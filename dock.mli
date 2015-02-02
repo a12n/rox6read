@@ -19,7 +19,7 @@ val unit_connected : t -> bool
 
 (** Model of cycling computer unit that is/was connected to the
  * docking station. *)
-val unit_model : t -> Unit_model.t
+val unit_model : t -> Unit_model.t option
 
 (** Write [data] to the docking station. *)
 val write : t -> string -> unit
