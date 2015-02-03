@@ -28,11 +28,13 @@ let open_dock path =
 let close = Unix.close
 
 
+(** Read [n] bytes of data from the docking station. *)
 let read fd n =
   let buf = String.make n '?' in
   ignore (Unix.read fd buf 0 n);
   buf
 
+(** Write [data] to the docking station. *)
 let write fd data =
   let n = String.length data in
   ignore (Unix.write fd data 0 n)
