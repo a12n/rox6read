@@ -45,12 +45,10 @@ let command fd data n =
 
 
 let unit_connected fd =
-  write fd "\xF4";
-  (read fd 1).[0] == '\x01'
+  (command fd "\xF4" 1).[0] == '\x01'
 
 let unit_model fd =
-  write fd "\xFE";
-  match (read fd 11).[1] with
+  match (command fd "\xFE" 11).[1] with
     '\x00' -> None
   | '\x17' -> Some (Unit_model.Rox_5)
   | '\x18' -> Some (Unit_model.Rox_6)
