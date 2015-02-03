@@ -1,4 +1,13 @@
+open Batteries
+
 type t = Unix.file_descr
+
+let dump prefix data =
+  print_string prefix;
+  String.to_list data
+  |> List.map (fun c -> Printf.sprintf "%02X" (Char.code c))
+  |> String.concat " "
+  |> print_endline
 
 let cfmakeraw tio =
   Unix.({ tio with
@@ -32,10 +41,12 @@ let close = Unix.close
 let read fd n =
   let buf = String.make n '?' in
   ignore (Unix.read fd buf 0 n);
+  dump "DS -> " buf;
   buf
 
 (** Write [data] to the docking station. *)
 let write fd data =
+  dump "DS <- " data;
   let n = String.length data in
   ignore (Unix.write fd data 0 n)
 
