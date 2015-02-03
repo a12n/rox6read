@@ -37,6 +37,10 @@ let write fd data =
   let n = String.length data in
   ignore (Unix.write fd data 0 n)
 
+let command fd data n =
+  write fd data;
+  read fd n
+
 
 let unit_connected fd =
   write fd "\xF4";
