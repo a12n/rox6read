@@ -45,10 +45,10 @@ let command fd ~data ~ans_size =
 
 
 let unit_connected fd =
-  (command fd "\xF4" 1).[0] == '\x01'
+  (command fd ~data:"\xF4" ~ans_size:1).[0] == '\x01'
 
 let unit_model fd =
-  match (command fd "\xFE" 11).[1] with
+  match (command fd ~data:"\xFE" ~ans_size:11).[1] with
     '\x00' -> None
   | '\x17' -> Some (Unit_model.Rox_5)
   | '\x18' -> Some (Unit_model.Rox_6)
