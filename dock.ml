@@ -29,7 +29,7 @@ let cfmakeraw tio =
 
 
 let open_dock path =
-  let fd = Unix.(openfile path [O_RDWR] 0o640) in
+  let fd = Unix.(openfile path [O_NONBLOCK; O_RDWR] 0o640) in
   Unix.(tcflush fd TCIOFLUSH);
   Unix.(tcsetattr fd TCSANOW (cfmakeraw (tcgetattr fd)));
   fd
@@ -37,18 +37,35 @@ let open_dock path =
 let close = Unix.close
 
 
+let io_timeout = 5.0
+
 (** Read [n] bytes of data from the docking station. *)
 let read fd n =
   let buf = String.make n '?' in
-  ignore (Unix.read fd buf 0 n);
-  dump "DS -> " buf;
-  buf
+  let rec read_at k =
+    if k < n then
+      match Unix.select [fd] [] [] io_timeout with
+      | [fd], [], [] ->
+         let m = Unix.read fd buf k (n - k) in
+         dump "DS -> " (String.sub buf k m);
+         read_at (k + m)
+      | _ -> failwith "Read from docking station timed out"
+    else
+      buf in
+  read_at 0
 
 (** Write [data] to the docking station. *)
 let write fd data =
-  dump "DS <- " data;
   let n = String.length data in
-  ignore (Unix.write fd data 0 n)
+  let rec write_at k =
+    if k < n then
+      match Unix.select [] [fd] [] io_timeout with
+      | [], [fd], [] ->
+         let m = Unix.write fd data k (n - k) in
+         dump "DS <- " (String.sub data k m);
+         write_at (k + m)
+      | _ -> failwith "Write to docking station timed out" in
+  write_at 0
 
 let command fd ~data ~ans_size =
   write fd data;
