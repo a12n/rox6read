@@ -60,8 +60,9 @@ let device_connected fd =
   ans.[0] == '\x01'
 
 let device_model fd =
-  match (command fd ~data:"\xFE" ~ans_size:11).[1] with
+  let ans = command fd ~data:"\xFE" ~ans_size:11 in
+  match ans.[1] with
     '\x00' -> None
   | '\x17' -> Some (Device_model.Rox_5)
   | '\x18' -> Some (Device_model.Rox_6)
-  | model -> Some (Device_model.Other (Char.code model))
+  | _ -> failwith "Unsupported device model"
