@@ -22,9 +22,12 @@ module Bat_status =
   struct
     type t = Ok | Low
 
-    let scan _ans =
-      (* TODO *)
-      Low
+    let scan ans =
+      (* TODO: Checksum *)
+      if (Char.code ans.[2]) lsr 7 == 0 then
+        Low
+      else
+        Ok
 
     let recieve =
       scan % command ~code:0xEF ~address:0x6A00 ~ans_size:7
