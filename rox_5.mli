@@ -16,10 +16,10 @@ module Totals :
 sig
   type t = {
       (* Bike *)
-      distance : int * int;
-      time : int * int;
-      cal : int * int;
-      climb : int * int;
+      distance : int * int;     (* m *)
+      time : int * int;         (* s *)
+      cal : int * int;          (* kcal *)
+      climb : int * int;        (* mm *)
       (* Hike *)
       hike_alt : int;
       hike_time : int;
