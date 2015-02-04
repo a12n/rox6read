@@ -116,7 +116,6 @@ module Settings =
         (* Altitude *)
         slp = (c.(0) lor ((c.(1) land 0x07) lsl 8)) * 10 + 90000;
         actual_alt =
-          (* FIXME *)
           ((((c.(24) land 0x7F) lsl 8) lor c.(23)) * 1000 +
              (c.(25) land 0x0F)) * ((c.(24) lsr 7) * -1) ;
         home_alt =
