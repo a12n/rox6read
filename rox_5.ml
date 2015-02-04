@@ -24,10 +24,10 @@ module Bat_status =
 
     let scan ans =
       (* TODO: Checksum *)
-      if (Char.code ans.[2]) lsr 7 == 0 then
-        Low
-      else
+      if (Char.code ans.[2]) land 0x80 == 0 then
         Ok
+      else
+        Low
 
     let recieve =
       scan % command ~code:0xEF ~address:0x6A00 ~ans_size:7
