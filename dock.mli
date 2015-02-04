@@ -28,6 +28,6 @@ val device_info : t -> Device_info.t option
  * validate end of message markers. *)
 val command : t -> code:int -> address:int -> ans_size:int -> string
 
-(** Send some [data] to the docking station, and receive [ans_size]
+(** Send command with [code] to the docking station. Receive [ans_size]
  * bytes of response. *)
-val simple_command : t -> data:string -> ans_size:int -> string
+val simple_command : t -> code:int -> ans_size:int -> string

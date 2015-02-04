@@ -76,24 +76,27 @@ let write fd data =
       | _ -> failwith "Write to docking station timed out" in
   write_at 0
 
-let simple_command fd ~data ~ans_size =
+let simple_command fd ~code ~ans_size =
+  let output = IO.output_string () in
+  IO.write_byte output code;
+  let data = IO.close_out output in
   write fd data;
   read fd ans_size
 
 let command fd ~code ~address ~ans_size =
-  let data = format_command ~code ~address ~ans_size in
-  let ans = simple_command fd ~data ~ans_size:(ans_size + 2) in
+  write fd (format_command ~code ~address ~ans_size);
+  let ans = read fd (ans_size + 2) in
   if not (fully_received ans) then
     failwith "Missing end of response marker";
   String.sub ans 0 ans_size
 
 
 let device_connected fd =
-  let ans = simple_command fd ~data:"\xF4" ~ans_size:1 in
+  let ans = simple_command fd ~code:0xF4 ~ans_size:1 in
   ans.[0] == '\x01'
 
 let device_info fd =
-  let ans = simple_command fd ~data:"\xFE" ~ans_size:11 in
+  let ans = simple_command fd ~code:0xFE ~ans_size:11 in
   match ans.[1] with
     '\x00' -> None
   | '\x17' ->
