@@ -33,6 +33,19 @@ module Bat_status =
       scan % command ~code:0xEF ~address:0x6A00 ~ans_size:7
   end
 
+module Settings =
+  struct
+    (* TODO *)
+    type t = unit
+
+    let scan _ans =
+      (* TODO *)
+      ()
+
+    let recieve =
+      scan % command ~code:0xEF ~address:0x2000 ~ans_size:34
+  end
+
 module Totals =
   struct
     (* TODO *)
