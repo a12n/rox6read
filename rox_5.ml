@@ -48,12 +48,24 @@ module Settings =
 
 module Totals =
   struct
-    (* TODO *)
-    type t = unit
+    type t = {
+        distance : int * int;
+        time : int * int;
+        cal : int * int;
+        climb : int * int;
+        hike_alt : int;
+        hike_time : int;
+        hike_cal : int;
+      }
 
     let scan _ans =
-      (* TODO *)
-      ()
+      { distance = (0, 0);
+        time = (0, 0);
+        cal = (0, 0);
+        climb = (0, 0);
+        hike_alt = 0;
+        hike_cal = 0;
+        hike_time = 0 }
 
     let recieve =
       scan % command ~code:0xEF ~address:0x4200 ~ans_size:40

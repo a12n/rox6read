@@ -14,7 +14,17 @@ end
 
 module Totals :
 sig
-  type t
+  type t = {
+      (* Bike *)
+      distance : int * int;
+      time : int * int;
+      cal : int * int;
+      climb : int * int;
+      (* Hike *)
+      hike_alt : int;
+      hike_time : int;
+      hike_cal : int;
+    }
 
   val recieve : Dock.t -> t
 end
