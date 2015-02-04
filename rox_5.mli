@@ -4,3 +4,10 @@ sig
 
   val recieve : Dock.t -> t
 end
+
+module Totals :
+sig
+  type t
+
+  val recieve : Dock.t -> t
+end

@@ -32,3 +32,16 @@ module Bat_status =
     let recieve =
       scan % command ~code:0xEF ~address:0x6A00 ~ans_size:7
   end
+
+module Totals =
+  struct
+    (* TODO *)
+    type t = unit
+
+    let scan _ans =
+      (* TODO *)
+      ()
+
+    let recieve =
+      scan % command ~code:0xEF ~address:0x4200 ~ans_size:40
+  end
