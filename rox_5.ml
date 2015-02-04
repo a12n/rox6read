@@ -26,6 +26,6 @@ module Bat_status =
       (* TODO *)
       Low
 
-    let recieve ds =
-      command ds ~code:0xEF ~address:0x6A00 ~ans_size:7 |> scan
+    let recieve =
+      scan % command ~code:0xEF ~address:0x6A00 ~ans_size:7
   end
