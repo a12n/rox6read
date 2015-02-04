@@ -102,9 +102,8 @@ module Settings =
         );
         (* Date and time *)
         date = {
-            (* FIXME *)
             Date.y = ((c.(12) land 0x0F) lsl 8) lor c.(11);
-            mon = ((c.(12) land 0xF0) lsl 4);
+            mon = ((c.(12) land 0xF0) lsr 4);
             d = c.(10) land 0x3F;
           };
         time = {
