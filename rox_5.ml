@@ -8,8 +8,10 @@ module Bat_status =
     type t = Ok | Low
 
     let scan ans =
-      (* TODO: Checksum *)
-      if (Char.code ans.[2]) land 0x80 == 0 then
+      let c = char_codes ans in
+      if (Array.(sub c 0 6 |> sum) land 0x0F) != (c.(6) lsr 4) then
+        failwith "Invalid battery status checksum";
+      if (c.(2) land 0x80) == 0 then
         Ok
       else
         Low
