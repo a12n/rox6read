@@ -7,7 +7,38 @@ end
 
 module Settings :
 sig
-  type t
+  type t = {
+      (* Person *)
+      age : int;                (* y *)
+      mass : int;               (* g *)
+      sex : Sex.t;
+      (* Heart rate *)
+      hr_max : int;             (* bpm *)
+      hr_limits : int * int;    (* bpm *)
+      (* Training zones *)
+      training_zone : Training_zone.t;
+      zone_alarm : bool;
+      zone_start : int * int * int * int; (* % *)
+      (* Bike *)
+      wheel_size : int * int;   (* mm *)
+      (* Date and time *)
+      date : Date.t;
+      time : Time.t;
+      (* Altitude *)
+      slp : int;                (* Pa *)
+      actual_alt : int;         (* mm *)
+      home_alt : int;           (* mm *)
+      alt_ref : Alt_ref.t;
+      (* Device *)
+      lang : Lang.t;
+      date_format : Date_format.t;
+      speed_unit : Speed_unit.t;
+      mass_unit : Mass_unit.t;
+      contrast : Contrast.t;
+      low_bat : Low_bat.t;
+      (* Service interval *)
+      serv_interval : bool * int; (* h *)
+    }
 
   val recieve : Dock.t -> t
 end
