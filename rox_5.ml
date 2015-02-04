@@ -45,7 +45,13 @@ module Totals =
 
     let scan ans =
       let c = char_codes ans in
-      (* TODO: Checksum *)
+      (* Checksums *)
+      if (Array.(sub c 0 35 |> sum) land 0xFF) != c.(35) then
+        failwith "Invalid totals checksum";
+      if c.(36) != 0xA1 || c.(37) != 0xA2 ||
+           c.(38) != 0xA3 || c.(39) != 0xA4 then
+        failwith "Invalid totals padding";
+      (* Scan binary data *)
       { distance = (
           (* Bike1 *)
           (c.( 0) lor (c.( 1) lsl 8) lor (c.( 2) lsl 16) lor ((c.( 3) land 0x0F) lsl 24)) +
