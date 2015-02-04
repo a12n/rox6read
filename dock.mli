@@ -14,9 +14,9 @@ val command : t -> data:string -> ans_size:int -> string
  * docking station. *)
 val device_connected : t -> bool
 
-(** Model of cycling computer device that is/was connected to the
+(** Information about cycling computer that is/was connected to the
  * docking station. *)
-val device_model : t -> Device_model.t option
+val device_info : t -> Device_info.t option
 
 (** Open connection to the docking station through serial device file
  * at [path]. *)

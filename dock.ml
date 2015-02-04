@@ -59,10 +59,14 @@ let device_connected fd =
   let ans = command fd ~data:"\xF4" ~ans_size:1 in
   ans.[0] == '\x01'
 
-let device_model fd =
+let device_info fd =
   let ans = command fd ~data:"\xFE" ~ans_size:11 in
   match ans.[1] with
     '\x00' -> None
-  | '\x17' -> Some (Device_model.Rox_5)
-  | '\x18' -> Some (Device_model.Rox_6)
+  | '\x17' ->
+     Some { Device_info.model = Device_model.Rox_5;
+            serial_number = String.sub ans 2 4 }
+  | '\x18' ->
+     Some { Device_info.model = Device_model.Rox_6;
+            serial_number = String.sub ans 2 4 }
   | _ -> failwith "Unsupported device model"
