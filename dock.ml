@@ -2,13 +2,6 @@ open Batteries
 
 type t = Unix.file_descr
 
-let dump prefix data =
-  print_string prefix;
-  String.to_list data
-  |> List.map (fun c -> Printf.sprintf "%02X" (Char.code c))
-  |> String.concat " "
-  |> print_endline
-
 let cfmakeraw tio =
   Unix.({ tio with
           c_brkint = false;
@@ -27,14 +20,21 @@ let cfmakeraw tio =
           c_parenb = false;
           c_parmrk = false })
 
+let dump prefix data =
+  print_string prefix;
+  String.to_list data
+  |> List.map (fun c -> Printf.sprintf "%02X" (Char.code c))
+  |> String.concat " "
+  |> print_endline
+
+
+let close = Unix.close
 
 let open_dock path =
   let fd = Unix.(openfile path [O_NONBLOCK; O_RDWR] 0o640) in
   Unix.(tcflush fd TCIOFLUSH);
   Unix.(tcsetattr fd TCSANOW (cfmakeraw (tcgetattr fd)));
   fd
-
-let close = Unix.close
 
 
 let io_timeout = 5.0
