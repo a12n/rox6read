@@ -56,7 +56,8 @@ let command fd ~data ~ans_size =
 
 
 let device_connected fd =
-  (command fd ~data:"\xF4" ~ans_size:1).[0] == '\x01'
+  let ans = command fd ~data:"\xF4" ~ans_size:1 in
+  ans.[0] == '\x01'
 
 let device_model fd =
   match (command fd ~data:"\xFE" ~ans_size:11).[1] with
