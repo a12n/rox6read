@@ -55,12 +55,12 @@ let command fd ~data ~ans_size =
   read fd ans_size
 
 
-let unit_connected fd =
+let device_connected fd =
   (command fd ~data:"\xF4" ~ans_size:1).[0] == '\x01'
 
-let unit_model fd =
+let device_model fd =
   match (command fd ~data:"\xFE" ~ans_size:11).[1] with
     '\x00' -> None
-  | '\x17' -> Some (Unit_model.Rox_5)
-  | '\x18' -> Some (Unit_model.Rox_6)
-  | model -> Some (Unit_model.Other (Char.code model))
+  | '\x17' -> Some (Device_model.Rox_5)
+  | '\x18' -> Some (Device_model.Rox_6)
+  | model -> Some (Device_model.Other (Char.code model))

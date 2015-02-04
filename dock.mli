@@ -10,14 +10,14 @@ val close : t -> unit
  * response. *)
 val command : t -> data:string -> ans_size:int -> string
 
+(** Returns [true] if there's a cycling computer connected to the
+ * docking station. *)
+val device_connected : t -> bool
+
+(** Model of cycling computer device that is/was connected to the
+ * docking station. *)
+val device_model : t -> Device_model.t option
+
 (** Open connection to the docking station through serial device file
  * at [path]. *)
 val open_dock : string -> t
-
-(** Returns [true] if there's a cycling computer unit connected to the
- * docking station. *)
-val unit_connected : t -> bool
-
-(** Model of cycling computer unit that is/was connected to the
- * docking station. *)
-val unit_model : t -> Unit_model.t option
