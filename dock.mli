@@ -6,10 +6,6 @@ type t
 (** Close connection to the docking station. *)
 val close : t -> unit
 
-(** Send some [data] to the docking station, and receive [n] bytes of
- * response. *)
-val command : t -> data:string -> ans_size:int -> string
-
 (** Returns [true] if there's a cycling computer connected to the
  * docking station. *)
 val device_connected : t -> bool
@@ -21,3 +17,7 @@ val device_info : t -> Device_info.t option
 (** Open connection to the docking station through serial device file
  * at [path]. *)
 val open_dock : string -> t
+
+(** Send some [data] to the docking station, and receive [n] bytes of
+ * response. *)
+val simple_command : t -> data:string -> ans_size:int -> string

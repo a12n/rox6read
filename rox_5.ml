@@ -12,8 +12,8 @@ let fully_received ans =
   n > 2 && ans.[n - 2] == '\x00' && ans.[n - 1] == '\xFF'
 
 let command ds ~code ~address ~ans_size =
-  let ans = Dock.command ds ~data:(format_command ~code ~address ~ans_size)
-                         ~ans_size:(ans_size + 2) in
+  let data = format_command ~code ~address ~ans_size in
+  let ans = Dock.simple_command ds ~data ~ans_size:(ans_size + 2) in
   if not (fully_received ans) then
     failwith "Missing end of response marker";
   String.sub ans 0 ans_size

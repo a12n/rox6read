@@ -67,17 +67,17 @@ let write fd data =
       | _ -> failwith "Write to docking station timed out" in
   write_at 0
 
-let command fd ~data ~ans_size =
+let simple_command fd ~data ~ans_size =
   write fd data;
   read fd ans_size
 
 
 let device_connected fd =
-  let ans = command fd ~data:"\xF4" ~ans_size:1 in
+  let ans = simple_command fd ~data:"\xF4" ~ans_size:1 in
   ans.[0] == '\x01'
 
 let device_info fd =
-  let ans = command fd ~data:"\xFE" ~ans_size:11 in
+  let ans = simple_command fd ~data:"\xFE" ~ans_size:11 in
   match ans.[1] with
     '\x00' -> None
   | '\x17' ->
