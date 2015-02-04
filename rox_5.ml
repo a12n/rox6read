@@ -63,6 +63,7 @@ module Totals =
 
     let scan ans =
       let c = char_codes ans in
+      (* TODO: Checksum *)
       { distance = (
           (* Bike1 *)
           (c.( 0) lor (c.( 1) lsl 8) lor (c.( 2) lsl 16) lor ((c.( 3) land 0x0F) lsl 24)) +
