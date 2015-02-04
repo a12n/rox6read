@@ -1,23 +1,5 @@
 open Batteries
 
-let format_command ~code ~address ~ans_size =
-  let output = IO.output_string () in
-  IO.write_byte output code;
-  IO.BigEndian.write_ui16 output address;
-  IO.write_ui16 output ans_size;
-  IO.close_out output
-
-let fully_received ans =
-  let n = String.length ans in
-  n > 2 && ans.[n - 2] == '\x00' && ans.[n - 1] == '\xFF'
-
-let command ds ~code ~address ~ans_size =
-  let data = format_command ~code ~address ~ans_size in
-  let ans = Dock.simple_command ds ~data ~ans_size:(ans_size + 2) in
-  if not (fully_received ans) then
-    failwith "Missing end of response marker";
-  String.sub ans 0 ans_size
-
 let char_codes =
   Array.of_list % List.map Char.code % String.to_list
 
@@ -33,7 +15,7 @@ module Bat_status =
         Low
 
     let recieve =
-      scan % command ~code:0xEF ~address:0x6A00 ~ans_size:7
+      scan % Dock.command ~code:0xEF ~address:0x6A00 ~ans_size:7
   end
 
 module Settings =
@@ -46,7 +28,7 @@ module Settings =
       ()
 
     let recieve =
-      scan % command ~code:0xEF ~address:0x2000 ~ans_size:34
+      scan % Dock.command ~code:0xEF ~address:0x2000 ~ans_size:34
   end
 
 module Totals =
@@ -105,5 +87,5 @@ module Totals =
           ((c.(25) land 0x03) lsl 24) lor (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) }
 
     let recieve =
-      scan % command ~code:0xEF ~address:0x4200 ~ans_size:40
+      scan % Dock.command ~code:0xEF ~address:0x4200 ~ans_size:40
   end
