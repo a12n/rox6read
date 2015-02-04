@@ -18,6 +18,9 @@ let command ds ~code ~address ~ans_size =
     failwith "Missing end of response marker";
   String.sub ans 0 ans_size
 
+let char_codes =
+  Array.of_list % List.map Char.code % String.to_list
+
 module Bat_status =
   struct
     type t = Ok | Low
