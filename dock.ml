@@ -39,7 +39,6 @@ let open_dock path =
 
 let io_timeout = 5.0
 
-(** Read [n] bytes of data from the docking station. *)
 let read fd n =
   let buf = String.make n '?' in
   let rec read_at k =
@@ -54,7 +53,6 @@ let read fd n =
       buf in
   read_at 0
 
-(** Write [data] to the docking station. *)
 let write fd data =
   let n = String.length data in
   let rec write_at k =
