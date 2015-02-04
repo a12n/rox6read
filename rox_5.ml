@@ -3,6 +3,13 @@ open Batteries
 let char_codes =
   Array.of_list % List.map Char.code % String.to_list
 
+let valid_checksum c n =
+  (Array.(sub c 0 n |> sum) land 0xFF) == c.(n)
+
+let valid_padding c k =
+  c.(k) == 0xA1 && c.(k + 1) == 0xA2 &&
+    c.(k + 2) == 0xA3 && c.(k + 3) == 0xA4
+
 module Bat_status =
   struct
     type t = Ok | Low
@@ -48,10 +55,9 @@ module Totals =
     let scan ans =
       let c = char_codes ans in
       (* Checksums *)
-      if (Array.(sub c 0 35 |> sum) land 0xFF) != c.(35) then
+      if not (valid_checksum c 35) then
         failwith "Invalid totals checksum";
-      if c.(36) != 0xA1 || c.(37) != 0xA2 ||
-           c.(38) != 0xA3 || c.(39) != 0xA4 then
+      if not (valid_padding c 36) then
         failwith "Invalid totals padding";
       (* Scan binary data *)
       { distance = (
