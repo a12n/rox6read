@@ -24,6 +24,6 @@ val device_info : t -> Device_info.t option
 
 (** {2 I/O and Commands} *)
 
-(** Send some [data] to the docking station, and receive [n] bytes of
- * response. *)
+(** Send some [data] to the docking station, and receive [ans_size]
+ * bytes of response. *)
 val simple_command : t -> data:string -> ans_size:int -> string
