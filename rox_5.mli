@@ -37,7 +37,7 @@ sig
       contrast : Contrast.t;
       low_bat : Low_bat.t;
       (* Service interval *)
-      serv_interval : bool * int; (* h *)
+      serv_interval : bool * int; (* km *)
     }
 
   val recieve : Dock.t -> t
