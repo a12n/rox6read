@@ -52,9 +52,9 @@ sig
       kcal : int * int;         (* kcal *)
       climb : int * int;        (* mm *)
       (* Hike *)
-      hike_alt : int;
-      hike_time : int;
-      hike_kcal : int;
+      hike_alt : int;           (* mm *)
+      hike_time : int;          (* s *)
+      hike_kcal : int;          (* kcal *)
     }
 
   val recieve : Dock.t -> t
