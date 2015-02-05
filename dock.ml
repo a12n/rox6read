@@ -90,6 +90,22 @@ let command fd ~code ~address ~ans_size =
     failwith "Missing end of response marker";
   String.sub ans 0 ans_size
 
+let pkg_command fd ~code ~address ~ans_size ~pkg_size =
+  let rec command_at ans off =
+    if off < ans_size then
+      begin
+        let n = min (ans_size - off) pkg_size in
+        write fd (format_command ~code
+                                 ~address:(address + off)
+                                 ~ans_size:n);
+        let buf = read fd (n + 2) in
+        if not (fully_received buf) then
+          failwith "Missing end of response marker";
+        command_at (String.concat "" [ans; buf]) (off + n)
+      end
+    else
+      ans in
+  command_at (String.make ans_size '?') 0
 
 let device_connected fd =
   let ans = simple_command fd ~code:0xF4 ~ans_size:1 in
