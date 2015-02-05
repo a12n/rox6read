@@ -24,7 +24,7 @@ module Bat_status =
         Low
 
     let recieve =
-      scan % Dock.command ~code:0xEF ~address:0x6A00 ~ans_size:7
+      scan % Dock.command ~code:0xEF ~address:0x006A ~ans_size:7
   end
 
 module Settings =
@@ -193,7 +193,7 @@ module Settings =
       }
 
     let recieve =
-      scan % Dock.command ~code:0xEF ~address:0x2000 ~ans_size:34
+      scan % Dock.command ~code:0xEF ~address:0x0020 ~ans_size:34
   end
 
 module Totals =
@@ -257,5 +257,5 @@ module Totals =
           ((c.(25) land 0x03) lsl 24) lor (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) }
 
     let recieve =
-      scan % Dock.command ~code:0xEF ~address:0x4200 ~ans_size:40
+      scan % Dock.command ~code:0xEF ~address:0x0042 ~ans_size:40
   end

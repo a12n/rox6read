@@ -30,7 +30,7 @@ let dump prefix data =
 let format_command ~code ~address ~ans_size =
   let output = IO.output_string () in
   IO.write_byte output code;
-  IO.BigEndian.write_ui16 output address;
+  IO.write_ui16 output address;
   IO.write_ui16 output ans_size;
   IO.close_out output
 
