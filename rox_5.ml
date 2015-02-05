@@ -107,10 +107,9 @@ module Settings =
             d = c.(10) land 0x3F;
           };
         time = {
-            (* FIXME *)
-            Time.h = (c.(1) land 0x78) lsl 3;
+            Time.h = (c.(1) land 0x78) lsr 3;
             min = c.(2) land 0x3F;
-            s = (c.(5) land 0xFC) lsl 2;
+            s = (c.(5) land 0xFC) lsr 2;
           };
         (* Altitude *)
         slp = (c.(0) lor ((c.(1) land 0x07) lsl 8)) * 10 + 90000;
