@@ -115,12 +115,23 @@ module Settings =
         (* Altitude *)
         slp = (c.(0) lor ((c.(1) land 0x07) lsl 8)) * 10 + 90000;
         actual_alt =
-          ((((c.(24) land 0x7F) lsl 8) lor c.(23)) * 1000 +
-             (c.(25) land 0x0F)) * ((c.(24) lsr 7) * -1) ;
+          begin
+            let alt = (((c.(24) land 0x7F) lsl 8) lor c.(23)) * 1000 +
+                        (c.(25) land 0x0F) in
+            if (c.(24) lsr 7) == 0 then
+              alt
+            else
+              -alt
+          end;
         home_alt =
-          (* FIXME *)
-          ((((c.(27) land 0x7F) lsl 8) lor c.(26)) * 1000 +
-             (c.(28) land 0x0F)) * ((c.(27) lsl 7) * -1) ;
+          begin
+            let alt = (((c.(27) land 0x7F) lsl 8) lor c.(26)) * 1000 +
+                        (c.(28) land 0x0F) in
+            if (c.(27) lsr 7) == 0 then
+              alt
+            else
+              -alt
+          end ;
         alt_ref = if (c.(25) land 0x80) == 0 then
                     Alt_ref.Actual_alt
                   else
