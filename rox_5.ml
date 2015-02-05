@@ -201,11 +201,11 @@ module Totals =
     type t = {
         distance : int * int;
         time : int * int;
-        cal : int * int;
+        kcal : int * int;
         climb : int * int;
         hike_alt : int;
         hike_time : int;
-        hike_cal : int;
+        hike_kcal : int;
       }
 
     let scan ans =
@@ -232,7 +232,7 @@ module Totals =
           (* Bike2 *)
           ((c.(15) land 3) lsl 24) lor (c.(14) lsl 16) lor (c.(13) lsl 8) lor c.(12)
         );
-        cal = (
+        kcal = (
           (* Bike1 *)
           (((c.(25) land 0x04) lsr 2) lsl 16) lor (c.(17) lsl 8) lor c.(16)
         ,
@@ -251,7 +251,7 @@ module Totals =
         hike_alt =
           (((c.(34) land 15) lsl 16) land (c.(33) lsl 8) lor c.(32)) * 100 +
             10 * ((c.(34) land 0xF0) lsr 4) ;
-        hike_cal =
+        hike_kcal =
           (((c.(25) land 0x10) lsr 4) lsl 16) lor (c.(21) lsl 8) lor c.(20) ;
         hike_time =
           ((c.(25) land 0x03) lsl 24) lor (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) }

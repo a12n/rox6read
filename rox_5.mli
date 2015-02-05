@@ -49,12 +49,12 @@ sig
       (* Bike *)
       distance : int * int;     (* m *)
       time : int * int;         (* s *)
-      cal : int * int;          (* kcal *)
+      kcal : int * int;         (* kcal *)
       climb : int * int;        (* mm *)
       (* Hike *)
       hike_alt : int;
       hike_time : int;
-      hike_cal : int;
+      hike_kcal : int;
     }
 
   val recieve : Dock.t -> t
