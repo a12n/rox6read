@@ -273,9 +273,9 @@ let pkg_command fd ~code ~address ~ans_size =
     if off < ans_size then
       begin
         let n = min (ans_size - off) pkg_size in
-        Ser_port.write fd (format_command ~code
-                                          ~address:(address + off)
-                                          ~ans_size:n);
+        Ser_port.write fd (command_buf ~code
+                                       ~address:(address + off)
+                                       ~ans_size:n);
         let buf = Ser_port.read fd (n + 2) in
         if not (fully_received buf) then
           failwith "Missing end of response marker";
