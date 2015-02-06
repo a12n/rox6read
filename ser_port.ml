@@ -21,7 +21,8 @@ let open_port path =
 let timeout = 5.0
 
 let read fd n =
-  let buf = Bytes.make n '\x00' in
+  (* TODO: use bytes *)
+  let buf = String.make n '\x00' in
   let rec aux k =
     if k < n then
       match Unix.select [fd] [] [] timeout with
@@ -34,7 +35,8 @@ let read fd n =
   aux 0
 
 let write fd buf =
-  let n = Bytes.length buf in
+  (* TODO: use bytes *)
+  let n = String.length buf in
   let rec aux k =
     if k < n then
       match Unix.select [] [fd] [] timeout with

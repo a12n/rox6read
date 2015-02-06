@@ -13,7 +13,7 @@ val close : t -> unit
 val open_port : string -> t
 
 (** Read exactly [n] bytes from the port, or fail with [Timeout]. *)
-val read : t -> int -> bytes
+val read : t -> int -> string
 
 (** Write data from [buf] to the port, or fail with [Timeout]. *)
-val write : t -> bytes -> unit
+val write : t -> string -> unit
