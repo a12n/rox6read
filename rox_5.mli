@@ -1,8 +1,3 @@
-module Bat_status :
-sig
-  type t = Ok | Low
-end
-
 module Settings :
 sig
   type t = {
@@ -54,7 +49,7 @@ sig
     }
 end
 
-val bat_status : Ser_port.t -> Bat_status.t
+val bat_low : Ser_port.t -> bool
 
 val settings : Ser_port.t -> Settings.t
 

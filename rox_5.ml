@@ -28,18 +28,13 @@ let command fd ~code ~address ~ans_size =
     failwith "Missing end of response marker";
   String.sub ans 0 ans_size
 
-module Bat_status =
+module Bat_low =
   struct
-    type t = Ok | Low
-
     let scan ans =
       let c = char_codes ans in
       if (Array.(sub c 0 6 |> sum) land 0x0F) != (c.(6) lsr 4) then
         failwith "Invalid battery status checksum";
-      if (c.(2) land 0x80) == 0 then
-        Ok
-      else
-        Low
+      (c.(2) land 0x80) != 0
   end
 
 module Settings =
@@ -289,8 +284,8 @@ let pkg_command fd ~code ~address ~ans_size ~pkg_size =
   command_at 0;
   ans
 
-let bat_status =
-  Bat_status.scan % command ~code:0xEF ~address:0x006A ~ans_size:7
+let bat_low =
+  Bat_low.scan % command ~code:0xEF ~address:0x006A ~ans_size:7
 
 let settings =
   Settings.scan % command ~code:0xEF ~address:0x0020 ~ans_size:34
