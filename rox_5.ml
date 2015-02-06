@@ -47,7 +47,13 @@ exception Invalid_checksum
 
 module Activity =
   struct
+    (* TODO *)
+    type t = string
+
     let address = 0x00A6
+
+    let scan ans =
+      ans
   end
 
 module Activity_summary =
@@ -299,6 +305,9 @@ module Totals =
 
 let activity_summary =
   Activity_summary.scan % command ~code:0xEF ~address:0x0071 ~ans_size:53
+
+let activity port { Activity_summary.raw_size; _ } =
+  package_command port ~code:0xEF ~address:Activity.address ~ans_size:raw_size |> Activity.scan
 
 let bat_low =
   Bat_low.scan % command ~code:0xEF ~address:0x006A ~ans_size:7

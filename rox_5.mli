@@ -1,3 +1,9 @@
+module Activity :
+sig
+  (* TODO *)
+  type t = string
+end
+
 module Activity_summary :
 sig
   type t = {
@@ -59,6 +65,8 @@ end
 exception Invalid_checksum
 
 val activity_summary : Ser_port.t -> Activity_summary.t
+
+val activity : Ser_port.t -> Activity_summary.t -> Activity.t
 
 val bat_low : Ser_port.t -> bool
 
