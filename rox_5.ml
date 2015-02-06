@@ -43,6 +43,9 @@ let package_command fd ~code ~address ~ans_size =
   aux 0;
   ans
 
+exception Invalid_checksum
+exception Invalid_padding
+
 module Bat_low =
   struct
     let scan ans =
