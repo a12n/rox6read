@@ -51,7 +51,7 @@ module Bat_low =
     let scan ans =
       let c = char_codes ans in
       if (Array.(sub c 0 6 |> sum) land 0x0F) != (c.(6) lsr 4) then
-        failwith "Invalid battery status checksum";
+        raise Invalid_checksum;
       (c.(2) land 0x80) != 0
   end
 
@@ -94,9 +94,9 @@ module Settings =
       let c = char_codes ans in
       (* Checksums *)
       if not (valid_checksum c 29) then
-        failwith "Invalid settings checksum";
+        raise Invalid_checksum;
       if not (valid_padding c 30) then
-        failwith "Invalid settings padding";
+        raise Invalid_padding;
       (* Scan binary data *)
       {
         (* Person *)
@@ -237,9 +237,9 @@ module Totals =
       let c = char_codes ans in
       (* Checksums *)
       if not (valid_checksum c 35) then
-        failwith "Invalid totals checksum";
+        raise Invalid_checksum;
       if not (valid_padding c 36) then
-        failwith "Invalid totals padding";
+        raise Invalid_padding;
       (* Scan binary data *)
       { distance = (
           (* Bike1 *)
