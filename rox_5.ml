@@ -50,7 +50,7 @@ module Activity =
     let address = 0x00A6
   end
 
-module Activiy_summary =
+module Activity_summary =
   struct
     type t = {
         raw_size : int;        (* size of activity in device memory *)
