@@ -45,6 +45,22 @@ let package_command fd ~code ~address ~ans_size =
 
 exception Invalid_checksum
 
+module Activity =
+  struct
+    let address = 0x00A6
+  end
+
+module Activiy_summary =
+  struct
+    type t = {
+        raw_size : int;        (* size of activity in device memory *)
+      }
+
+    let scan ans =
+      let c = char_codes ans in
+      { raw_size = ((c.(26) lsl 8) lor c.(25)) - Activity.address }
+  end
+
 module Bat_low =
   struct
     let scan ans =
