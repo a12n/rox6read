@@ -266,7 +266,8 @@ module Totals =
 
 
 
-let pkg_command fd ~code ~address ~ans_size ~pkg_size =
+let pkg_command fd ~code ~address ~ans_size =
+  let pkg_size = 768 in
   let ans = String.make ans_size '?' in
   let rec command_at off =
     if off < ans_size then
