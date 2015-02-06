@@ -50,7 +50,6 @@ sig
 end
 
 exception Invalid_checksum
-exception Invalid_padding
 
 val bat_low : Ser_port.t -> bool
 

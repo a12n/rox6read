@@ -44,7 +44,6 @@ let package_command fd ~code ~address ~ans_size =
   ans
 
 exception Invalid_checksum
-exception Invalid_padding
 
 module Bat_low =
   struct
@@ -96,7 +95,7 @@ module Settings =
       if not (valid_checksum c 29) then
         raise Invalid_checksum;
       if not (valid_padding c 30) then
-        raise Invalid_padding;
+        raise Invalid_checksum;
       (* Scan binary data *)
       {
         (* Person *)
@@ -239,7 +238,7 @@ module Totals =
       if not (valid_checksum c 35) then
         raise Invalid_checksum;
       if not (valid_padding c 36) then
-        raise Invalid_padding;
+        raise Invalid_checksum;
       (* Scan binary data *)
       { distance = (
           (* Bike1 *)
