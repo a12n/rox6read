@@ -1,8 +1,6 @@
 module Bat_status :
 sig
   type t = Ok | Low
-
-  val recieve : Ser_port.t -> t
 end
 
 module Settings :
@@ -39,8 +37,6 @@ sig
       (* Service interval *)
       serv_interval : bool * int; (* km *)
     }
-
-  val recieve : Ser_port.t -> t
 end
 
 module Totals :
@@ -56,6 +52,10 @@ sig
       hike_time : int;          (* s *)
       hike_kcal : int;          (* kcal *)
     }
-
-  val recieve : Ser_port.t -> t
 end
+
+val bat_status : Ser_port.t -> Bat_status.t
+
+val settings : Ser_port.t -> Settings.t
+
+val totals : Ser_port.t -> Totals.t

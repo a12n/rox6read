@@ -40,9 +40,6 @@ module Bat_status =
         Ok
       else
         Low
-
-    let recieve =
-      scan % command ~code:0xEF ~address:0x006A ~ans_size:7
   end
 
 module Settings =
@@ -209,9 +206,6 @@ module Settings =
           ((c.(5) land 0x03) lsl 16) lor (c.(4) lsl 8) lor c.(3)
         );
       }
-
-    let recieve =
-      scan % command ~code:0xEF ~address:0x0020 ~ans_size:34
   end
 
 module Totals =
@@ -273,9 +267,6 @@ module Totals =
           (((c.(25) land 0x10) lsr 4) lsl 16) lor (c.(21) lsl 8) lor c.(20) ;
         hike_time =
           ((c.(25) land 0x03) lsl 24) lor (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) }
-
-    let recieve =
-      scan % command ~code:0xEF ~address:0x0042 ~ans_size:40
   end
 
 
@@ -297,3 +288,12 @@ let pkg_command fd ~code ~address ~ans_size ~pkg_size =
       end in
   command_at 0;
   ans
+
+let bat_status =
+  Bat_status.scan % command ~code:0xEF ~address:0x006A ~ans_size:7
+
+let settings =
+  Settings.scan % command ~code:0xEF ~address:0x0020 ~ans_size:34
+
+let totals =
+  Totals.scan % command ~code:0xEF ~address:0x0042 ~ans_size:40
