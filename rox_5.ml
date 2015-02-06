@@ -10,19 +10,19 @@ let valid_padding c k =
   c.(k) == 0xA1 && c.(k + 1) == 0xA2 &&
     c.(k + 2) == 0xA3 && c.(k + 3) == 0xA4
 
-let format_command ~code ~address ~ans_size =
-  let output = IO.output_string () in
-  IO.write_byte output code;
-  IO.write_ui16 output address;
-  IO.write_ui16 output ans_size;
-  IO.close_out output
+let command_buf ~code ~address ~ans_size =
+  let buf = IO.output_string () in
+  IO.write_byte buf code;
+  IO.write_ui16 buf address;
+  IO.write_ui16 buf ans_size;
+  IO.close_out buf
 
 let fully_received ans =
   let n = String.length ans in
   n > 2 && ans.[n - 2] == '\x00' && ans.[n - 1] == '\xFF'
 
 let command fd ~code ~address ~ans_size =
-  Ser_port.write fd (format_command ~code ~address ~ans_size);
+  Ser_port.write fd (command_buf ~code ~address ~ans_size);
   let ans = Ser_port.read fd (ans_size + 2) in
   if not (fully_received ans) then
     failwith "Missing end of response marker";
