@@ -3,9 +3,9 @@ type t = Unix.file_descr
 exception Timeout
 
 let dump prefix buf =
-  print_string prefix;
-  String.iter (fun c -> Printf.printf " %02X" (Char.code c)) buf;
-  print_newline ()
+  prerr_string prefix;
+  String.iter (fun c -> Printf.fprintf stderr " %02X" (Char.code c)) buf;
+  prerr_newline ()
 
 let cfmakeraw attr =
   { attr with Unix.c_brkint = false; c_csize = 8; c_echo = false;
