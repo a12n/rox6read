@@ -2,6 +2,11 @@ type t = Unix.file_descr
 
 exception Timeout
 
+let dump prefix buf =
+  print_string prefix;
+  String.iter (fun c -> Printf.printf " %02X" (Char.code c)) buf;
+  print_newline ()
+
 let cfmakeraw attr =
   { attr with Unix.c_brkint = false; c_csize = 8; c_echo = false;
               c_echonl = false; c_icanon = false; c_icrnl = false;
@@ -28,6 +33,7 @@ let read fd n =
       match Unix.select [fd] [] [] timeout with
       | [fd], [], [] ->
          let m = Unix.read fd buf k (n - k) in
+         dump "PORT -->" (String.sub buf k m);
          aux (k + m)
       | _ -> raise Timeout
     else
@@ -42,6 +48,7 @@ let write fd buf =
       match Unix.select [] [fd] [] timeout with
       | [], [fd], [] ->
          let m = Unix.write fd buf k (n - k) in
+         dump "PORT <--" (String.sub buf k m);
          aux (k + m)
       | _ -> raise Timeout in
   aux 0
