@@ -1,3 +1,10 @@
+module Activity_summary :
+sig
+  type t = {
+      raw_size : int;        (* size of activity in device memory *)
+    }
+end
+
 module Settings :
 sig
   type t = {
@@ -50,6 +57,8 @@ sig
 end
 
 exception Invalid_checksum
+
+val activity_summary : Ser_port.t -> Activity_summary.t
 
 val bat_low : Ser_port.t -> bool
 

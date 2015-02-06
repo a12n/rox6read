@@ -297,6 +297,9 @@ module Totals =
           ((c.(25) land 0x03) lsl 24) lor (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) }
   end
 
+let activity_summary =
+  Activity_summary.scan % command ~code:0xEF ~address:0x0071 ~ans_size:53
+
 let bat_low =
   Bat_low.scan % command ~code:0xEF ~address:0x006A ~ans_size:7
 
