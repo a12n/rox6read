@@ -28,6 +28,21 @@ let command fd ~code ~address ~ans_size =
     failwith "Missing end of response marker";
   String.sub ans 0 ans_size
 
+let package_command fd ~code ~address ~ans_size =
+  (* TODO: Use bytes *)
+  let ans = String.make ans_size '\x00' in
+  let max_ans_size = 768 in
+  let rec aux off =
+    if off < ans_size then
+      begin
+        let part_size = min (ans_size - off) max_ans_size in
+        let part = command fd ~code ~address:(address + off) ~ans_size:part_size in
+        String.blit part 0 ans off part_size;
+        aux (off + part_size)
+      end in
+  aux 0;
+  ans
+
 module Bat_low =
   struct
     let scan ans =
@@ -263,27 +278,6 @@ module Totals =
         hike_time =
           ((c.(25) land 0x03) lsl 24) lor (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) }
   end
-
-
-
-let pkg_command fd ~code ~address ~ans_size =
-  let pkg_size = 768 in
-  let ans = String.make ans_size '?' in
-  let rec command_at off =
-    if off < ans_size then
-      begin
-        let n = min (ans_size - off) pkg_size in
-        Ser_port.write fd (command_buf ~code
-                                       ~address:(address + off)
-                                       ~ans_size:n);
-        let buf = Ser_port.read fd (n + 2) in
-        if not (fully_received buf) then
-          failwith "Missing end of response marker";
-        String.blit buf 0 ans off n;
-        command_at (off + n)
-      end in
-  command_at 0;
-  ans
 
 let bat_low =
   Bat_low.scan % command ~code:0xEF ~address:0x006A ~ans_size:7
