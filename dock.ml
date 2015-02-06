@@ -14,8 +14,8 @@ let device_info port =
     '\x00' -> None
   | '\x17' ->
      Some { Device_info.model = Device_model.Rox_5;
-            serial_number = String.sub ans 2 4 }
+            ser_number = String.sub ans 2 4 }
   | '\x18' ->
      Some { Device_info.model = Device_model.Rox_6;
-            serial_number = String.sub ans 2 4 }
+            ser_number = String.sub ans 2 4 }
   | _ -> raise Unknown_device

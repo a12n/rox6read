@@ -1,4 +1,4 @@
 type t = {
     model : Device_model.t;
-    serial_number : string;
+    ser_number : string;
   }
