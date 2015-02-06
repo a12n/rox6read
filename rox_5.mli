@@ -2,7 +2,7 @@ module Bat_status :
 sig
   type t = Ok | Low
 
-  val recieve : Dock.t -> t
+  val recieve : Ser_port.t -> t
 end
 
 module Settings :
@@ -40,7 +40,7 @@ sig
       serv_interval : bool * int; (* km *)
     }
 
-  val recieve : Dock.t -> t
+  val recieve : Ser_port.t -> t
 end
 
 module Totals :
@@ -57,5 +57,5 @@ sig
       hike_kcal : int;          (* kcal *)
     }
 
-  val recieve : Dock.t -> t
+  val recieve : Ser_port.t -> t
 end

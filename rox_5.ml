@@ -10,6 +10,24 @@ let valid_padding c k =
   c.(k) == 0xA1 && c.(k + 1) == 0xA2 &&
     c.(k + 2) == 0xA3 && c.(k + 3) == 0xA4
 
+let format_command ~code ~address ~ans_size =
+  let output = IO.output_string () in
+  IO.write_byte output code;
+  IO.write_ui16 output address;
+  IO.write_ui16 output ans_size;
+  IO.close_out output
+
+let fully_received ans =
+  let n = String.length ans in
+  n > 2 && ans.[n - 2] == '\x00' && ans.[n - 1] == '\xFF'
+
+let command fd ~code ~address ~ans_size =
+  Ser_port.write fd (format_command ~code ~address ~ans_size);
+  let ans = Ser_port.read fd (ans_size + 2) in
+  if not (fully_received ans) then
+    failwith "Missing end of response marker";
+  String.sub ans 0 ans_size
+
 module Bat_status =
   struct
     type t = Ok | Low
@@ -24,7 +42,7 @@ module Bat_status =
         Low
 
     let recieve =
-      scan % Dock.command ~code:0xEF ~address:0x006A ~ans_size:7
+      scan % command ~code:0xEF ~address:0x006A ~ans_size:7
   end
 
 module Settings =
@@ -193,7 +211,7 @@ module Settings =
       }
 
     let recieve =
-      scan % Dock.command ~code:0xEF ~address:0x0020 ~ans_size:34
+      scan % command ~code:0xEF ~address:0x0020 ~ans_size:34
   end
 
 module Totals =
@@ -257,5 +275,25 @@ module Totals =
           ((c.(25) land 0x03) lsl 24) lor (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) }
 
     let recieve =
-      scan % Dock.command ~code:0xEF ~address:0x0042 ~ans_size:40
+      scan % command ~code:0xEF ~address:0x0042 ~ans_size:40
   end
+
+
+
+let pkg_command fd ~code ~address ~ans_size ~pkg_size =
+  let ans = String.make ans_size '?' in
+  let rec command_at off =
+    if off < ans_size then
+      begin
+        let n = min (ans_size - off) pkg_size in
+        Ser_port.write fd (format_command ~code
+                                          ~address:(address + off)
+                                          ~ans_size:n);
+        let buf = Ser_port.read fd (n + 2) in
+        if not (fully_received buf) then
+          failwith "Missing end of response marker";
+        String.blit buf 0 ans off n;
+        command_at (off + n)
+      end in
+  command_at 0;
+  ans
