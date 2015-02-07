@@ -219,7 +219,7 @@ module Log_summary =
         mass : int;             (* g *)
         sex : Sex.t;
 
-        hr_max : int;           (* bpm *)
+        max_hr : int;           (* bpm *)
         hr_limits : int * int;  (* bpm *)
 
         training_zone : Training_zone.t;
@@ -254,7 +254,7 @@ module Log_summary =
       if not (valid_padding c 49) then
         raise (Invalid_response "padding");
       (* Parse binary data *)
-      { hr_max = c.(0);
+      { max_hr = c.(0);
         zone_start = c.(1), c.(2), c.(3), c.(4);
         hr_limits = c.(5), c.(6);
         age = c.(7);
@@ -263,8 +263,8 @@ module Log_summary =
         training_zone =
           begin
             match (c.(30) land 0xC0) lsr 6 with
-              0 -> Training_zone.Fit (* TODO: hr_limits = hr_max * 0.7, hr_max * 0.8 *)
-            | 1 -> Training_zone.Fat (* TODO: hr_limits = hr_max * 0.55, hr_max * 0.7 *)
+              0 -> Training_zone.Fit (* TODO: hr_limits = max_hr * 0.7, max_hr * 0.8 *)
+            | 1 -> Training_zone.Fat (* TODO: hr_limits = max_hr * 0.55, max_hr * 0.7 *)
             | 2 -> Training_zone.Own
             | _ -> raise (Invalid_response "training zone")
           end ;
@@ -323,7 +323,7 @@ module Settings =
         mass : int;               (* kg *)
         sex : Sex.t;
         (* Heart rate *)
-        hr_max : int;             (* bpm *)
+        max_hr : int;             (* bpm *)
         hr_limits : int * int;    (* bpm *)
         (* Training zones *)
         training_zone : Training_zone.t;
@@ -367,7 +367,7 @@ module Settings =
               else
                 Sex.Female ;
         (* Heart rate *)
-        hr_max = c.(16);
+        max_hr = c.(16);
         hr_limits = (c.(21), c.(22));
         (* Training zones *)
         training_zone =

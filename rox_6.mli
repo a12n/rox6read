@@ -86,7 +86,7 @@ sig
       mass : int;                         (* g *)
       sex : Sex.t;
 
-      hr_max : int;           (* bpm *)
+      max_hr : int;           (* bpm *)
       hr_limits : int * int;              (* bpm *)
 
       training_zone : Training_zone.t;
@@ -122,7 +122,7 @@ sig
       mass : int;               (* g *)
       sex : Sex.t;
       (* Heart rate *)
-      hr_max : int;             (* bpm *)
+      max_hr : int;             (* bpm *)
       hr_limits : int * int;    (* bpm *)
       (* Training zones *)
       training_zone : Training_zone.t;
