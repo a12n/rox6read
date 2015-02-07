@@ -93,7 +93,7 @@ sig
     }
 end
 
-exception Invalid_checksum
+exception Invalid_response of string
 
 val log_summary : Ser_port.t -> Log_summary.t
 

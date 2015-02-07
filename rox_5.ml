@@ -43,7 +43,7 @@ let package_command fd ~code ~address ~ans_size =
   aux 0;
   ans
 
-exception Invalid_checksum
+exception Invalid_response of string
 
 module Log =
   struct
@@ -97,9 +97,9 @@ module Log_summary =
       let c = char_codes ans in
       (* Checksum *)
       if not (valid_checksum c 48) then
-        raise Invalid_checksum;
+        raise (Invalid_response "checksum");
       if not (valid_padding c 49) then
-        raise Invalid_checksum;
+        raise (Invalid_response "padding");
       (* Parse binary data *)
       { hr_max = c.(0);
         zone_start = c.(1), c.(2), c.(3), c.(4);
@@ -158,7 +158,7 @@ module Bat_low =
     let scan ans =
       let c = char_codes ans in
       if (Array.(sub c 0 6 |> sum) land 0x0F) != (c.(6) lsr 4) then
-        raise Invalid_checksum;
+        raise (Invalid_response "checksum");
       (c.(2) land 0x80) != 0
   end
 
@@ -201,9 +201,9 @@ module Settings =
       let c = char_codes ans in
       (* Checksums *)
       if not (valid_checksum c 29) then
-        raise Invalid_checksum;
+        raise (Invalid_response "checksum");
       if not (valid_padding c 30) then
-        raise Invalid_checksum;
+        raise (Invalid_response "padding");
       (* Scan binary data *)
       {
         (* Person *)
@@ -344,9 +344,9 @@ module Totals =
       let c = char_codes ans in
       (* Checksums *)
       if not (valid_checksum c 35) then
-        raise Invalid_checksum;
+        raise (Invalid_response "checksum");
       if not (valid_padding c 36) then
-        raise Invalid_checksum;
+        raise (Invalid_response "padding");
       (* Scan binary data *)
       { distance = (
           (* Bike1 *)
