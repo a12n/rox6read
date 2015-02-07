@@ -59,12 +59,55 @@ module Activity =
 module Activity_summary =
   struct
     type t = {
+        sample_interval : int;  (* s *)
+        hr_max : int;           (* bpm *)
+        zone_start : int * int * int * int; (* % *)
+        hr_limits : int * int;              (* bpm *)
+        age : int;                          (* y *)
+        mass : int;                         (* g *)
         raw_size : int;        (* size of activity in device memory *)
+        training_zone : Training_zone.t;
+        sex : Sex.t;
+        start_date : Date.t;
+        start_time : Time.t;
       }
 
     let scan ans =
       let c = char_codes ans in
-      { raw_size = ((c.(26) lsl 8) lor c.(25)) - Activity.address }
+      (* Checksum *)
+      if not (valid_checksum c 48) then
+        raise Invalid_checksum;
+      if not (valid_padding c 49) then
+        raise Invalid_checksum;
+      (* Parse binary data *)
+      { sample_interval = 10;
+        hr_max = c.(0);
+        zone_start = c.(0) * c.(1) / 100,
+                     c.(0) * c.(2) / 100,
+                     c.(0) * c.(3) / 100,
+                     c.(0) * c.(4) / 100;
+        hr_limits = c.(5), c.(6);
+        age = c.(7);
+        mass = c.(9) * 1000 + c.(8);
+        raw_size = ((c.(26) lsl 8) lor c.(25)) - Activity.address;
+        training_zone =
+          begin
+            match (c.(30) land 0xC0) lsr 6 with
+              0 -> Training_zone.Fit (* TODO: hr_limits = hr_max * 0.7, hr_max * 0.8 *)
+            | 1 -> Training_zone.Fat (* TODO: hr_limits = hr_max * 0.55, hr_max * 0.7 *)
+            | 2 -> Training_zone.Own
+            | _ -> failwith "Invalid training zone in activity summary"
+          end ;
+        sex = if (c.(31) land 0x40) == 0 then
+                Sex.Male
+              else
+                Sex.Female ;
+        start_date = { Date.y = ((c.(36) land 0x0F) lsl 8) lor c.(35);
+                       mon = (c.(36) land 0xF0) lsr 4;
+                       d = c.(34) land 0x3F };
+        start_time = { Time.h = c.(29) land 0x1F;
+                       min = c.(30) land 0x3F;
+                       s = c.(31) land 0x3F } }
   end
 
 module Bat_low =

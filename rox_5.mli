@@ -7,7 +7,17 @@ end
 module Activity_summary :
 sig
   type t = {
+      sample_interval : int;  (* s *)
+      hr_max : int;           (* bpm *)
+      zone_start : int * int * int * int; (* % *)
+      hr_limits : int * int;              (* bpm *)
+      age : int;                          (* y *)
+      mass : int;                         (* g *)
       raw_size : int;        (* size of activity in device memory *)
+      training_zone : Training_zone.t;
+      sex : Sex.t;
+      start_date : Date.t;
+      start_time : Time.t;
     }
 end
 
