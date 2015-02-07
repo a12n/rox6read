@@ -18,6 +18,23 @@ sig
       sex : Sex.t;
       start_date : Date.t;
       start_time : Time.t;
+      (* Hike? *)
+      mass_unit : Mass_unit.t;
+      hike_duration : int;      (* s *)
+      hike_kcal : int;          (* kcal *)
+      alt_uphill : int;         (* mm *)
+      alt_downhill : int;       (* mm *)
+      (* Bike *)
+      duration : int;         (* s *)
+      speed_unit : Speed_unit.t;
+      max_speed : float;        (* km/h *)
+      climb : int;              (* mm *)
+      max_speed_e : float;      (* ? *)
+      distance : int;           (* m *)
+      kcal : int;               (* kcal *)
+      bike : int;               (* 1 | 2 *)
+      wheel_size : int;         (* mm *)
+      descent : int;            (* mm *)
     }
 end
 

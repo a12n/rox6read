@@ -70,6 +70,23 @@ module Activity_summary =
         sex : Sex.t;
         start_date : Date.t;
         start_time : Time.t;
+        (* Hike? *)
+        mass_unit : Mass_unit.t;
+        hike_duration : int;    (* s *)
+        hike_kcal : int;        (* kcal *)
+        alt_uphill : int;       (* mm *)
+        alt_downhill : int;     (* mm *)
+        (* Bike *)
+        duration : int;         (* s *)
+        speed_unit : Speed_unit.t;
+        max_speed : float;        (* km/h *)
+        climb : int;              (* mm *)
+        max_speed_e : float;      (* ? *)
+        distance : int;           (* m *)
+        kcal : int;               (* kcal *)
+        bike : int;               (* 1 | 2 *)
+        wheel_size : int;         (* mm *)
+        descent : int;            (* mm *)
       }
 
     let scan ans =
@@ -107,7 +124,34 @@ module Activity_summary =
                        d = c.(34) land 0x3F };
         start_time = { Time.h = c.(29) land 0x1F;
                        min = c.(30) land 0x3F;
-                       s = c.(31) land 0x3F } }
+                       s = c.(31) land 0x3F };
+        (* Hike? *)
+        mass_unit = if (c.(14) land 0x80) == 0 then
+                      Mass_unit.Kg
+                    else
+                      Mass_unit.Lb ;
+        hike_duration = ((c.(21) land 0x3F) lsl 16) lor (c.(20) lsl 8) lor c.(19) ;
+        hike_kcal = ((c.(44) land 0x01) lsl 16) lor (c.(41) lsl 8) lor c.(40) ;
+        alt_uphill = ((c.(44) land 0x0F) lsl 16) lor (c.(43) lsl 8) lor c.(42) ;
+        alt_downhill = ((c.(47) land 0x0F) lsl 16) lor (c.(46) lsl 8) lor c.(45) ;
+        (* Bike *)
+        duration = ((c.(12) land 0x3F) lsl 16) lor (c.(11) lsl 8) lor c.(10) ;
+        speed_unit = if (c.(14) land 0x80) == 0 then
+                       Speed_unit.Kmh
+                     else
+                       Speed_unit.Mph ;
+        max_speed = float_of_int (((c.(14) land 0x7F) lsl 8) + c.(13)) /. 100.0;
+        climb = 100 * (((c.(18) lsr 4) lsl 16) lor (c.(16) lsl 8) lor c.(15)) ;
+        max_speed_e = float_of_int ((c.(18) lsl 8) lor c.(17)) ;
+        distance = (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) ;
+        kcal = ((c.(29) lsr 7) lsl 16) lor (c.(28) lsl 8) lor c.(27) ;
+        bike = if (c.(31) land 0x80) == 0 then
+                 1
+               else
+                 2 ;
+        wheel_size = ((c.(33) land 0x0F) lsl 8) lor c.(32) ;
+        descent = 100 * (((c.(39) land 0x0F) lsl 16) lor (c.(38) lsl 8) lor c.(37)) ;
+      }
   end
 
 module Bat_low =
