@@ -104,10 +104,7 @@ module Log_summary =
         raise Invalid_checksum;
       (* Parse binary data *)
       { hr_max = c.(0);
-        zone_start = c.(0) * c.(1) / 100,
-                     c.(0) * c.(2) / 100,
-                     c.(0) * c.(3) / 100,
-                     c.(0) * c.(4) / 100;
+        zone_start = c.(1), c.(2), c.(3), c.(4);
         hr_limits = c.(5), c.(6);
         age = c.(7);
         mass = c.(9) * 1000 + c.(8);
