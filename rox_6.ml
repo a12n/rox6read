@@ -47,15 +47,143 @@ let package_command fd ~code ~address ~ans_size =
   aux 0;
   ans
 
+module Bike_entry =
+  struct
+    type t = {
+        rotations : int;
+        temp : int;             (* °C *)
+        speed : float;          (* km/h *)
+        hr : int;               (* bpm *)
+        cadence : int;          (* rpm *)
+        alt : int;              (* mm *)
+
+        distance : int;         (* m *)
+        duration : int;         (* s *)
+        abs_distance : int;     (* m *)
+        abs_duration : int;     (* s *)
+
+        alt_diff : int;         (* mm *)
+        distance_uphill : int;  (* m *)
+        duration_uphill : int;  (* s *)
+        distance_downhill : int; (* m *)
+        duration_downhill : int; (* s *)
+      }
+
+    let size = 9
+
+    let scan buf =
+      let c = char_codes buf in
+      { rotations = ((c.(2) land 0x03) lsl 8) lor c.(1);
+        temp = (c.(2) lsr 2) - 10;
+        speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
+        hr = c.(5);
+        cadence = c.(6);
+        alt =
+          begin
+            let alt = ((c.(8) land 0x7F) lsl 8) lor c.(7) in
+            if (c.(8) lsr 7) == 0 then
+              alt
+            else
+              -alt
+          end;
+        (* Derived fields *)
+        distance = 0;
+        duration = 0;
+        abs_distance = 0;
+        abs_duration = 0;
+        alt_diff = 0;
+        distance_uphill = 0;
+        duration_uphill = 0;
+        distance_downhill = 0;
+        duration_downhill = 0;
+      }
+  end
+
+module Bike_lap =
+  struct
+    type t = string
+
+    let size = 23
+
+    let scan buf = buf
+  end
+
+module Bike_pause =
+  struct
+    type t = string
+
+    let size = 21
+
+    let scan buf = buf
+  end
+
+module Hike_entry =
+  struct
+    type t = string
+
+    let size = 5
+
+    let scan buf = buf
+  end
+
+module Hike_pause =
+  struct
+    type t = string
+
+    let size = 16
+
+    let scan buf = buf
+  end
+
+module Log_entry =
+  struct
+    type t = Bike of Bike_entry.t
+           | Hike of Hike_entry.t
+  end
+
+module Log_marker =
+  struct
+    type t = Bike_lap of Bike_lap.t
+           | Bike_pause of Bike_pause.t
+           | Hike_pause of Hike_pause.t
+  end
+
 module Log =
   struct
-    (* TODO *)
-    type t = string
+    type t = {
+        entry : Log_entry.t list;
+        marker : Log_marker.t list;
+      }
 
     let address = 0x00A6
 
-    let scan ans =
-      ans
+    let scan buf =
+      let n = String.length buf in
+      let rec aux k ans =
+        if k < n then
+          begin
+            match (Char.code buf.[k]) land 0x07 with
+            | 0 ->
+               let e = String.sub buf k Bike_entry.size |> Bike_entry.scan in
+               aux (k + Bike_entry.size) { ans with entry = (Log_entry.Bike e) :: ans.entry }
+            | 1 ->
+               let m = String.sub buf k Bike_pause.size |> Bike_pause.scan in
+               aux (k + Bike_pause.size) { ans with marker = (Log_marker.Bike_pause m) :: ans.marker }
+            | 2 ->
+               let m = String.sub buf k Bike_lap.size |> Bike_lap.scan in
+               aux (k + Bike_lap.size) { ans with marker = (Log_marker.Bike_lap m) :: ans.marker }
+            | 3 ->
+               let e = String.sub buf k Hike_entry.size |> Hike_entry.scan in
+               aux (k + Hike_entry.size) { ans with entry = (Log_entry.Hike e) :: ans.entry }
+            | 4 ->
+               let m = String.sub buf k Hike_pause.size |> Hike_pause.scan in
+               aux (k + Hike_pause.size) { ans with marker = (Log_marker.Hike_pause m) :: ans.marker }
+            | _ -> raise (Invalid_response "log entry type")
+          end
+        else
+          { ans with entry = List.rev ans.entry;
+                     marker = List.rev ans.marker } in
+      aux 0 { entry = []; marker = [] }
   end
 
 module Log_summary =

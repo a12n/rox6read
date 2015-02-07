@@ -1,7 +1,68 @@
+module Bike_entry :
+sig
+  type t = {
+      (* Data from device *)
+      rotations : int;
+      temp : int;             (* °C *)
+      speed : float;          (* km/h *)
+      hr : int;               (* bpm *)
+      cadence : int;          (* rpm *)
+      alt : int;              (* mm *)
+
+      (* Derived fields *)
+      distance : int;         (* m *)
+      duration : int;         (* s *)
+      abs_distance : int;     (* m *)
+      abs_duration : int;     (* s *)
+
+      (* Derived fields *)
+      alt_diff : int;         (* mm *)
+      distance_uphill : int;  (* m *)
+      duration_uphill : int;  (* s *)
+      distance_downhill : int; (* m *)
+      duration_downhill : int; (* s *)
+    }
+end
+
+module Bike_lap :
+sig
+  type t = string
+end
+
+module Bike_pause :
+sig
+  type t = string
+end
+
+module Hike_entry :
+sig
+  type t = string
+end
+
+module Hike_pause :
+sig
+  type t = string
+end
+
+module Log_entry :
+sig
+  type t = Bike of Bike_entry.t
+         | Hike of Hike_entry.t
+end
+
+module Log_marker :
+sig
+  type t = Bike_lap of Bike_lap.t
+         | Bike_pause of Bike_pause.t
+         | Hike_pause of Hike_pause.t
+end
+
 module Log :
 sig
-  (* TODO *)
-  type t = string
+  type t = {
+      entry : Log_entry.t list;
+      marker : Log_marker.t list;
+    }
 end
 
 module Log_summary :
