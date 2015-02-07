@@ -101,11 +101,34 @@ module Bike_entry =
 
 module Bike_lap =
   struct
-    type t = string
+    type t = {
+        rotations : int;
+        duration : int;         (* s *)
+        avg_speed : float;      (* km/h *)
+        avg_hr : int;           (* bpm *)
+        max_hr : int;           (* bpm *)
+        avg_cadence : int;      (* rpm *)
+        kcal : int;             (* kcal *)
+        max_speed : float;      (* km/h *)
+        alt_gain : int;         (* mm *)
+        alt_loss : int;         (* mm *)
+      }
 
     let size = 23
 
-    let scan buf = buf
+    let scan buf =
+      let c = char_codes buf in
+      { rotations = (c.(8) lsl 16) lor (c.(7) lsl 8) lor c.(6);
+        duration = ((c.(3) land 0x3F) lsl 16) lor (c.(2) lsl 8) lor c.(1);
+        avg_speed = float_of_int (((c.(5) land 0x7F) lsl 8) lor c.(4)) /. 100.0;
+        avg_hr = c.(9);
+        max_hr = c.(10);
+        avg_cadence = c.(11);
+        kcal = ((c.(15) lsr 7) lsl 16) lor (c.(13) lsl 8) lor (c.(12));
+        max_speed = float_of_int (((c.(15) land 0x7F) lsl 8) lor c.(14)) /. 100.0;
+        alt_gain = (c.(18) lsl 16) lor (c.(17) lsl 8) lor c.(16);
+        alt_loss = (c.(21) lsl 16) lor (c.(20) lsl 8) lor c.(19);
+      }
   end
 
 module Bike_pause =

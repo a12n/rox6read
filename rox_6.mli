@@ -26,7 +26,18 @@ end
 
 module Bike_lap :
 sig
-  type t = string
+  type t = {
+      rotations : int;
+      duration : int;         (* s *)
+      avg_speed : float;      (* km/h *)
+      avg_hr : int;           (* bpm *)
+      max_hr : int;           (* bpm *)
+      avg_cadence : int;      (* rpm *)
+      kcal : int;             (* kcal *)
+      max_speed : float;      (* km/h *)
+      alt_gain : int;         (* mm *)
+      alt_loss : int;         (* mm *)
+    }
 end
 
 module Bike_pause :
