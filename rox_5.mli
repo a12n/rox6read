@@ -39,7 +39,7 @@ sig
       speed_unit : Speed_unit.t;
       sample_interval : int;  (* s *)
 
-      raw_size : int;        (* size of log in device memory *)
+      log_size : int;        (* size of log in device memory *)
 
       max_speed_e : float;      (* ? *)
     }

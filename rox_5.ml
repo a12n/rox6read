@@ -91,7 +91,7 @@ module Log_summary =
         speed_unit : Speed_unit.t;
         sample_interval : int;  (* s *)
 
-        raw_size : int;        (* size of log in device memory *)
+        log_size : int;        (* size of log in device memory *)
 
         max_speed_e : float;      (* ? *)
       }
@@ -113,7 +113,7 @@ module Log_summary =
         hr_limits = c.(5), c.(6);
         age = c.(7);
         mass = c.(9) * 1000 + c.(8);
-        raw_size = ((c.(26) lsl 8) lor c.(25)) - Log.address;
+        log_size = ((c.(26) lsl 8) lor c.(25)) - Log.address;
         training_zone =
           begin
             match (c.(30) land 0xC0) lsr 6 with
@@ -400,8 +400,8 @@ module Totals =
 let log_summary =
   Log_summary.scan % command ~code:0xEF ~address:0x0071 ~ans_size:53
 
-let log port { Log_summary.raw_size; _ } =
-  package_command port ~code:0xEF ~address:Log.address ~ans_size:raw_size |> Log.scan
+let log port { Log_summary.log_size; _ } =
+  package_command port ~code:0xEF ~address:Log.address ~ans_size:log_size |> Log.scan
 
 let bat_low =
   Bat_low.scan % command ~code:0xEF ~address:0x006A ~ans_size:7
