@@ -73,7 +73,7 @@ module Log_summary =
         zone_start : int * int * int * int; (* % *)
 
         bike_no : Bike_no.t;
-        wheel_size : int;       (* mm *)
+        wheel_circum : int;     (* mm *)
 
         distance : int;         (* m *)
         duration : int;         (* s *)
@@ -148,7 +148,7 @@ module Log_summary =
                     Bike_no.Bike_1
                   else
                     Bike_no.Bike_2 ;
-        wheel_size = ((c.(33) land 0x0F) lsl 8) lor c.(32) ;
+        wheel_circum = ((c.(33) land 0x0F) lsl 8) lor c.(32) ;
         alt_loss = 100 * (((c.(39) land 0x0F) lsl 16) lor (c.(38) lsl 8) lor c.(37)) ;
       }
   end
@@ -177,7 +177,7 @@ module Settings =
         zone_alarm : bool;
         zone_start : int * int * int * int; (* % *)
         (* Bike *)
-        wheel_size : int * int;   (* mm *)
+        wheel_circum : int * int; (* mm *)
         (* Date and time *)
         date : Date.t;
         time : Time.t;
@@ -228,7 +228,7 @@ module Settings =
         zone_alarm = (c.(9) land 0x80) == 0;
         zone_start = (c.(17), c.(18), c.(19), c.(20));
         (* Bike *)
-        wheel_size = (
+        wheel_circum = (
           (* Bike1 *)
           ((c.(7) land 0x0F) lsl 8) lor c.(6)
         ,

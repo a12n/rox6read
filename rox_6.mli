@@ -21,7 +21,7 @@ sig
       zone_start : int * int * int * int; (* % *)
 
       bike_no : Bike_no.t;
-      wheel_size : int;         (* mm *)
+      wheel_circum : int;       (* mm *)
 
       distance : int;           (* m *)
       duration : int;           (* s *)
@@ -57,7 +57,7 @@ sig
       zone_alarm : bool;
       zone_start : int * int * int * int; (* % *)
       (* Bike *)
-      wheel_size : int * int;   (* mm *)
+      wheel_circum : int * int; (* mm *)
       (* Date and time *)
       date : Date.t;
       time : Time.t;
