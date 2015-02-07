@@ -87,8 +87,8 @@ module Log_summary =
         hike_alt_loss : int;    (* mm *)
         hike_kcal : int;        (* kcal *)
 
-        mass_unit : Mass_unit.t;
         speed_unit : Speed_unit.t;
+        mass_unit : Mass_unit.t;
 
         log_size : int;        (* size of log in device memory *)
 
