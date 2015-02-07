@@ -334,10 +334,10 @@ module Totals =
     type t = {
         distance : int * int;
         duration : int * int;
-        kcal : int * int;
         alt_gain : int * int;
-        hike_alt_gain : int;
+        kcal : int * int;
         hike_duration : int;
+        hike_alt_gain : int;
         hike_kcal : int;
       }
 

@@ -80,11 +80,11 @@ sig
       (* Bike *)
       distance : int * int;     (* m *)
       duration : int * int;     (* s *)
-      kcal : int * int;         (* kcal *)
       alt_gain : int * int;     (* mm *)
+      kcal : int * int;         (* kcal *)
       (* Hike *)
-      hike_alt_gain : int;      (* mm *)
       hike_duration : int;      (* s *)
+      hike_alt_gain : int;      (* mm *)
       hike_kcal : int;          (* kcal *)
     }
 end
