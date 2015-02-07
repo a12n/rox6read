@@ -32,7 +32,7 @@ sig
       max_speed_e : float;      (* ? *)
       distance : int;           (* m *)
       kcal : int;               (* kcal *)
-      bike : int;               (* 1 | 2 *)
+      bike_no : Bike_no.t;
       wheel_size : int;         (* mm *)
       alt_loss : int;           (* mm *)
     }

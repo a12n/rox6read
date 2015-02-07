@@ -84,7 +84,7 @@ module Activity_summary =
         max_speed_e : float;      (* ? *)
         distance : int;           (* m *)
         kcal : int;               (* kcal *)
-        bike : int;               (* 1 | 2 *)
+        bike_no : Bike_no.t;
         wheel_size : int;         (* mm *)
         alt_loss : int;           (* mm *)
       }
@@ -145,10 +145,10 @@ module Activity_summary =
         max_speed_e = float_of_int ((c.(18) lsl 8) lor c.(17)) ;
         distance = (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) ;
         kcal = ((c.(29) lsr 7) lsl 16) lor (c.(28) lsl 8) lor c.(27) ;
-        bike = if (c.(31) land 0x80) == 0 then
-                 1
-               else
-                 2 ;
+        bike_no = if (c.(31) land 0x80) == 0 then
+                    Bike_no.Bike_1
+                  else
+                    Bike_no.Bike_2 ;
         wheel_size = ((c.(33) land 0x0F) lsl 8) lor c.(32) ;
         alt_loss = 100 * (((c.(39) land 0x0F) lsl 16) lor (c.(38) lsl 8) lor c.(37)) ;
       }
