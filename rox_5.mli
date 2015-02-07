@@ -62,12 +62,12 @@ sig
   type t = {
       (* Bike *)
       distance : int * int;     (* m *)
-      time : int * int;         (* s *)
+      duration : int * int;     (* s *)
       kcal : int * int;         (* kcal *)
       climb : int * int;        (* mm *)
       (* Hike *)
       hike_alt : int;           (* mm *)
-      hike_time : int;          (* s *)
+      hike_duration : int;      (* s *)
       hike_kcal : int;          (* kcal *)
     }
 end

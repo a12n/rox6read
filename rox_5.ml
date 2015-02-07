@@ -289,11 +289,11 @@ module Totals =
   struct
     type t = {
         distance : int * int;
-        time : int * int;
+        duration : int * int;
         kcal : int * int;
         climb : int * int;
         hike_alt : int;
-        hike_time : int;
+        hike_duration : int;
         hike_kcal : int;
       }
 
@@ -314,7 +314,7 @@ module Totals =
           (c.( 8) lor (c.( 9) lsl 8) lor (c.(10) lsl 16) lor ((c.(11) land 0x0F) lsl 24)) +
             (((c.(15) land 0xFC) lsl 2) lor ((c.(11) land 0x0F) lsr 4)) / 1000
         );
-        time = (
+        duration = (
           (* Bike1 *)
           c.(4) lor (c.(5) lsl 8) lor (c.(6) lsl 16) lor (c.(7) land 0x03) lsl 24
         ,
@@ -342,7 +342,7 @@ module Totals =
             10 * ((c.(34) land 0xF0) lsr 4) ;
         hike_kcal =
           (((c.(25) land 0x10) lsr 4) lsl 16) lor (c.(21) lsl 8) lor c.(20) ;
-        hike_time =
+        hike_duration =
           ((c.(25) land 0x03) lsl 24) lor (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) }
   end
 
