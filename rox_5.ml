@@ -1,5 +1,7 @@
 open Batteries
 
+exception Invalid_response of string
+
 let char_codes =
   Array.of_list % List.map Char.code % String.to_list
 
@@ -25,7 +27,7 @@ let command fd ~code ~address ~ans_size =
   Ser_port.write fd (command_buf ~code ~address ~ans_size);
   let ans = Ser_port.read fd (ans_size + 2) in
   if not (fully_received ans) then
-    failwith "Missing end of response marker";
+    raise (Invalid_response "end of response marker");
   String.sub ans 0 ans_size
 
 let package_command fd ~code ~address ~ans_size =
@@ -42,8 +44,6 @@ let package_command fd ~code ~address ~ans_size =
       end in
   aux 0;
   ans
-
-exception Invalid_response of string
 
 module Log =
   struct
@@ -113,7 +113,7 @@ module Log_summary =
               0 -> Training_zone.Fit (* TODO: hr_limits = hr_max * 0.7, hr_max * 0.8 *)
             | 1 -> Training_zone.Fat (* TODO: hr_limits = hr_max * 0.55, hr_max * 0.7 *)
             | 2 -> Training_zone.Own
-            | _ -> failwith "Invalid training zone in log summary"
+            | _ -> raise (Invalid_response "training zone")
           end ;
         sex = if (c.(31) land 0x40) == 0 then
                 Sex.Male
@@ -223,7 +223,7 @@ module Settings =
               0 -> Training_zone.Fit
             | 1 -> Training_zone.Fat
             | 2 -> Training_zone.Own
-            | _ -> failwith "Invalid training zone in settings"
+            | _ -> raise (Invalid_response "training zone")
           end ;
         zone_alarm = (c.(9) land 0x80) == 0;
         zone_start = (c.(17), c.(18), c.(19), c.(20));
@@ -281,7 +281,7 @@ module Settings =
             | 4 -> Lang.Es
             | 5 -> Lang.Pl
             | 6 -> Lang.Nl
-            | _ -> failwith "Invalid language in settings"
+            | _ -> raise (Invalid_response "language")
           end ;
         date_format =
           if (c.(28) land 0x80) == 0 then
@@ -304,7 +304,7 @@ module Settings =
               1 -> Contrast.High
             | 2 -> Contrast.Mid
             | 3 -> Contrast.Low
-            | _ -> failwith "Invalid contrast value in settings"
+            | _ -> raise (Invalid_response "contrast value")
           end ;
         low_bat =
           begin
@@ -317,7 +317,7 @@ module Settings =
             | 6 -> Low_bat.Below_2670
             | 7 -> Low_bat.Below_2830
             | 8 -> Low_bat.Below_3000
-            | _ -> failwith "Invalid low battery level in settings"
+            | _ -> raise (Invalid_response "low battery level")
           end ;
         (* Service interval *)
         serv_interval = (
