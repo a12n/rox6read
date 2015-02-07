@@ -2,6 +2,8 @@ open Batteries
 
 exception Invalid_response of string
 
+let sample_interval = 10
+
 let char_codes =
   Array.of_list % List.map Char.code % String.to_list
 
