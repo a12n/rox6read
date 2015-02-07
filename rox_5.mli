@@ -81,9 +81,9 @@ sig
       distance : int * int;     (* m *)
       duration : int * int;     (* s *)
       kcal : int * int;         (* kcal *)
-      climb : int * int;        (* mm *)
+      alt_gain : int * int;     (* mm *)
       (* Hike *)
-      hike_alt : int;           (* mm *)
+      hike_alt_gain : int;      (* mm *)
       hike_duration : int;      (* s *)
       hike_kcal : int;          (* kcal *)
     }

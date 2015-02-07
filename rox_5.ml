@@ -335,8 +335,8 @@ module Totals =
         distance : int * int;
         duration : int * int;
         kcal : int * int;
-        climb : int * int;
-        hike_alt : int;
+        alt_gain : int * int;
+        hike_alt_gain : int;
         hike_duration : int;
         hike_kcal : int;
       }
@@ -372,7 +372,7 @@ module Totals =
           (* Bike2 *)
           (((c.(25) land 0x08) lsr 3) lsl 16) lor (c.(19) lsl 8) lor c.(18)
         );
-        climb = (
+        alt_gain = (
           (* Bike1 *)
           (((c.(28) land 0x0F) lsl 16) lor (c.(27) lsl 8) lor c.(26)) * 100 +
             10 * ((c.(28) land 0xF0) lsr 4)
@@ -381,7 +381,7 @@ module Totals =
           (((c.(31) land 0x0F) lsl 16) lor (c.(30) lsl 8) lor c.(29)) * 100 +
             10 * ((c.(31) land 0xF0) lsr 4)
         );
-        hike_alt =
+        hike_alt_gain =
           (((c.(34) land 15) lsl 16) land (c.(33) lsl 8) lor c.(32)) * 100 +
             10 * ((c.(34) land 0xF0) lsr 4) ;
         hike_kcal =
