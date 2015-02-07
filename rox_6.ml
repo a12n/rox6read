@@ -126,8 +126,8 @@ module Bike_lap =
         avg_cadence = c.(11);
         kcal = ((c.(15) lsr 7) lsl 16) lor (c.(13) lsl 8) lor (c.(12));
         max_speed = float_of_int (((c.(15) land 0x7F) lsl 8) lor c.(14)) /. 100.0;
-        alt_gain = (c.(18) lsl 16) lor (c.(17) lsl 8) lor c.(16);
-        alt_loss = (c.(21) lsl 16) lor (c.(20) lsl 8) lor c.(19);
+        alt_gain = 100 * ((c.(18) lsl 16) lor (c.(17) lsl 8) lor c.(16));
+        alt_loss = 100 * ((c.(21) lsl 16) lor (c.(20) lsl 8) lor c.(19));
       }
   end
 
