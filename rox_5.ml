@@ -59,34 +59,41 @@ module Activity =
 module Activity_summary =
   struct
     type t = {
-        sample_interval : int;  (* s *)
-        hr_max : int;           (* bpm *)
-        zone_start : int * int * int * int; (* % *)
-        hr_limits : int * int;              (* bpm *)
-        age : int;                          (* y *)
-        mass : int;                         (* g *)
-        raw_size : int;        (* size of activity in device memory *)
-        training_zone : Training_zone.t;
-        sex : Sex.t;
         start_date : Date.t;
         start_time : Time.t;
-        (* Hike? *)
-        mass_unit : Mass_unit.t;
+
+        age : int;              (* y *)
+        mass : int;             (* g *)
+        sex : Sex.t;
+
+        hr_max : int;           (* bpm *)
+        hr_limits : int * int;  (* bpm *)
+
+        training_zone : Training_zone.t;
+        zone_start : int * int * int * int; (* % *)
+
+        bike_no : Bike_no.t;
+        wheel_size : int;       (* mm *)
+
+        distance : int;         (* m *)
+        duration : int;         (* s *)
+        max_speed : float;      (* km/h *)
+        alt_gain : int;         (* mm *)
+        alt_loss : int;         (* mm *)
+        kcal : int;             (* kcal *)
+
         hike_duration : int;    (* s *)
-        hike_kcal : int;        (* kcal *)
         hike_alt_gain : int;    (* mm *)
         hike_alt_loss : int;    (* mm *)
-        (* Bike *)
-        duration : int;         (* s *)
+        hike_kcal : int;        (* kcal *)
+
+        mass_unit : Mass_unit.t;
         speed_unit : Speed_unit.t;
-        max_speed : float;        (* km/h *)
-        alt_gain : int;           (* mm *)
+        sample_interval : int;  (* s *)
+
+        raw_size : int;        (* size of activity in device memory *)
+
         max_speed_e : float;      (* ? *)
-        distance : int;           (* m *)
-        kcal : int;               (* kcal *)
-        bike_no : Bike_no.t;
-        wheel_size : int;         (* mm *)
-        alt_loss : int;           (* mm *)
       }
 
     let scan ans =
