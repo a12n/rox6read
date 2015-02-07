@@ -91,8 +91,6 @@ module Log_summary =
         mass_unit : Mass_unit.t;
 
         log_size : int;        (* size of log in device memory *)
-
-        max_speed_e : float;      (* ? *)
       }
 
     let scan ans =
@@ -144,7 +142,6 @@ module Log_summary =
                        Speed_unit.Mph ;
         max_speed = float_of_int (((c.(14) land 0x7F) lsl 8) + c.(13)) /. 100.0;
         alt_gain = 100 * (((c.(18) lsr 4) lsl 16) lor (c.(16) lsl 8) lor c.(15)) ;
-        max_speed_e = float_of_int ((c.(18) lsl 8) lor c.(17)) ;
         distance = (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) ;
         kcal = ((c.(29) lsr 7) lsl 16) lor (c.(28) lsl 8) lor c.(27) ;
         bike_no = if (c.(31) land 0x80) == 0 then

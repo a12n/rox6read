@@ -39,8 +39,6 @@ sig
       mass_unit : Mass_unit.t;
 
       log_size : int;        (* size of log in device memory *)
-
-      max_speed_e : float;      (* ? *)
     }
 end
 
