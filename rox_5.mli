@@ -37,7 +37,6 @@ sig
 
       mass_unit : Mass_unit.t;
       speed_unit : Speed_unit.t;
-      sample_interval : int;  (* s *)
 
       log_size : int;        (* size of log in device memory *)
 

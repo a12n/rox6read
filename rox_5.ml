@@ -89,7 +89,6 @@ module Log_summary =
 
         mass_unit : Mass_unit.t;
         speed_unit : Speed_unit.t;
-        sample_interval : int;  (* s *)
 
         log_size : int;        (* size of log in device memory *)
 
@@ -104,8 +103,7 @@ module Log_summary =
       if not (valid_padding c 49) then
         raise Invalid_checksum;
       (* Parse binary data *)
-      { sample_interval = 10;
-        hr_max = c.(0);
+      { hr_max = c.(0);
         zone_start = c.(0) * c.(1) / 100,
                      c.(0) * c.(2) / 100,
                      c.(0) * c.(3) / 100,
