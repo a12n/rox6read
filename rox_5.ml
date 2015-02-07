@@ -45,7 +45,7 @@ let package_command fd ~code ~address ~ans_size =
 
 exception Invalid_checksum
 
-module Activity =
+module Log =
   struct
     (* TODO *)
     type t = string
@@ -56,7 +56,7 @@ module Activity =
       ans
   end
 
-module Activity_summary =
+module Log_summary =
   struct
     type t = {
         start_date : Date.t;
@@ -91,7 +91,7 @@ module Activity_summary =
         speed_unit : Speed_unit.t;
         sample_interval : int;  (* s *)
 
-        raw_size : int;        (* size of activity in device memory *)
+        raw_size : int;        (* size of log in device memory *)
 
         max_speed_e : float;      (* ? *)
       }
@@ -113,14 +113,14 @@ module Activity_summary =
         hr_limits = c.(5), c.(6);
         age = c.(7);
         mass = c.(9) * 1000 + c.(8);
-        raw_size = ((c.(26) lsl 8) lor c.(25)) - Activity.address;
+        raw_size = ((c.(26) lsl 8) lor c.(25)) - Log.address;
         training_zone =
           begin
             match (c.(30) land 0xC0) lsr 6 with
               0 -> Training_zone.Fit (* TODO: hr_limits = hr_max * 0.7, hr_max * 0.8 *)
             | 1 -> Training_zone.Fat (* TODO: hr_limits = hr_max * 0.55, hr_max * 0.7 *)
             | 2 -> Training_zone.Own
-            | _ -> failwith "Invalid training zone in activity summary"
+            | _ -> failwith "Invalid training zone in log summary"
           end ;
         sex = if (c.(31) land 0x40) == 0 then
                 Sex.Male
@@ -397,11 +397,11 @@ module Totals =
           ((c.(25) land 0x03) lsl 24) lor (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) }
   end
 
-let activity_summary =
-  Activity_summary.scan % command ~code:0xEF ~address:0x0071 ~ans_size:53
+let log_summary =
+  Log_summary.scan % command ~code:0xEF ~address:0x0071 ~ans_size:53
 
-let activity port { Activity_summary.raw_size; _ } =
-  package_command port ~code:0xEF ~address:Activity.address ~ans_size:raw_size |> Activity.scan
+let log port { Log_summary.raw_size; _ } =
+  package_command port ~code:0xEF ~address:Log.address ~ans_size:raw_size |> Log.scan
 
 let bat_low =
   Bat_low.scan % command ~code:0xEF ~address:0x006A ~ans_size:7

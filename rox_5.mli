@@ -1,10 +1,10 @@
-module Activity :
+module Log :
 sig
   (* TODO *)
   type t = string
 end
 
-module Activity_summary :
+module Log_summary :
 sig
   type t = {
       start_date : Date.t;
@@ -39,7 +39,7 @@ sig
       speed_unit : Speed_unit.t;
       sample_interval : int;  (* s *)
 
-      raw_size : int;        (* size of activity in device memory *)
+      raw_size : int;        (* size of log in device memory *)
 
       max_speed_e : float;      (* ? *)
     }
@@ -98,9 +98,9 @@ end
 
 exception Invalid_checksum
 
-val activity_summary : Ser_port.t -> Activity_summary.t
+val log_summary : Ser_port.t -> Log_summary.t
 
-val activity : Ser_port.t -> Activity_summary.t -> Activity.t
+val log : Ser_port.t -> Log_summary.t -> Log.t
 
 val bat_low : Ser_port.t -> bool
 
