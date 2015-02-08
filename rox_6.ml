@@ -70,7 +70,7 @@ module Log_summary =
 
         distance : float;       (* m *)
         duration : int;         (* s *)
-        max_speed : float;      (* km/h *)
+        max_speed : float * int; (* km/h, log entry index *)
         alt_gain : float;       (* m *)
         alt_loss : float;       (* m *)
         kcal : int;             (* kcal *)
@@ -140,7 +140,11 @@ module Log_summary =
                        Speed_unit.Kmh
                      else
                        Speed_unit.Mph ;
-        max_speed = float_of_int (((c.(14) land 0x7F) lsl 8) + c.(13)) /. 100.0;
+        max_speed = (
+          float_of_int (((c.(14) land 0x7F) lsl 8) + c.(13)) /. 100.0
+        ,
+          (c.(18) lsl 8) lor c.(17)
+        );
         alt_gain = float_of_int (
                        ((c.(18) lsr 4) lsl 16) lor (c.(16) lsl 8) lor c.(15) (* dm *)
                      ) /. 10.0;

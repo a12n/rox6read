@@ -97,7 +97,7 @@ sig
 
       distance : float;         (* m *)
       duration : int;           (* s *)
-      max_speed : float;        (* km/h *)
+      max_speed : float * int;  (* km/h, log entry index *)
       alt_gain : float;         (* m *)
       alt_loss : float;         (* m *)
       kcal : int;               (* kcal *)
