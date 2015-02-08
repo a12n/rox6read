@@ -116,7 +116,7 @@ module Bike_lap =
 
     let size = 23
 
-    let scan buf =
+    let scan { Log_summary.wheel_circum; _ } buf =
       let c = char_codes buf in
       { wheel_rot = (c.(8) lsl 16) lor (c.(7) lsl 8) lor c.(6);
         duration = ((c.(3) land 0x3F) lsl 16) lor (c.(2) lsl 8) lor c.(1);
@@ -187,7 +187,7 @@ module Log =
           begin
             match (Char.code buf.[k]) land 0x07 with
             | 0 ->
-               let e = String.sub buf k Bike_entry.size |> Bike_entry.scan in
+               let e = String.sub buf k Bike_entry.size |> Bike_entry.scan summary in
                aux (k + Bike_entry.size) { ans with entry = (Log_entry.Bike e) :: ans.entry }
             | 1 ->
                let m = String.sub buf k Bike_pause.size |> Bike_pause.scan in
