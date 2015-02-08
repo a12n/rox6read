@@ -168,7 +168,7 @@ module Bike_entry =
 
     let size = 9
 
-    let scan buf =
+    let scan { Log_summary.wheel_circum; _ } buf =
       let c = char_codes buf in
       { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
         speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
@@ -213,7 +213,7 @@ module Bike_lap =
 
     let size = 23
 
-    let scan { Log_summary.wheel_circum; _ } buf =
+    let scan buf =
       let c = char_codes buf in
       { wheel_rot = (c.(8) lsl 16) lor (c.(7) lsl 8) lor c.(6);
         duration = ((c.(3) land 0x3F) lsl 16) lor (c.(2) lsl 8) lor c.(1);
