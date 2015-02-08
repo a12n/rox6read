@@ -2,6 +2,8 @@ open Batteries
 
 exception Invalid_response of string
 
+let log_address = 0x00A6
+
 let sample_interval = 10
 
 let char_codes =
@@ -97,7 +99,7 @@ module Log_summary =
         hr_limits = c.(5), c.(6);
         age = c.(7);
         mass = c.(9) * 1000 + c.(8);
-        log_size = ((c.(26) lsl 8) lor c.(25)) - Log.address;
+        log_size = ((c.(26) lsl 8) lor c.(25)) - log_address;
         training_zone =
           begin
             match (c.(30) land 0xC0) lsr 6 with
@@ -274,8 +276,6 @@ module Log =
         entry : Log_entry.t list;
         marker : Log_marker.t list;
       }
-
-    let address = 0x00A6
 
     let scan summary buf =
       let n = String.length buf in
@@ -546,7 +546,7 @@ let log_summary =
   Log_summary.scan % command ~code:0xEF ~address:0x0071 ~ans_size:53
 
 let log port ({ Log_summary.log_size; _ } as summary) =
-  package_command port ~code:0xEF ~address:Log.address ~ans_size:log_size |> Log.scan summary
+  package_command port ~code:0xEF ~address:log_address ~ans_size:log_size |> Log.scan summary
 
 let bat_low =
   Bat_low.scan % command ~code:0xEF ~address:0x006A ~ans_size:7
