@@ -90,7 +90,7 @@ sig
       hr_limits : int * int;              (* bpm *)
 
       training_zone : Training_zone.t;
-      zone_start : int * int * int * int; (* % *)
+      zone_start : float * float * float * float; (* frac of max_hr *)
 
       bike_no : Bike_no.t;
       wheel_circum : float;     (* m *)
@@ -127,7 +127,7 @@ sig
       (* Training zones *)
       training_zone : Training_zone.t;
       zone_alarm : bool;
-      zone_start : int * int * int * int; (* % *)
+      zone_start : float * float * float * float; (* frac of max_hr *)
       (* Bike *)
       wheel_circum : float * float; (* m *)
       (* Date and time *)

@@ -63,7 +63,7 @@ module Log_summary =
         hr_limits : int * int;  (* bpm *)
 
         training_zone : Training_zone.t;
-        zone_start : int * int * int * int; (* % *)
+        zone_start : float * float * float * float; (* frac of max_hr *)
 
         bike_no : Bike_no.t;
         wheel_circum : float;   (* m *)
@@ -95,7 +95,10 @@ module Log_summary =
         raise (Invalid_response "padding");
       (* Parse binary data *)
       { max_hr = c.(0);
-        zone_start = c.(1), c.(2), c.(3), c.(4);
+        zone_start = float_of_int c.(1) /. 100.0,
+                     float_of_int c.(2) /. 100.0,
+                     float_of_int c.(3) /. 100.0,
+                     float_of_int c.(4) /. 100.0;
         hr_limits = c.(5), c.(6);
         age = c.(7);
         mass = float_of_int (c.(9) * 1000 + c.(8)) /. 1000.0;
@@ -345,7 +348,7 @@ module Settings =
         (* Training zones *)
         training_zone : Training_zone.t;
         zone_alarm : bool;
-        zone_start : int * int * int * int; (* % *)
+        zone_start : float * float * float * float; (* frac of max_hr *)
         (* Bike *)
         wheel_circum : float * float; (* m *)
         (* Date and time *)
@@ -396,7 +399,10 @@ module Settings =
             | _ -> raise (Invalid_response "training zone")
           end ;
         zone_alarm = (c.(9) land 0x80) == 0;
-        zone_start = (c.(17), c.(18), c.(19), c.(20));
+        zone_start = float_of_int c.(17) /. 100.0,
+                     float_of_int c.(18) /. 100.0,
+                     float_of_int c.(19) /. 100.0,
+                     float_of_int c.(20) /. 100.0;
         (* Bike *)
         wheel_circum = (
           (* Bike1 *)
