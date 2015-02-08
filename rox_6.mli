@@ -3,11 +3,11 @@ sig
   type t = {
       (* Data from sensors *)
       wheel_rot : int;
-      temp : int;             (* °C *)
       speed : float;          (* km/h *)
-      hr : int;               (* bpm *)
       cadence : int;          (* rpm *)
+      hr : int;               (* bpm *)
       alt : int;              (* mm *)
+      temp : int;             (* °C *)
 
       (* Derived fields *)
       distance : int;         (* m *)

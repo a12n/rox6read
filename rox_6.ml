@@ -51,11 +51,11 @@ module Bike_entry =
   struct
     type t = {
         wheel_rot : int;
-        temp : int;             (* °C *)
         speed : float;          (* km/h *)
-        hr : int;               (* bpm *)
         cadence : int;          (* rpm *)
+        hr : int;               (* bpm *)
         alt : int;              (* mm *)
+        temp : int;             (* °C *)
 
         distance : int;         (* m *)
         duration : int;         (* s *)
@@ -74,10 +74,9 @@ module Bike_entry =
     let scan buf =
       let c = char_codes buf in
       { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
-        temp = (c.(2) lsr 2) - 10;
         speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
-        hr = c.(5);
         cadence = c.(6);
+        hr = c.(5);
         alt =
           begin
             let alt = ((c.(8) land 0x7F) lsl 8) lor c.(7) in
@@ -86,6 +85,7 @@ module Bike_entry =
             else
               -alt
           end;
+        temp = (c.(2) lsr 2) - 10;
         (* Derived fields *)
         distance = 0;
         duration = 0;
