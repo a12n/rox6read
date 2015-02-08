@@ -1,25 +1,25 @@
 module Bike_entry :
 sig
   type t = {
-      (* Data from device *)
-      rotations : int;
-      temp : int;             (* °C *)
+      (* Data from sensors *)
+      wheel_rot : int;
       speed : float;          (* km/h *)
-      hr : int;               (* bpm *)
       cadence : int;          (* rpm *)
-      alt : int;              (* mm *)
+      hr : int;               (* bpm *)
+      alt : float;            (* m *)
+      temp : int;             (* °C *)
 
       (* Derived fields *)
-      distance : int;         (* m *)
+      distance : float;         (* m *)
       duration : int;         (* s *)
-      abs_distance : int;     (* m *)
-      abs_duration : int;     (* s *)
 
       (* Derived fields *)
-      alt_diff : int;         (* mm *)
-      distance_uphill : int;  (* m *)
+      abs_distance : float;     (* m *)
+      abs_duration : int;     (* s *)
+      alt_diff : float;       (* m *)
+      distance_uphill : float;  (* m *)
       duration_uphill : int;  (* s *)
-      distance_downhill : int; (* m *)
+      distance_downhill : float; (* m *)
       duration_downhill : int; (* s *)
     }
 end
@@ -27,7 +27,7 @@ end
 module Bike_lap :
 sig
   type t = {
-      rotations : int;
+      wheel_rot : int;
       duration : int;         (* s *)
       avg_speed : float;      (* km/h *)
       avg_hr : int;           (* bpm *)
@@ -35,8 +35,8 @@ sig
       avg_cadence : int;      (* rpm *)
       kcal : int;             (* kcal *)
       max_speed : float;      (* km/h *)
-      alt_gain : int;         (* mm *)
-      alt_loss : int;         (* mm *)
+      alt_gain : float;       (* m *)
+      alt_loss : float;       (* m *)
     }
 end
 
@@ -83,7 +83,7 @@ sig
       start_time : Time.t;
 
       age : int;                          (* y *)
-      mass : int;                         (* g *)
+      mass : float;                       (* kg *)
       sex : Sex.t;
 
       max_hr : int;           (* bpm *)
@@ -93,18 +93,18 @@ sig
       zone_start : int * int * int * int; (* % *)
 
       bike_no : Bike_no.t;
-      wheel_circum : int;       (* mm *)
+      wheel_circum : float;     (* m *)
 
-      distance : int;           (* m *)
+      distance : float;         (* m *)
       duration : int;           (* s *)
       max_speed : float;        (* km/h *)
-      alt_gain : int;           (* mm *)
-      alt_loss : int;           (* mm *)
+      alt_gain : float;         (* m *)
+      alt_loss : float;         (* m *)
       kcal : int;               (* kcal *)
 
       hike_duration : int;      (* s *)
-      hike_alt_gain : int;      (* mm *)
-      hike_alt_loss : int;      (* mm *)
+      hike_alt_gain : float;    (* m *)
+      hike_alt_loss : float;    (* m *)
       hike_kcal : int;          (* kcal *)
 
       speed_unit : Speed_unit.t;
@@ -119,7 +119,7 @@ sig
   type t = {
       (* Person *)
       age : int;                (* y *)
-      mass : int;               (* g *)
+      mass : float;             (* kg *)
       sex : Sex.t;
       (* Heart rate *)
       max_hr : int;             (* bpm *)
@@ -129,14 +129,14 @@ sig
       zone_alarm : bool;
       zone_start : int * int * int * int; (* % *)
       (* Bike *)
-      wheel_circum : int * int; (* mm *)
+      wheel_circum : float * float; (* m *)
       (* Date and time *)
       date : Date.t;
       time : Time.t;
       (* Altitude *)
       slp : int;                (* Pa *)
-      actual_alt : int;         (* mm *)
-      home_alt : int;           (* mm *)
+      actual_alt : float;       (* m *)
+      home_alt : float;         (* m *)
       alt_ref : Alt_ref.t;
       (* Device *)
       lang : Lang.t;
@@ -154,13 +154,13 @@ module Totals :
 sig
   type t = {
       (* Bike *)
-      distance : int * int;     (* m *)
+      distance : float * float; (* m *)
       duration : int * int;     (* s *)
-      alt_gain : int * int;     (* mm *)
+      alt_gain : float * float; (* m *)
       kcal : int * int;         (* kcal *)
       (* Hike *)
       hike_duration : int;      (* s *)
-      hike_alt_gain : int;      (* mm *)
+      hike_alt_gain : float;    (* m *)
       hike_kcal : int;          (* kcal *)
     }
 end
