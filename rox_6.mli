@@ -1,8 +1,8 @@
 module Bike_entry :
 sig
   type t = {
-      (* Data from device *)
-      rotations : int;
+      (* Data from sensors *)
+      wheel_rot : int;
       temp : int;             (* °C *)
       speed : float;          (* km/h *)
       hr : int;               (* bpm *)
@@ -27,7 +27,7 @@ end
 module Bike_lap :
 sig
   type t = {
-      rotations : int;
+      wheel_rot : int;
       duration : int;         (* s *)
       avg_speed : float;      (* km/h *)
       avg_hr : int;           (* bpm *)

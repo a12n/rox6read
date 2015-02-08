@@ -50,7 +50,7 @@ let package_command fd ~code ~address ~ans_size =
 module Bike_entry =
   struct
     type t = {
-        rotations : int;
+        wheel_rot : int;
         temp : int;             (* °C *)
         speed : float;          (* km/h *)
         hr : int;               (* bpm *)
@@ -73,7 +73,7 @@ module Bike_entry =
 
     let scan buf =
       let c = char_codes buf in
-      { rotations = ((c.(2) land 0x03) lsl 8) lor c.(1);
+      { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
         temp = (c.(2) lsr 2) - 10;
         speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
         hr = c.(5);
@@ -102,7 +102,7 @@ module Bike_entry =
 module Bike_lap =
   struct
     type t = {
-        rotations : int;
+        wheel_rot : int;
         duration : int;         (* s *)
         avg_speed : float;      (* km/h *)
         avg_hr : int;           (* bpm *)
@@ -118,7 +118,7 @@ module Bike_lap =
 
     let scan buf =
       let c = char_codes buf in
-      { rotations = (c.(8) lsl 16) lor (c.(7) lsl 8) lor c.(6);
+      { wheel_rot = (c.(8) lsl 16) lor (c.(7) lsl 8) lor c.(6);
         duration = ((c.(3) land 0x3F) lsl 16) lor (c.(2) lsl 8) lor c.(1);
         avg_speed = float_of_int (((c.(5) land 0x7F) lsl 8) lor c.(4)) /. 100.0;
         avg_hr = c.(9);
