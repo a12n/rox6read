@@ -6,7 +6,7 @@ sig
       speed : float;          (* km/h *)
       cadence : int;          (* rpm *)
       hr : int;               (* bpm *)
-      alt : int;              (* mm *)
+      alt : float;            (* m *)
       temp : int;             (* °C *)
 
       (* Derived fields *)
@@ -16,7 +16,7 @@ sig
       (* Derived fields *)
       abs_distance : float;     (* m *)
       abs_duration : int;     (* s *)
-      alt_diff : int;         (* mm *)
+      alt_diff : float;       (* m *)
       distance_uphill : float;  (* m *)
       duration_uphill : int;  (* s *)
       distance_downhill : float; (* m *)
@@ -35,8 +35,8 @@ sig
       avg_cadence : int;      (* rpm *)
       kcal : int;             (* kcal *)
       max_speed : float;      (* km/h *)
-      alt_gain : int;         (* mm *)
-      alt_loss : int;         (* mm *)
+      alt_gain : float;       (* m *)
+      alt_loss : float;       (* m *)
     }
 end
 
@@ -98,13 +98,13 @@ sig
       distance : float;         (* m *)
       duration : int;           (* s *)
       max_speed : float;        (* km/h *)
-      alt_gain : int;           (* mm *)
-      alt_loss : int;           (* mm *)
+      alt_gain : float;         (* m *)
+      alt_loss : float;         (* m *)
       kcal : int;               (* kcal *)
 
       hike_duration : int;      (* s *)
-      hike_alt_gain : int;      (* mm *)
-      hike_alt_loss : int;      (* mm *)
+      hike_alt_gain : float;    (* m *)
+      hike_alt_loss : float;    (* m *)
       hike_kcal : int;          (* kcal *)
 
       speed_unit : Speed_unit.t;
@@ -135,8 +135,8 @@ sig
       time : Time.t;
       (* Altitude *)
       slp : int;                (* Pa *)
-      actual_alt : int;         (* mm *)
-      home_alt : int;           (* mm *)
+      actual_alt : float;       (* m *)
+      home_alt : float;         (* m *)
       alt_ref : Alt_ref.t;
       (* Device *)
       lang : Lang.t;
@@ -156,11 +156,11 @@ sig
       (* Bike *)
       distance : float * float; (* m *)
       duration : int * int;     (* s *)
-      alt_gain : int * int;     (* mm *)
+      alt_gain : float * float; (* m *)
       kcal : int * int;         (* kcal *)
       (* Hike *)
       hike_duration : int;      (* s *)
-      hike_alt_gain : int;      (* mm *)
+      hike_alt_gain : float;    (* m *)
       hike_kcal : int;          (* kcal *)
     }
 end

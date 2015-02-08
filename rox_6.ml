@@ -71,13 +71,13 @@ module Log_summary =
         distance : float;       (* m *)
         duration : int;         (* s *)
         max_speed : float;      (* km/h *)
-        alt_gain : int;         (* mm *)
-        alt_loss : int;         (* mm *)
+        alt_gain : float;       (* m *)
+        alt_loss : float;       (* m *)
         kcal : int;             (* kcal *)
 
         hike_duration : int;    (* s *)
-        hike_alt_gain : int;    (* mm *)
-        hike_alt_loss : int;    (* mm *)
+        hike_alt_gain : float;  (* m *)
+        hike_alt_loss : float;  (* m *)
         hike_kcal : int;        (* kcal *)
 
         speed_unit : Speed_unit.t;
@@ -125,8 +125,12 @@ module Log_summary =
                       Mass_unit.Lb ;
         hike_duration = ((c.(21) land 0x3F) lsl 16) lor (c.(20) lsl 8) lor c.(19) ;
         hike_kcal = ((c.(44) land 0x01) lsl 16) lor (c.(41) lsl 8) lor c.(40) ;
-        hike_alt_gain = ((c.(44) land 0x0F) lsl 16) lor (c.(43) lsl 8) lor c.(42) ;
-        hike_alt_loss = ((c.(47) land 0x0F) lsl 16) lor (c.(46) lsl 8) lor c.(45) ;
+        hike_alt_gain = float_of_int (
+                            ((c.(44) land 0x0F) lsl 16) lor (c.(43) lsl 8) lor c.(42) (* mm *)
+                          ) /. 1000.0;
+        hike_alt_loss = float_of_int (
+                            ((c.(47) land 0x0F) lsl 16) lor (c.(46) lsl 8) lor c.(45) (* mm *)
+                          ) /. 1000.0;
         (* Bike *)
         duration = ((c.(12) land 0x3F) lsl 16) lor (c.(11) lsl 8) lor c.(10) ;
         speed_unit = if (c.(14) land 0x80) == 0 then
@@ -134,7 +138,9 @@ module Log_summary =
                      else
                        Speed_unit.Mph ;
         max_speed = float_of_int (((c.(14) land 0x7F) lsl 8) + c.(13)) /. 100.0;
-        alt_gain = 100 * (((c.(18) lsr 4) lsl 16) lor (c.(16) lsl 8) lor c.(15)) ;
+        alt_gain = float_of_int (
+                       ((c.(18) lsr 4) lsl 16) lor (c.(16) lsl 8) lor c.(15) (* dm *)
+                     ) /. 10.0;
         distance = float_of_int (
                        (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22)
                      );
@@ -146,7 +152,9 @@ module Log_summary =
         wheel_circum = float_of_int (
                            ((c.(33) land 0x0F) lsl 8) lor c.(32) (* mm *)
                          ) /. 1000.0;
-        alt_loss = 100 * (((c.(39) land 0x0F) lsl 16) lor (c.(38) lsl 8) lor c.(37)) ;
+        alt_loss = float_of_int (
+                       ((c.(39) land 0x0F) lsl 16) lor (c.(38) lsl 8) lor c.(37) (* dm *)
+                     ) /. 10.0;
       }
   end
 
@@ -157,7 +165,7 @@ module Bike_entry =
         speed : float;          (* km/h *)
         cadence : int;          (* rpm *)
         hr : int;               (* bpm *)
-        alt : int;              (* mm *)
+        alt : float;            (* m *)
         temp : int;             (* °C *)
 
         distance : float;       (* m *)
@@ -165,7 +173,7 @@ module Bike_entry =
 
         abs_distance : float;    (* m *)
         abs_duration : int;     (* s *)
-        alt_diff : int;         (* mm *)
+        alt_diff : float;       (* m *)
         distance_uphill : float; (* m *)
         duration_uphill : int;  (* s *)
         distance_downhill : float; (* m *)
@@ -182,11 +190,11 @@ module Bike_entry =
         hr = c.(5);
         alt =
           begin
-            let alt = ((c.(8) land 0x7F) lsl 8) lor c.(7) in
-            if (c.(8) lsr 7) == 0 then
-              alt
-            else
-              -alt
+            let alt = float_of_int (((c.(8) land 0x7F) lsl 8) lor c.(7)) in
+            ( if (c.(8) lsr 7) == 0 then
+                alt
+              else
+                -.alt ) /. 1000.0
           end;
         temp = (c.(2) lsr 2) - 10;
         (* Derived fields *)
@@ -195,7 +203,7 @@ module Bike_entry =
         (* Derived fields *)
         abs_distance = 0.0;
         abs_duration = 0;
-        alt_diff = 0;
+        alt_diff = 0.0;
         distance_uphill = 0.0;
         duration_uphill = 0;
         distance_downhill = 0.0;
@@ -214,8 +222,8 @@ module Bike_lap =
         avg_cadence : int;      (* rpm *)
         kcal : int;             (* kcal *)
         max_speed : float;      (* km/h *)
-        alt_gain : int;         (* mm *)
-        alt_loss : int;         (* mm *)
+        alt_gain : float;       (* m *)
+        alt_loss : float;       (* m *)
       }
 
     let size = 23
@@ -230,8 +238,12 @@ module Bike_lap =
         avg_cadence = c.(11);
         kcal = ((c.(15) lsr 7) lsl 16) lor (c.(13) lsl 8) lor (c.(12));
         max_speed = float_of_int (((c.(15) land 0x7F) lsl 8) lor c.(14)) /. 100.0;
-        alt_gain = 100 * ((c.(18) lsl 16) lor (c.(17) lsl 8) lor c.(16));
-        alt_loss = 100 * ((c.(21) lsl 16) lor (c.(20) lsl 8) lor c.(19));
+        alt_gain = float_of_int (
+                       (c.(18) lsl 16) lor (c.(17) lsl 8) lor c.(16) (* dm *)
+                     ) /. 10.0;
+        alt_loss = float_of_int (
+                       (c.(21) lsl 16) lor (c.(20) lsl 8) lor c.(19) (* dm *)
+                     ) /. 10.0;
       }
   end
 
@@ -341,8 +353,8 @@ module Settings =
         time : Time.t;
         (* Altitude *)
         slp : int;                (* Pa *)
-        actual_alt : int;         (* mm *)
-        home_alt : int;           (* mm *)
+        actual_alt : float;       (* m *)
+        home_alt : float;         (* m *)
         alt_ref : Alt_ref.t;
         (* Device *)
         lang : Lang.t;
@@ -412,21 +424,25 @@ module Settings =
         slp = (c.(0) lor ((c.(1) land 0x07) lsl 8)) * 10 + 90000;
         actual_alt =
           begin
-            let alt = (((c.(24) land 0x7F) lsl 8) lor c.(23)) * 1000 +
-                        (c.(25) land 0x0F) in
-            if (c.(24) lsr 7) == 0 then
-              alt
-            else
-              -alt
+            let alt = float_of_int (
+                          (((c.(24) land 0x7F) lsl 8) lor c.(23)) * 1000 +
+                            (c.(25) land 0x0F)
+                        ) in
+            ( if (c.(24) lsr 7) == 0 then
+                alt
+              else
+                -.alt ) /. 1000.0
           end;
         home_alt =
           begin
-            let alt = (((c.(27) land 0x7F) lsl 8) lor c.(26)) * 1000 +
-                        (c.(28) land 0x0F) in
-            if (c.(27) lsr 7) == 0 then
-              alt
-            else
-              -alt
+            let alt = float_of_int (
+                          (((c.(27) land 0x7F) lsl 8) lor c.(26)) * 1000 +
+                            (c.(28) land 0x0F)
+                        ) in
+            ( if (c.(27) lsr 7) == 0 then
+                alt
+              else
+                -.alt ) /. 1000.0
           end ;
         alt_ref = if (c.(25) land 0x80) == 0 then
                     Alt_ref.Actual_alt
@@ -495,10 +511,10 @@ module Totals =
     type t = {
         distance : float * float;
         duration : int * int;
-        alt_gain : int * int;
+        alt_gain : float * float;
         kcal : int * int;
         hike_duration : int;
-        hike_alt_gain : int;
+        hike_alt_gain : float;
         hike_kcal : int;
       }
 
@@ -539,16 +555,22 @@ module Totals =
         );
         alt_gain = (
           (* Bike1 *)
-          (((c.(28) land 0x0F) lsl 16) lor (c.(27) lsl 8) lor c.(26)) * 100 +
-            10 * ((c.(28) land 0xF0) lsr 4)
+          float_of_int (
+              (((c.(28) land 0x0F) lsl 16) lor (c.(27) lsl 8) lor c.(26)) * 100 +
+                10 * ((c.(28) land 0xF0) lsr 4)
+            ) /. 1000.0
         ,
           (* Bike2 *)
-          (((c.(31) land 0x0F) lsl 16) lor (c.(30) lsl 8) lor c.(29)) * 100 +
-            10 * ((c.(31) land 0xF0) lsr 4)
+          float_of_int (
+              (((c.(31) land 0x0F) lsl 16) lor (c.(30) lsl 8) lor c.(29)) * 100 +
+                10 * ((c.(31) land 0xF0) lsr 4)
+            ) /. 1000.0
         );
         hike_alt_gain =
-          (((c.(34) land 15) lsl 16) land (c.(33) lsl 8) lor c.(32)) * 100 +
-            10 * ((c.(34) land 0xF0) lsr 4) ;
+          float_of_int (
+              (((c.(34) land 15) lsl 16) land (c.(33) lsl 8) lor c.(32)) * 100 +
+                10 * ((c.(34) land 0xF0) lsr 4)
+            ) /. 1000.0;
         hike_kcal =
           (((c.(25) land 0x10) lsr 4) lsl 16) lor (c.(21) lsl 8) lor c.(20) ;
         hike_duration =
