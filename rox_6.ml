@@ -47,6 +47,103 @@ let package_command fd ~code ~address ~ans_size =
   aux 0;
   ans
 
+module Log_summary =
+  struct
+    type t = {
+        start_date : Date.t;
+        start_time : Time.t;
+
+        age : int;              (* y *)
+        mass : int;             (* g *)
+        sex : Sex.t;
+
+        max_hr : int;           (* bpm *)
+        hr_limits : int * int;  (* bpm *)
+
+        training_zone : Training_zone.t;
+        zone_start : int * int * int * int; (* % *)
+
+        bike_no : Bike_no.t;
+        wheel_circum : int;     (* mm *)
+
+        distance : int;         (* m *)
+        duration : int;         (* s *)
+        max_speed : float;      (* km/h *)
+        alt_gain : int;         (* mm *)
+        alt_loss : int;         (* mm *)
+        kcal : int;             (* kcal *)
+
+        hike_duration : int;    (* s *)
+        hike_alt_gain : int;    (* mm *)
+        hike_alt_loss : int;    (* mm *)
+        hike_kcal : int;        (* kcal *)
+
+        speed_unit : Speed_unit.t;
+        mass_unit : Mass_unit.t;
+
+        log_size : int;        (* size of log in device memory *)
+      }
+
+    let scan ans =
+      let c = char_codes ans in
+      (* Checksum *)
+      if not (valid_checksum c 48) then
+        raise (Invalid_response "checksum");
+      if not (valid_padding c 49) then
+        raise (Invalid_response "padding");
+      (* Parse binary data *)
+      { max_hr = c.(0);
+        zone_start = c.(1), c.(2), c.(3), c.(4);
+        hr_limits = c.(5), c.(6);
+        age = c.(7);
+        mass = c.(9) * 1000 + c.(8);
+        log_size = ((c.(26) lsl 8) lor c.(25)) - Log.address;
+        training_zone =
+          begin
+            match (c.(30) land 0xC0) lsr 6 with
+              0 -> Training_zone.Fit (* TODO: hr_limits = max_hr * 0.7, max_hr * 0.8 *)
+            | 1 -> Training_zone.Fat (* TODO: hr_limits = max_hr * 0.55, max_hr * 0.7 *)
+            | 2 -> Training_zone.Own
+            | _ -> raise (Invalid_response "training zone")
+          end ;
+        sex = if (c.(31) land 0x40) == 0 then
+                Sex.Male
+              else
+                Sex.Female ;
+        start_date = { Date.y = ((c.(36) land 0x0F) lsl 8) lor c.(35);
+                       mon = (c.(36) land 0xF0) lsr 4;
+                       d = c.(34) land 0x3F };
+        start_time = { Time.h = c.(29) land 0x1F;
+                       min = c.(30) land 0x3F;
+                       s = c.(31) land 0x3F };
+        (* Hike? *)
+        mass_unit = if (c.(14) land 0x80) == 0 then
+                      Mass_unit.Kg
+                    else
+                      Mass_unit.Lb ;
+        hike_duration = ((c.(21) land 0x3F) lsl 16) lor (c.(20) lsl 8) lor c.(19) ;
+        hike_kcal = ((c.(44) land 0x01) lsl 16) lor (c.(41) lsl 8) lor c.(40) ;
+        hike_alt_gain = ((c.(44) land 0x0F) lsl 16) lor (c.(43) lsl 8) lor c.(42) ;
+        hike_alt_loss = ((c.(47) land 0x0F) lsl 16) lor (c.(46) lsl 8) lor c.(45) ;
+        (* Bike *)
+        duration = ((c.(12) land 0x3F) lsl 16) lor (c.(11) lsl 8) lor c.(10) ;
+        speed_unit = if (c.(14) land 0x80) == 0 then
+                       Speed_unit.Kmh
+                     else
+                       Speed_unit.Mph ;
+        max_speed = float_of_int (((c.(14) land 0x7F) lsl 8) + c.(13)) /. 100.0;
+        alt_gain = 100 * (((c.(18) lsr 4) lsl 16) lor (c.(16) lsl 8) lor c.(15)) ;
+        distance = (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) ;
+        kcal = ((c.(29) lsr 7) lsl 16) lor (c.(28) lsl 8) lor c.(27) ;
+        bike_no = if (c.(31) land 0x80) == 0 then
+                    Bike_no.Bike_1
+                  else
+                    Bike_no.Bike_2 ;
+        wheel_circum = ((c.(33) land 0x0F) lsl 8) lor c.(32) ;
+        alt_loss = 100 * (((c.(39) land 0x0F) lsl 16) lor (c.(38) lsl 8) lor c.(37)) ;
+      }
+  end
+
 module Bike_entry =
   struct
     type t = {
@@ -207,103 +304,6 @@ module Log =
           { ans with entry = List.rev ans.entry;
                      marker = List.rev ans.marker } in
       aux 0 { entry = []; marker = [] }
-  end
-
-module Log_summary =
-  struct
-    type t = {
-        start_date : Date.t;
-        start_time : Time.t;
-
-        age : int;              (* y *)
-        mass : int;             (* g *)
-        sex : Sex.t;
-
-        max_hr : int;           (* bpm *)
-        hr_limits : int * int;  (* bpm *)
-
-        training_zone : Training_zone.t;
-        zone_start : int * int * int * int; (* % *)
-
-        bike_no : Bike_no.t;
-        wheel_circum : int;     (* mm *)
-
-        distance : int;         (* m *)
-        duration : int;         (* s *)
-        max_speed : float;      (* km/h *)
-        alt_gain : int;         (* mm *)
-        alt_loss : int;         (* mm *)
-        kcal : int;             (* kcal *)
-
-        hike_duration : int;    (* s *)
-        hike_alt_gain : int;    (* mm *)
-        hike_alt_loss : int;    (* mm *)
-        hike_kcal : int;        (* kcal *)
-
-        speed_unit : Speed_unit.t;
-        mass_unit : Mass_unit.t;
-
-        log_size : int;        (* size of log in device memory *)
-      }
-
-    let scan ans =
-      let c = char_codes ans in
-      (* Checksum *)
-      if not (valid_checksum c 48) then
-        raise (Invalid_response "checksum");
-      if not (valid_padding c 49) then
-        raise (Invalid_response "padding");
-      (* Parse binary data *)
-      { max_hr = c.(0);
-        zone_start = c.(1), c.(2), c.(3), c.(4);
-        hr_limits = c.(5), c.(6);
-        age = c.(7);
-        mass = c.(9) * 1000 + c.(8);
-        log_size = ((c.(26) lsl 8) lor c.(25)) - Log.address;
-        training_zone =
-          begin
-            match (c.(30) land 0xC0) lsr 6 with
-              0 -> Training_zone.Fit (* TODO: hr_limits = max_hr * 0.7, max_hr * 0.8 *)
-            | 1 -> Training_zone.Fat (* TODO: hr_limits = max_hr * 0.55, max_hr * 0.7 *)
-            | 2 -> Training_zone.Own
-            | _ -> raise (Invalid_response "training zone")
-          end ;
-        sex = if (c.(31) land 0x40) == 0 then
-                Sex.Male
-              else
-                Sex.Female ;
-        start_date = { Date.y = ((c.(36) land 0x0F) lsl 8) lor c.(35);
-                       mon = (c.(36) land 0xF0) lsr 4;
-                       d = c.(34) land 0x3F };
-        start_time = { Time.h = c.(29) land 0x1F;
-                       min = c.(30) land 0x3F;
-                       s = c.(31) land 0x3F };
-        (* Hike? *)
-        mass_unit = if (c.(14) land 0x80) == 0 then
-                      Mass_unit.Kg
-                    else
-                      Mass_unit.Lb ;
-        hike_duration = ((c.(21) land 0x3F) lsl 16) lor (c.(20) lsl 8) lor c.(19) ;
-        hike_kcal = ((c.(44) land 0x01) lsl 16) lor (c.(41) lsl 8) lor c.(40) ;
-        hike_alt_gain = ((c.(44) land 0x0F) lsl 16) lor (c.(43) lsl 8) lor c.(42) ;
-        hike_alt_loss = ((c.(47) land 0x0F) lsl 16) lor (c.(46) lsl 8) lor c.(45) ;
-        (* Bike *)
-        duration = ((c.(12) land 0x3F) lsl 16) lor (c.(11) lsl 8) lor c.(10) ;
-        speed_unit = if (c.(14) land 0x80) == 0 then
-                       Speed_unit.Kmh
-                     else
-                       Speed_unit.Mph ;
-        max_speed = float_of_int (((c.(14) land 0x7F) lsl 8) + c.(13)) /. 100.0;
-        alt_gain = 100 * (((c.(18) lsr 4) lsl 16) lor (c.(16) lsl 8) lor c.(15)) ;
-        distance = (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) ;
-        kcal = ((c.(29) lsr 7) lsl 16) lor (c.(28) lsl 8) lor c.(27) ;
-        bike_no = if (c.(31) land 0x80) == 0 then
-                    Bike_no.Bike_1
-                  else
-                    Bike_no.Bike_2 ;
-        wheel_circum = ((c.(33) land 0x0F) lsl 8) lor c.(32) ;
-        alt_loss = 100 * (((c.(39) land 0x0F) lsl 16) lor (c.(38) lsl 8) lor c.(37)) ;
-      }
   end
 
 module Bat_low =
