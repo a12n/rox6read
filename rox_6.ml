@@ -68,7 +68,7 @@ module Log_summary =
         bike_no : Bike_no.t;
         wheel_circum : float;   (* m *)
 
-        distance : int;         (* m *)
+        distance : float;       (* m *)
         duration : int;         (* s *)
         max_speed : float;      (* km/h *)
         alt_gain : int;         (* mm *)
@@ -135,7 +135,9 @@ module Log_summary =
                        Speed_unit.Mph ;
         max_speed = float_of_int (((c.(14) land 0x7F) lsl 8) + c.(13)) /. 100.0;
         alt_gain = 100 * (((c.(18) lsr 4) lsl 16) lor (c.(16) lsl 8) lor c.(15)) ;
-        distance = (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) ;
+        distance = float_of_int (
+                       (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22)
+                     );
         kcal = ((c.(29) lsr 7) lsl 16) lor (c.(28) lsl 8) lor c.(27) ;
         bike_no = if (c.(31) land 0x80) == 0 then
                     Bike_no.Bike_1
@@ -158,15 +160,15 @@ module Bike_entry =
         alt : int;              (* mm *)
         temp : int;             (* °C *)
 
-        distance : int;         (* m *)
+        distance : float;       (* m *)
         duration : int;         (* s *)
-        abs_distance : int;     (* m *)
-        abs_duration : int;     (* s *)
 
+        abs_distance : float;    (* m *)
+        abs_duration : int;     (* s *)
         alt_diff : int;         (* mm *)
-        distance_uphill : int;  (* m *)
+        distance_uphill : float; (* m *)
         duration_uphill : int;  (* s *)
-        distance_downhill : int; (* m *)
+        distance_downhill : float; (* m *)
         duration_downhill : int; (* s *)
       }
 
@@ -188,14 +190,15 @@ module Bike_entry =
           end;
         temp = (c.(2) lsr 2) - 10;
         (* Derived fields *)
-        distance = 0;
-        duration = 0;
-        abs_distance = 0;
+        distance = 0.0;
+        duration = sample_interval;
+        (* Derived fields *)
+        abs_distance = 0.0;
         abs_duration = 0;
         alt_diff = 0;
-        distance_uphill = 0;
+        distance_uphill = 0.0;
         duration_uphill = 0;
-        distance_downhill = 0;
+        distance_downhill = 0.0;
         duration_downhill = 0;
       }
   end
@@ -490,7 +493,7 @@ module Settings =
 module Totals =
   struct
     type t = {
-        distance : int * int;
+        distance : float * float;
         duration : int * int;
         alt_gain : int * int;
         kcal : int * int;
@@ -509,12 +512,16 @@ module Totals =
       (* Scan binary data *)
       { distance = (
           (* Bike1 *)
-          (c.( 0) lor (c.( 1) lsl 8) lor (c.( 2) lsl 16) lor ((c.( 3) land 0x0F) lsl 24)) +
-            (((c.( 7) land 0xFC) lsl 2) lor ((c.( 3) land 0xF0) lsr 4)) / 1000
+          float_of_int (
+              (c.( 0) lor (c.( 1) lsl 8) lor (c.( 2) lsl 16) lor ((c.( 3) land 0x0F) lsl 24)) +
+                (((c.( 7) land 0xFC) lsl 2) lor ((c.( 3) land 0xF0) lsr 4)) / 1000
+            )
         ,
           (* Bike2 *)
-          (c.( 8) lor (c.( 9) lsl 8) lor (c.(10) lsl 16) lor ((c.(11) land 0x0F) lsl 24)) +
-            (((c.(15) land 0xFC) lsl 2) lor ((c.(11) land 0x0F) lsr 4)) / 1000
+          float_of_int (
+              (c.( 8) lor (c.( 9) lsl 8) lor (c.(10) lsl 16) lor ((c.(11) land 0x0F) lsl 24)) +
+                (((c.(15) land 0xFC) lsl 2) lor ((c.(11) land 0x0F) lsr 4)) / 1000
+            )
         );
         duration = (
           (* Bike1 *)

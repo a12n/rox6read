@@ -10,16 +10,16 @@ sig
       temp : int;             (* °C *)
 
       (* Derived fields *)
-      distance : int;         (* m *)
+      distance : float;         (* m *)
       duration : int;         (* s *)
-      abs_distance : int;     (* m *)
-      abs_duration : int;     (* s *)
 
       (* Derived fields *)
+      abs_distance : float;     (* m *)
+      abs_duration : int;     (* s *)
       alt_diff : int;         (* mm *)
-      distance_uphill : int;  (* m *)
+      distance_uphill : float;  (* m *)
       duration_uphill : int;  (* s *)
-      distance_downhill : int; (* m *)
+      distance_downhill : float; (* m *)
       duration_downhill : int; (* s *)
     }
 end
@@ -95,7 +95,7 @@ sig
       bike_no : Bike_no.t;
       wheel_circum : float;     (* m *)
 
-      distance : int;           (* m *)
+      distance : float;         (* m *)
       duration : int;           (* s *)
       max_speed : float;        (* km/h *)
       alt_gain : int;           (* mm *)
@@ -154,7 +154,7 @@ module Totals :
 sig
   type t = {
       (* Bike *)
-      distance : int * int;     (* m *)
+      distance : float * float; (* m *)
       duration : int * int;     (* s *)
       alt_gain : int * int;     (* mm *)
       kcal : int * int;         (* kcal *)
