@@ -56,7 +56,7 @@ module Log_summary =
         start_time : Time.t;
 
         age : int;              (* y *)
-        mass : int;             (* g *)
+        mass : float;           (* kg *)
         sex : Sex.t;
 
         max_hr : int;           (* bpm *)
@@ -98,7 +98,7 @@ module Log_summary =
         zone_start = c.(1), c.(2), c.(3), c.(4);
         hr_limits = c.(5), c.(6);
         age = c.(7);
-        mass = c.(9) * 1000 + c.(8);
+        mass = float_of_int (c.(9) * 1000 + c.(8)) /. 1000.0;
         log_size = ((c.(26) lsl 8) lor c.(25)) - log_address;
         training_zone =
           begin
@@ -320,7 +320,7 @@ module Settings =
     type t = {
         (* Person *)
         age : int;                (* y *)
-        mass : int;               (* kg *)
+        mass : float;             (* kg *)
         sex : Sex.t;
         (* Heart rate *)
         max_hr : int;             (* bpm *)
@@ -361,7 +361,7 @@ module Settings =
       {
         (* Person *)
         age = c.(13);
-        mass = c.(15) * 1000 + c.(14);
+        mass = float_of_int (c.(15) * 1000 + c.(14)) /. 1000.0;
         sex = if (c.(28) land 0x10) == 0 then
                 Sex.Male
               else

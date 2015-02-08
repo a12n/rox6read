@@ -83,7 +83,7 @@ sig
       start_time : Time.t;
 
       age : int;                          (* y *)
-      mass : int;                         (* g *)
+      mass : float;                       (* kg *)
       sex : Sex.t;
 
       max_hr : int;           (* bpm *)
@@ -119,7 +119,7 @@ sig
   type t = {
       (* Person *)
       age : int;                (* y *)
-      mass : int;               (* g *)
+      mass : float;             (* kg *)
       sex : Sex.t;
       (* Heart rate *)
       max_hr : int;             (* bpm *)
