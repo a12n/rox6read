@@ -198,10 +198,10 @@ module Bike_entry =
         alt =
           begin
             let alt = float_of_int (((c.(8) land 0x7F) lsl 8) lor c.(7)) in
-            ( if (c.(8) lsr 7) == 0 then
-                alt
-              else
-                -.alt ) /. 1000.0
+            if (c.(8) lsr 7) == 0 then
+              alt
+            else
+              -.alt
           end;
         temp = (c.(2) lsr 2) - 10;
         (* Derived fields *)
