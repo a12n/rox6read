@@ -1,26 +1,12 @@
 module Bike_entry :
 sig
   type t = {
-      (* Data from sensors *)
       wheel_rot : int;
       speed : float;          (* km/h *)
       cadence : int;          (* rpm *)
       hr : int;               (* bpm *)
       alt : float;            (* m *)
       temp : int;             (* °C *)
-
-      (* Derived fields *)
-      distance : float;         (* m *)
-      duration : int;         (* s *)
-
-      (* Derived fields *)
-      abs_distance : float;     (* m *)
-      abs_duration : int;     (* s *)
-      alt_diff : float;       (* m *)
-      distance_uphill : float;  (* m *)
-      duration_uphill : int;  (* s *)
-      distance_downhill : float; (* m *)
-      duration_downhill : int; (* s *)
     }
 end
 

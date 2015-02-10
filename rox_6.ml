@@ -174,17 +174,6 @@ module Bike_entry =
         hr : int;               (* bpm *)
         alt : float;            (* m *)
         temp : int;             (* °C *)
-
-        distance : float;       (* m *)
-        duration : int;         (* s *)
-
-        abs_distance : float;    (* m *)
-        abs_duration : int;     (* s *)
-        alt_diff : float;       (* m *)
-        distance_uphill : float; (* m *)
-        duration_uphill : int;  (* s *)
-        distance_downhill : float; (* m *)
-        duration_downhill : int; (* s *)
       }
 
     let size = 9
@@ -203,19 +192,7 @@ module Bike_entry =
             else
               -.alt
           end;
-        temp = (c.(2) lsr 2) - 10;
-        (* Derived fields *)
-        distance = 0.0;
-        duration = sample_interval;
-        (* Derived fields *)
-        abs_distance = 0.0;
-        abs_duration = 0;
-        alt_diff = 0.0;
-        distance_uphill = 0.0;
-        duration_uphill = 0;
-        distance_downhill = 0.0;
-        duration_downhill = 0;
-      }
+        temp = (c.(2) lsr 2) - 10; }
   end
 
 module Bike_lap =
