@@ -280,31 +280,41 @@ module Log =
 
     let scan buf =
       let n = String.length buf in
-      let rec aux k ans =
+      let rec aux k entry marker =
         if k < n then
           begin
             match (Char.code buf.[k]) land 0x07 with
             | 0 ->
                let e = String.sub buf k Bike_entry.size |> Bike_entry.scan in
-               aux (k + Bike_entry.size) { ans with entry = (Log_entry.Bike e) :: ans.entry }
+               aux (k + Bike_entry.size)
+                   ((Log_entry.Bike e) :: entry)
+                   marker
             | 1 ->
                let m = String.sub buf k Bike_pause.size |> Bike_pause.scan in
-               aux (k + Bike_pause.size) { ans with marker = (Log_marker.Bike_pause m) :: ans.marker }
+               aux (k + Bike_pause.size)
+                   entry
+                   ((Log_marker.Bike_pause m) :: marker)
             | 2 ->
                let m = String.sub buf k Bike_lap.size |> Bike_lap.scan in
-               aux (k + Bike_lap.size) { ans with marker = (Log_marker.Bike_lap m) :: ans.marker }
+               aux (k + Bike_lap.size)
+                   entry
+                   ((Log_marker.Bike_lap m) :: marker)
             | 3 ->
                let e = String.sub buf k Hike_entry.size |> Hike_entry.scan in
-               aux (k + Hike_entry.size) { ans with entry = (Log_entry.Hike e) :: ans.entry }
+               aux (k + Hike_entry.size)
+                   ((Log_entry.Hike e) :: entry)
+                   marker
             | 4 ->
                let m = String.sub buf k Hike_pause.size |> Hike_pause.scan in
-               aux (k + Hike_pause.size) { ans with marker = (Log_marker.Hike_pause m) :: ans.marker }
+               aux (k + Hike_pause.size)
+                   entry
+                   ((Log_marker.Hike_pause m) :: marker)
             | _ -> raise (Invalid_response "log entry type")
           end
         else
-          { ans with entry = List.rev ans.entry;
-                     marker = List.rev ans.marker } in
-      aux 0 { entry = []; marker = [] }
+          { entry = List.rev entry;
+            marker = List.rev marker } in
+      aux 0 [] []
   end
 
 module Bat_low =
