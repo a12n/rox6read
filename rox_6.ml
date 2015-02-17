@@ -249,7 +249,15 @@ module Bike_lap =
 
 module Bike_pause =
   struct
-    type t = string
+    type t = {
+        wheel_rot : int;
+        duration : int;         (* s *)
+        avg_alt : float;        (* m *)
+        start_date : Date.t;
+        start_time : Time.t;
+        stop_date : Date.t;
+        stop_time : Time.t;
+      }
 
     let size = 21
 
