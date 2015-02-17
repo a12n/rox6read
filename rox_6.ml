@@ -261,7 +261,35 @@ module Bike_pause =
 
     let size = 21
 
-    let scan buf = buf
+    let scan buf =
+      let c = char_codes buf in
+      { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
+        duration = c.(0) lsr 3;
+        avg_alt =
+          begin
+            let alt = float_of_int (((c.(8) land 0x1F) lsl 8) lor c.(7)) in
+            if (c.(8) lsr 7) == 0 then
+              alt
+            else
+              -.alt
+          end;
+        start_date =
+          { Date.y = ((c.(9 + 2) land 0x0F) lsl 8) lor c.(8 + 2);
+            mon = c.(9 + 2) lsr 4;
+            d = c.(7 + 2) land 0x3F };
+        start_time =
+          { Time.h = c.(13 + 2) land 0x1F;
+            min = ((c.(14 + 2) land 0xE0) lsr 2) lor (c.(13 + 2) lsr 5);
+            s = c.(15 + 2) land 0x3F };
+        stop_date =
+          { Date.y = ((c.(12 + 2) land 0x0F) lsl 8) lor c.(11 + 2);
+            mon = c.(12 + 2) lsr 4;
+            d = c.(10 + 2) land 0x3F };
+        stop_time =
+          { Time.h = c.(14 + 2) land 0x1F;
+            min = c.(16 + 2) land 0x3F;
+            s = c.(17 + 2) land 0x3F };
+      }
   end
 
 module Hike_entry =
