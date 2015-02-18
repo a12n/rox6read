@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Activity fileDate="Wed Feb 18 22:59:22 GMT+0300 2015" revision="400">
+  <Computer unit="rox60" serial="00240" activityType="Cycling" dateCode="8183Sun Feb 15 13:46:47 GMT+0300 2015"/>
+  <GeneralInformation>
+    <user color="45824" gender="male"><![CDATA[Standard]]></user>
+    <sport><![CDATA[racing_bycicle]]></sport>
+    <age>30</age>
+    <GUID>43B47087-A6BA-B1D3-96C8-9A2D0D032FEF</GUID>
+    <altitudeDifferencesDownhill>46000</altitudeDifferencesDownhill>
+    <altitudeDifferencesUphill>57300</altitudeDifferencesUphill>
+    <averageAltitude>29086</averageAltitude>
+    <averageCadence>0</averageCadence>
+    <averageHeartrate>146</averageHeartrate>
+    <averageSpeed>7.371117129400104</averageSpeed>
+    <averageSpeedDownhill>0</averageSpeedDownhill>
+    <averageSpeedUphill>0</averageSpeedUphill>
+    <averageTemperature>9.731470230862698</averageTemperature>
+    <bike>bike1</bike>
+    <bodyWeight>72670</bodyWeight>
+    <bodyWeightUnit>kg</bodyWeightUnit>
+    <calories>1548</calories>
+    <caloriesDifferenceFactor>0.00038430570303516685</caloriesDifferenceFactor>
+    <description><![CDATA[]]></description>
+    <distance>59495</distance>
+    <distanceDownhill>1680.8039999999999</distanceDownhill>
+    <distanceUphill>2760.1020000000003</distanceUphill>
+    <externalLink><![CDATA[]]></externalLink>
+    <gender>male</gender>
+    <hrMax>190</hrMax>
+    <intensityZone1Start>114</intensityZone1Start>
+    <intensityZone2Start>133</intensityZone2Start>
+    <intensityZone3Start>152</intensityZone3Start>
+    <intensityZone4Start>171</intensityZone4Start>
+    <intensityZone4End>190</intensityZone4End>
+    <lowerLimit>133</lowerLimit>
+    <manualTemperature>0</manualTemperature>
+    <maximumAltitude>33000</maximumAltitude>
+    <maximumCadence>0</maximumCadence>
+    <maximumHeartrate>171</maximumHeartrate>
+    <maximumSpeed>12.063888888888888</maximumSpeed>
+    <maximumTemperature>19</maximumTemperature>
+    <measurement>kmh</measurement>
+    <minimumAltitude>19000</minimumAltitude>
+    <minimumCadence>0</minimumCadence>
+    <minimumHeartrate>103</minimumHeartrate>
+    <minimumSpeed>0.7</minimumSpeed>
+    <minimumTemperature>8</minimumTemperature>
+    <name><![CDATA[]]></name>
+    <pageHeaderData>190,60,70,80,90,105,155,30,67,72,247,31,0,247,16,61,2,42,1,0,0,0,103,232,0,187,30,12,6,13,46,47,85,8,15,223,39,204,1,0,0,0,0,0,0,0,0,0,1,161,162,163,164</pageHeaderData>
+    <pauseTime>868</pauseTime>
+    <rating>4</rating>
+    <feeling>3</feeling>
+    <trainingTimeDownhill>20400</trainingTimeDownhill>
+    <trainingTimeUphill>37000</trainingTimeUphill>
+    <samplingRate>10</samplingRate>
+    <startDate>Sun Feb 15 13:46:47 GMT+0300 2015</startDate>
+    <statistic>true</statistic>
+    <timeInIntensityZone1>0</timeInIntensityZone1>
+    <timeInIntensityZone2>0</timeInIntensityZone2>
+    <timeInIntensityZone3>0</timeInIntensityZone3>
+    <timeInIntensityZone4>0</timeInIntensityZone4>
+    <timeInTargetZone>0</timeInTargetZone>
+    <timeOverIntensityZone>0</timeOverIntensityZone>
+    <timeOverTargetZone>0</timeOverTargetZone>
+    <timeUnderIntensityZone>0</timeUnderIntensityZone>
+    <timeUnderTargetZone>0</timeUnderTargetZone>
+    <trackProfile>0</trackProfile>
+    <trainingTime>818300</trainingTime>
+    <trainingType/>
+    <trainingZone>fitZone</trainingZone>
+    <upperLimit>152</upperLimit>
+    <weather>1</weather>
+    <wheelSize>2133</wheelSize>
+    <wind>1</wind>
+    <Participant/>
+  </GeneralInformation>
+</Activity>
