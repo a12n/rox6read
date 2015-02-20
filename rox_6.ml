@@ -169,6 +169,7 @@ module Bike_entry =
   struct
     type t = {
         wheel_rot : int;
+        duration : int;         (* s *)
         speed : float;          (* km/h *)
         cadence : int;          (* rpm *)
         hr : int;               (* bpm *)
@@ -181,6 +182,8 @@ module Bike_entry =
     let scan buf =
       let c = char_codes buf in
       { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
+        (* TODO: If prev entry is from pause, duration -= prev.total_time % sample_interval *)
+        duration = sample_interval;
         speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
         cadence = c.(6);
         hr = c.(5);
@@ -235,7 +238,6 @@ module Bike_pause =
   struct
     type t = {
         wheel_rot : int;
-        duration : int;         (* s *)
         avg_alt : float;        (* m *)
         start_date : Date.t;
         start_time : Time.t;
@@ -248,7 +250,6 @@ module Bike_pause =
     let scan buf =
       let c = char_codes buf in
       { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
-        duration = c.(0) lsr 3;
         avg_alt =
           begin
             let alt = float_of_int (((c.(8) land 0x1F) lsl 8) lor c.(7)) in

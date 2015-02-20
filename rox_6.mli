@@ -2,6 +2,7 @@ module Bike_entry :
 sig
   type t = {
       wheel_rot : int;
+      duration : int;           (* s *)
       speed : float;          (* km/h *)
       cadence : int;          (* rpm *)
       hr : int;               (* bpm *)
@@ -30,7 +31,6 @@ module Bike_pause :
 sig
   type t = {
       wheel_rot : int;
-      duration : int;           (* s *)
       avg_alt : float;          (* m *)
       start_date : Date.t;
       start_time : Time.t;
