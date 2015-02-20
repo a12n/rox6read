@@ -249,32 +249,40 @@ module Bike_pause =
 
     let scan buf =
       let c = char_codes buf in
-      { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
-        avg_alt =
-          begin
-            let alt = float_of_int (((c.(8) land 0x1F) lsl 8) lor c.(7)) in
-            if (c.(8) lsr 7) == 0 then
-              alt
-            else
-              -.alt
-          end;
-        start_date =
-          { Date.y = ((c.(9 + 2) land 0x0F) lsl 8) lor c.(8 + 2);
-            mon = c.(9 + 2) lsr 4;
-            d = c.(7 + 2) land 0x3F };
-        start_time =
-          { Time.h = c.(13 + 2) land 0x1F;
-            min = ((c.(14 + 2) land 0xE0) lsr 2) lor (c.(13 + 2) lsr 5);
-            s = c.(15 + 2) land 0x3F };
-        stop_date =
-          { Date.y = ((c.(12 + 2) land 0x0F) lsl 8) lor c.(11 + 2);
-            mon = c.(12 + 2) lsr 4;
-            d = c.(10 + 2) land 0x3F };
-        stop_time =
-          { Time.h = c.(14 + 2) land 0x1F;
-            min = c.(16 + 2) land 0x3F;
-            s = c.(17 + 2) land 0x3F };
-      }
+      let duration = c.(0) lsr 3 in
+      let entry =
+        if duration == 0 then
+          None
+        else
+          Some { (Bike_entry.scan buf) with Bike_entry.duration } in
+      let pause =
+        { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
+          avg_alt =
+            begin
+              let alt = float_of_int (((c.(8) land 0x1F) lsl 8) lor c.(7)) in
+              if (c.(8) lsr 7) == 0 then
+                alt
+              else
+                -.alt
+            end;
+          start_date =
+            { Date.y = ((c.(9 + 2) land 0x0F) lsl 8) lor c.(8 + 2);
+              mon = c.(9 + 2) lsr 4;
+              d = c.(7 + 2) land 0x3F };
+          start_time =
+            { Time.h = c.(13 + 2) land 0x1F;
+              min = ((c.(14 + 2) land 0xE0) lsr 2) lor (c.(13 + 2) lsr 5);
+              s = c.(15 + 2) land 0x3F };
+          stop_date =
+            { Date.y = ((c.(12 + 2) land 0x0F) lsl 8) lor c.(11 + 2);
+              mon = c.(12 + 2) lsr 4;
+              d = c.(10 + 2) land 0x3F };
+          stop_time =
+            { Time.h = c.(14 + 2) land 0x1F;
+              min = c.(16 + 2) land 0x3F;
+              s = c.(17 + 2) land 0x3F };
+        } in
+      entry, pause
   end
 
 module Hike_entry =
@@ -327,9 +335,9 @@ module Log =
                    ((Log_entry.Bike e) :: entry)
                    marker
             | 1 ->
-               let m = String.sub buf k Bike_pause.size |> Bike_pause.scan in
+               let e, m = String.sub buf k Bike_pause.size |> Bike_pause.scan in
                aux (k + Bike_pause.size)
-                   entry
+                   (match e with Some e -> Log_entry.Bike e :: entry | None -> entry)
                    ((Log_marker.Bike_pause m) :: marker)
             | 2 ->
                let m = String.sub buf k Bike_lap.size |> Bike_lap.scan in
