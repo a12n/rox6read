@@ -277,7 +277,7 @@ module Bike_pause =
 
     let size = 21
 
-    let scan prev_entry buf =
+    let scan prev_entry _prev_pause buf =
       let c = char_codes buf in
       let duration = c.(0) lsr 3 in
       let entry =
@@ -384,7 +384,7 @@ module Log =
                    (e1 :: entry)
                    marker
             | 1 ->
-               let e0, m0 = String.sub buf k Bike_pause.size |> Bike_pause.scan prev.bike_entry in
+               let e0, m0 = String.sub buf k Bike_pause.size |> Bike_pause.scan prev.bike_entry prev.bike_pause in
                let m1 = Log_marker.Bike_pause m0 in
                begin
                  match e0 with
