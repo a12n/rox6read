@@ -273,6 +273,8 @@ module Bike_pause =
         stop_time : Time.t;
       }
 
+    type opt = Pause of t | No_pause
+
     let size = 21
 
     let scan prev_entry buf =
