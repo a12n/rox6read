@@ -179,11 +179,17 @@ module Bike_entry =
 
     let size = 9
 
-    let scan buf =
+    let scan prev buf =
       let c = char_codes buf in
-      { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
+      { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) -
+                      ( match prev with
+                        | Some ({wheel_rot = prev_wheel_rot; _}, true) -> prev_wheel_rot
+                        | _ -> 0 );
         (* TODO: If prev entry is from pause, duration -= prev.total_time % sample_interval *)
-        duration = sample_interval;
+        duration = sample_interval -
+                     ( match prev with
+                       | Some ({duration = prev_duration; _}, true) -> prev_duration
+                       | _ -> 0 );
         speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
         cadence = c.(6);
         hr = c.(5);
@@ -247,14 +253,14 @@ module Bike_pause =
 
     let size = 21
 
-    let scan buf =
+    let scan prev buf =
       let c = char_codes buf in
       let duration = c.(0) lsr 3 in
       let entry =
         if duration == 0 then
           None
         else
-          Some { (Bike_entry.scan buf) with Bike_entry.duration } in
+          Some { (Bike_entry.scan prev buf) with Bike_entry.duration } in
       let pause =
         { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
           avg_alt =
@@ -325,41 +331,64 @@ module Log =
 
     let scan buf =
       let n = String.length buf in
-      let rec aux k entry marker =
+      let rec aux k prev entry marker =
         if k < n then
           begin
             match (Char.code buf.[k]) land 0x07 with
             | 0 ->
-               let e = String.sub buf k Bike_entry.size |> Bike_entry.scan in
+               let e0 = String.sub buf k Bike_entry.size |> Bike_entry.scan prev in
+               let e1 = Log_entry.Bike e0 in
                aux (k + Bike_entry.size)
-                   ((Log_entry.Bike e) :: entry)
+                   (Some (e0, false))
+                   (e1 :: entry)
                    marker
             | 1 ->
-               let e, m = String.sub buf k Bike_pause.size |> Bike_pause.scan in
-               aux (k + Bike_pause.size)
-                   (match e with Some e -> Log_entry.Bike e :: entry | None -> entry)
-                   ((Log_marker.Bike_pause m) :: marker)
+               let e0, m0 = String.sub buf k Bike_pause.size |> Bike_pause.scan prev in
+               let m1 = Log_marker.Bike_pause m0 in
+               begin
+                 match e0 with
+                 | Some e0 ->
+                    let e1 = Log_entry.Bike e0 in
+                    aux (k + Bike_pause.size)
+                        (Some (e0, true))
+                        (e1 :: entry)
+                        (m1 :: marker)
+                 | None ->
+                    aux (k + Bike_pause.size)
+                        prev
+                        entry
+                        (m1 :: marker)
+               end
             | 2 ->
-               let m = String.sub buf k Bike_lap.size |> Bike_lap.scan in
+               let m1 = Log_marker.Bike_lap (
+                            String.sub buf k Bike_lap.size |> Bike_lap.scan
+                          ) in
                aux (k + Bike_lap.size)
+                   prev
                    entry
-                   ((Log_marker.Bike_lap m) :: marker)
+                   (m1 :: marker)
             | 3 ->
-               let e = String.sub buf k Hike_entry.size |> Hike_entry.scan in
+               let e1 = Log_entry.Hike (
+                            String.sub buf k Hike_entry.size |> Hike_entry.scan
+                          ) in
                aux (k + Hike_entry.size)
-                   ((Log_entry.Hike e) :: entry)
+                   prev
+                   (e1 :: entry)
                    marker
             | 4 ->
-               let m = String.sub buf k Hike_pause.size |> Hike_pause.scan in
+               let m1 = Log_marker.Hike_pause (
+                            String.sub buf k Hike_pause.size |> Hike_pause.scan
+                          ) in
                aux (k + Hike_pause.size)
+                   prev
                    entry
-                   ((Log_marker.Hike_pause m) :: marker)
+                   (m1 :: marker)
             | _ -> raise (Invalid_response "log entry type")
           end
         else
           { entry = List.rev entry;
             marker = List.rev marker } in
-      aux 0 [] []
+      aux 0 None [] []
   end
 
 module Bat_low =
