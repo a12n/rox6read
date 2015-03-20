@@ -15,6 +15,7 @@ end
 module Bike_lap :
 sig
   type t = {
+      ts : int;                 (* s *)
       wheel_rot : int;
       duration : int;         (* s *)
       avg_speed : float;      (* km/h *)
