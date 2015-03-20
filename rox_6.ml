@@ -168,6 +168,7 @@ module Log_summary =
 module Bike_entry =
   struct
     type t = {
+        ts : int;         (* s *)
         wheel_rot : int;
         duration : int;         (* s *)
         speed : float;          (* km/h *)
@@ -185,10 +186,14 @@ module Bike_entry =
 
     let scan prev_entry buf =
       let c = char_codes buf in
-      { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) -
+      let duration =
+        sample_interval -
+          ( match prev_entry with Pause_entry prev -> prev.duration | _ -> 0 ) in
+      { ts = duration +
+               ( match prev_entry with Entry prev | Pause_entry prev -> prev.ts | _ -> 0 );
+        wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) -
                       ( match prev_entry with Pause_entry prev -> prev.wheel_rot | _ -> 0 );
-        duration = sample_interval -
-                     ( match prev_entry with Pause_entry prev -> prev.duration | _ -> 0 );
+        duration;
         speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
         cadence = c.(6);
         hr = c.(5);
