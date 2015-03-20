@@ -177,19 +177,18 @@ module Bike_entry =
         temp : int;             (* °C *)
       }
 
+    type prev = Entry of t
+              | Pause_entry of t
+              | No_entry
+
     let size = 9
 
-    let scan prev buf =
+    let scan prev_entry buf =
       let c = char_codes buf in
       { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) -
-                      ( match prev with
-                        | Some ({wheel_rot = prev_wheel_rot; _}, true) -> prev_wheel_rot
-                        | _ -> 0 );
-        (* TODO: If prev entry is from pause, duration -= prev.total_time % sample_interval *)
+                      ( match prev_entry with Pause_entry prev -> prev.wheel_rot | _ -> 0 );
         duration = sample_interval -
-                     ( match prev with
-                       | Some ({duration = prev_duration; _}, true) -> prev_duration
-                       | _ -> 0 );
+                     ( match prev_entry with Pause_entry prev -> prev.duration | _ -> 0 );
         speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
         cadence = c.(6);
         hr = c.(5);
@@ -339,7 +338,7 @@ module Log =
                let e0 = String.sub buf k Bike_entry.size |> Bike_entry.scan prev in
                let e1 = Log_entry.Bike e0 in
                aux (k + Bike_entry.size)
-                   (Some (e0, false))
+                   (Bike_entry.Entry e0)
                    (e1 :: entry)
                    marker
             | 1 ->
@@ -350,7 +349,7 @@ module Log =
                  | Some e0 ->
                     let e1 = Log_entry.Bike e0 in
                     aux (k + Bike_pause.size)
-                        (Some (e0, true))
+                        (Bike_entry.Pause_entry e0)
                         (e1 :: entry)
                         (m1 :: marker)
                  | None ->
@@ -388,7 +387,7 @@ module Log =
         else
           { entry = List.rev entry;
             marker = List.rev marker } in
-      aux 0 None [] []
+      aux 0 Bike_entry.No_entry [] []
   end
 
 module Bat_low =
