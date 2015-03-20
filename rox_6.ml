@@ -243,20 +243,27 @@ module Bike_lap =
         max_speed : float;      (* km/h *)
         alt_gain : float;       (* m *)
         alt_loss : float;       (* m *)
+
+        distance : float;       (* m *)
+        abs_distance : float;   (* m *)
       }
 
     type opt = Lap of t | No_lap
 
     let size = 23
 
-    let scan _wheel_circum prev_lap buf =
+    let scan wheel_circum prev_lap buf =
       let c = char_codes buf in
       let duration =
         ((c.(3) land 0x3F) lsl 16) lor (c.(2) lsl 8) lor c.(1) in
+      let wheel_rot =
+        (c.(8) lsl 16) lor (c.(7) lsl 8) lor c.(6) in
+      let distance =
+        wheel_circum *. float_of_int wheel_rot in
       { ts = duration + (match prev_lap with
                            Lap prev -> prev.ts
                          | No_lap -> 0 );
-        wheel_rot = (c.(8) lsl 16) lor (c.(7) lsl 8) lor c.(6);
+        wheel_rot;
         duration;
         avg_speed = float_of_int (((c.(5) land 0x7F) lsl 8) lor c.(4)) /. 100.0;
         avg_hr = c.(9);
@@ -270,6 +277,11 @@ module Bike_lap =
         alt_loss = float_of_int (
                        (c.(21) lsl 16) lor (c.(20) lsl 8) lor c.(19) (* dm *)
                      ) /. 10.0;
+        distance;
+        abs_distance = distance +.
+                         (match prev_lap with
+                            Lap prev -> prev.abs_distance;
+                          | No_lap -> 0.0);
       }
   end
 

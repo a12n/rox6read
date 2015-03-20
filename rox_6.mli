@@ -29,6 +29,9 @@ sig
       max_speed : float;      (* km/h *)
       alt_gain : float;       (* m *)
       alt_loss : float;       (* m *)
+
+      distance : float;         (* m *)
+      abs_distance : float;     (* m *)
     }
 end
 
