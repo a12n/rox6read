@@ -370,7 +370,7 @@ module Log =
         bike_pause : Bike_pause.opt;
       }
 
-    let scan buf =
+    let scan _summary buf =
       let n = String.length buf in
       let rec aux k prev entry marker =
         if k < n then
@@ -703,8 +703,8 @@ module Totals =
 let log_summary =
   Log_summary.scan % command ~code:0xEF ~address:0x0071 ~ans_size:53
 
-let log port { Log_summary.log_size; _ } =
-  package_command port ~code:0xEF ~address:log_address ~ans_size:log_size |> Log.scan
+let log port ({Log_summary.log_size; _} as summary) =
+  package_command port ~code:0xEF ~address:log_address ~ans_size:log_size |> Log.scan summary
 
 let bat_low =
   Bat_low.scan % command ~code:0xEF ~address:0x006A ~ans_size:7
