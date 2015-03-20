@@ -176,6 +176,9 @@ module Bike_entry =
         hr : int;               (* bpm *)
         alt : float;            (* m *)
         temp : int;             (* °C *)
+
+        distance : float;       (* m *)
+        abs_distance : float;   (* m *)
       }
 
     type opt = Entry of t
@@ -192,13 +195,15 @@ module Bike_entry =
                           | Pause_entry e -> e.ts
                           | No_entry -> 0)}
 
-    let scan _wheel_circum prev_entry buf =
+    let scan wheel_circum prev_entry buf =
       let c = char_codes buf in
-      { ts = 0;                 (* Filled later *)
-        wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) -
+      let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) -
                       (match prev_entry with
                          Pause_entry prev -> prev.wheel_rot
-                       | Entry _ | No_entry -> 0);
+                       | Entry _ | No_entry -> 0) in
+      let distance = wheel_circum *. float_of_int wheel_rot in
+      { ts = 0;                 (* Filled later *)
+        wheel_rot;
         duration = sample_interval -
                      (match prev_entry with
                         Pause_entry prev -> prev.duration
@@ -214,7 +219,14 @@ module Bike_entry =
             else
               -.alt
           end;
-        temp = (c.(2) lsr 2) - 10; } |> fill_ts prev_entry
+        temp = (c.(2) lsr 2) - 10;
+        distance;
+        abs_distance =
+          distance +.
+            (match prev_entry with
+               No_entry -> 0.0
+             | Entry prev | Pause_entry prev -> prev.abs_distance);
+      } |> fill_ts prev_entry
   end
 
 module Bike_lap =
@@ -439,7 +451,9 @@ module Log =
                  (Log_entry.Bike {e with Bike_entry.ts = 0;
                                          wheel_rot = 0;
                                          duration = 0;
-                                         speed = 0.0}) :: entry
+                                         speed = 0.0;
+                                         distance = 0.0;
+                                         abs_distance = 0.0}) :: entry
               | (Log_entry.Hike _) :: _ | [] -> entry in
             {entry; marker}
           end in

@@ -9,6 +9,9 @@ sig
       hr : int;               (* bpm *)
       alt : float;            (* m *)
       temp : int;             (* °C *)
+
+      distance : float;         (* m *)
+      abs_distance : float;     (* m *)
     }
 end
 
