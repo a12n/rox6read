@@ -184,16 +184,21 @@ module Bike_entry =
 
     let size = 9
 
+    (* Update timestamp field *)
+    let fill_ts prev_entry entry =
+      {entry with ts = entry.duration +
+                         (match prev_entry with
+                            Entry e -> e.ts
+                          | Pause_entry e -> e.ts
+                          | _ -> 0)}
+
     let scan prev_entry buf =
       let c = char_codes buf in
-      let duration =
-        sample_interval -
-          ( match prev_entry with Pause_entry prev -> prev.duration | _ -> 0 ) in
-      { ts = duration +
-               ( match prev_entry with Entry prev | Pause_entry prev -> prev.ts | _ -> 0 );
+      { ts = 0;                 (* Filled later *)
         wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) -
                       ( match prev_entry with Pause_entry prev -> prev.wheel_rot | _ -> 0 );
-        duration;
+        duration = sample_interval -
+                     ( match prev_entry with Pause_entry prev -> prev.duration | _ -> 0 );
         speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
         cadence = c.(6);
         hr = c.(5);
@@ -205,7 +210,7 @@ module Bike_entry =
             else
               -.alt
           end;
-        temp = (c.(2) lsr 2) - 10; }
+        temp = (c.(2) lsr 2) - 10; } |> fill_ts prev_entry
   end
 
 module Bike_lap =
@@ -268,9 +273,11 @@ module Bike_pause =
       let duration = c.(0) lsr 3 in
       let entry =
         if duration == 0 then
-          None
+          Bike_entry.No_entry
         else
-          Some { (Bike_entry.scan prev buf) with Bike_entry.duration } in
+          let tmp_entry =
+            Bike_entry.scan prev_entry buf in
+          Bike_entry.Entry (Bike_entry.fill_ts prev_entry {tmp_entry with Bike_entry.duration}) in
       let pause =
         { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
           avg_alt =
@@ -362,13 +369,13 @@ module Log =
                let m1 = Log_marker.Bike_pause m0 in
                begin
                  match e0 with
-                 | Some e0 ->
+                 | Bike_entry.Entry e0 | Bike_entry.Pause_entry e0 ->
                     let e1 = Log_entry.Bike e0 in
                     aux (k + Bike_pause.size)
                         {prev with bike_entry = Bike_entry.Pause_entry e0}
                         (e1 :: entry)
                         (m1 :: marker)
-                 | None ->
+                 | Bike_entry.No_entry ->
                     aux (k + Bike_pause.size)
                         prev
                         entry
