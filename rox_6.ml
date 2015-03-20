@@ -335,6 +335,11 @@ module Log =
         marker : Log_marker.t list;
       }
 
+    type prev = {
+        bike_entry : Bike_entry.opt;
+        bike_lap : Bike_lap.opt;
+      }
+
     let scan buf =
       let n = String.length buf in
       let rec aux k prev entry marker =
@@ -342,21 +347,21 @@ module Log =
           begin
             match (Char.code buf.[k]) land 0x07 with
             | 0 ->
-               let e0 = String.sub buf k Bike_entry.size |> Bike_entry.scan prev in
+               let e0 = String.sub buf k Bike_entry.size |> Bike_entry.scan prev.bike_entry in
                let e1 = Log_entry.Bike e0 in
                aux (k + Bike_entry.size)
-                   (Bike_entry.Entry e0)
+                   {prev with bike_entry = Bike_entry.Entry e0}
                    (e1 :: entry)
                    marker
             | 1 ->
-               let e0, m0 = String.sub buf k Bike_pause.size |> Bike_pause.scan prev in
+               let e0, m0 = String.sub buf k Bike_pause.size |> Bike_pause.scan prev.bike_entry in
                let m1 = Log_marker.Bike_pause m0 in
                begin
                  match e0 with
                  | Some e0 ->
                     let e1 = Log_entry.Bike e0 in
                     aux (k + Bike_pause.size)
-                        (Bike_entry.Pause_entry e0)
+                        {prev with bike_entry = Bike_entry.Pause_entry e0}
                         (e1 :: entry)
                         (m1 :: marker)
                  | None ->
@@ -394,7 +399,8 @@ module Log =
         else
           { entry = List.rev entry;
             marker = List.rev marker } in
-      aux 0 Bike_entry.No_entry [] []
+      aux 0 {bike_entry = Bike_entry.No_entry;
+             bike_lap = Bike_lap.No_lap} [] []
   end
 
 module Bat_low =
