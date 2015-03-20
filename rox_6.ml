@@ -427,8 +427,17 @@ module Log =
             | _ -> raise (Invalid_response "log entry type")
           end
         else
-          { entry = List.rev entry;
-            marker = List.rev marker } in
+          begin
+            let entry = List.rev entry in
+            let marker = List.rev marker in
+            (* Insert fake first entry with zeroes for time and distance. *)
+            let entry =
+              match entry with
+              | (Log_entry.Bike e) :: _rest ->
+                 (Log_entry.Bike {e with Bike_entry.ts = 0; duration = 0}) :: entry
+              | (Log_entry.Hike _) :: _ | [] -> entry in
+            {entry; marker}
+          end in
       aux 0 {bike_entry = Bike_entry.No_entry;
              bike_lap = Bike_lap.No_lap;
              bike_pause = Bike_pause.No_pause} [] []
