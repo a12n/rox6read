@@ -434,7 +434,10 @@ module Log =
             let entry =
               match entry with
               | (Log_entry.Bike e) :: _rest ->
-                 (Log_entry.Bike {e with Bike_entry.ts = 0; duration = 0}) :: entry
+                 (Log_entry.Bike {e with Bike_entry.ts = 0;
+                                         wheel_rot = 0;
+                                         duration = 0;
+                                         speed = 0.0}) :: entry
               | (Log_entry.Hike _) :: _ | [] -> entry in
             {entry; marker}
           end in
