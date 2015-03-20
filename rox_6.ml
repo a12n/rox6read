@@ -223,6 +223,8 @@ module Bike_lap =
         alt_loss : float;       (* m *)
       }
 
+    type opt = Lap of t | No_lap
+
     let size = 23
 
     let scan buf =
