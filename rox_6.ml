@@ -190,15 +190,19 @@ module Bike_entry =
                          (match prev_entry with
                             Entry e -> e.ts
                           | Pause_entry e -> e.ts
-                          | _ -> 0)}
+                          | No_entry -> 0)}
 
     let scan prev_entry buf =
       let c = char_codes buf in
       { ts = 0;                 (* Filled later *)
         wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) -
-                      ( match prev_entry with Pause_entry prev -> prev.wheel_rot | _ -> 0 );
+                      (match prev_entry with
+                         Pause_entry prev -> prev.wheel_rot
+                       | Entry _ | No_entry -> 0);
         duration = sample_interval -
-                     ( match prev_entry with Pause_entry prev -> prev.duration | _ -> 0 );
+                     (match prev_entry with
+                        Pause_entry prev -> prev.duration
+                      | Entry _ | No_entry -> 0);
         speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
         cadence = c.(6);
         hr = c.(5);
@@ -237,7 +241,9 @@ module Bike_lap =
       let c = char_codes buf in
       let duration =
         ((c.(3) land 0x3F) lsl 16) lor (c.(2) lsl 8) lor c.(1) in
-      { ts = duration + ( match prev_lap with Lap prev -> prev.ts | _ -> 0 );
+      { ts = duration + (match prev_lap with
+                           Lap prev -> prev.ts
+                         | No_lap -> 0 );
         wheel_rot = (c.(8) lsl 16) lor (c.(7) lsl 8) lor c.(6);
         duration;
         avg_speed = float_of_int (((c.(5) land 0x7F) lsl 8) lor c.(4)) /. 100.0;
@@ -286,9 +292,9 @@ module Bike_pause =
          }
        *)
       let pause =
-        { ts = duration +
-                 (match prev_entry with
-                    Bike_entry.Entry e | Bike_entry.Pause_entry e -> e.Bike_entry.ts | _ -> 0);
+        { ts = duration + (match prev_entry with
+                             Bike_entry.No_entry -> 0
+                           | Bike_entry.Entry e | Bike_entry.Pause_entry e -> e.Bike_entry.ts);
           wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
           avg_alt =
             begin
