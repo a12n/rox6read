@@ -249,7 +249,7 @@ module Bike_lap =
 
     let size = 23
 
-    let scan prev_lap buf =
+    let scan _wheel_circum prev_lap buf =
       let c = char_codes buf in
       let duration =
         ((c.(3) land 0x3F) lsl 16) lor (c.(2) lsl 8) lor c.(1) in
@@ -416,7 +416,8 @@ module Log =
                         (m1 :: marker)
                end
             | 2 ->
-               let m0 = String.sub buf k Bike_lap.size |> Bike_lap.scan prev.bike_lap in
+               let m0 = String.sub buf k Bike_lap.size |>
+                          Bike_lap.scan wheel_circum prev.bike_lap in
                let m1 = Log_marker.Bike_lap m0 in
                aux (k + Bike_lap.size)
                    {prev with bike_lap = Bike_lap.Lap m0}
