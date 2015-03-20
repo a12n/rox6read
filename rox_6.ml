@@ -192,7 +192,7 @@ module Bike_entry =
                           | Pause_entry e -> e.ts
                           | No_entry -> 0)}
 
-    let scan prev_entry buf =
+    let scan _wheel_circum prev_entry buf =
       let c = char_codes buf in
       { ts = 0;                 (* Filled later *)
         wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) -
@@ -277,7 +277,7 @@ module Bike_pause =
 
     let size = 21
 
-    let scan prev_entry _prev_pause buf =
+    let scan wheel_circum prev_entry _prev_pause buf =
       let c = char_codes buf in
       let duration = c.(0) lsr 3 in
       let entry =
@@ -285,7 +285,7 @@ module Bike_pause =
           Bike_entry.No_entry
         else
           let tmp_entry =
-            Bike_entry.scan prev_entry buf in
+            Bike_entry.scan wheel_circum prev_entry buf in
           Bike_entry.Entry (Bike_entry.fill_ts prev_entry {tmp_entry with Bike_entry.duration}) in
       (*
          if(prevEntryIsFromPause)
@@ -370,21 +370,23 @@ module Log =
         bike_pause : Bike_pause.opt;
       }
 
-    let scan _summary buf =
+    let scan {Log_summary.wheel_circum; _} buf =
       let n = String.length buf in
       let rec aux k prev entry marker =
         if k < n then
           begin
             match (Char.code buf.[k]) land 0x07 with
             | 0 ->
-               let e0 = String.sub buf k Bike_entry.size |> Bike_entry.scan prev.bike_entry in
+               let e0 = String.sub buf k Bike_entry.size |>
+                          Bike_entry.scan wheel_circum prev.bike_entry in
                let e1 = Log_entry.Bike e0 in
                aux (k + Bike_entry.size)
                    {prev with bike_entry = Bike_entry.Entry e0}
                    (e1 :: entry)
                    marker
             | 1 ->
-               let e0, m0 = String.sub buf k Bike_pause.size |> Bike_pause.scan prev.bike_entry prev.bike_pause in
+               let e0, m0 = String.sub buf k Bike_pause.size |>
+                              Bike_pause.scan wheel_circum prev.bike_entry prev.bike_pause in
                let m1 = Log_marker.Bike_pause m0 in
                begin
                  match e0 with
