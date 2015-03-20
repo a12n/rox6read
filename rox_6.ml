@@ -367,6 +367,7 @@ module Log =
     type prev = {
         bike_entry : Bike_entry.opt;
         bike_lap : Bike_lap.opt;
+        bike_pause : Bike_pause.opt;
       }
 
     let scan buf =
@@ -390,12 +391,13 @@ module Log =
                  | Bike_entry.Entry e0 | Bike_entry.Pause_entry e0 ->
                     let e1 = Log_entry.Bike e0 in
                     aux (k + Bike_pause.size)
-                        {prev with bike_entry = Bike_entry.Pause_entry e0}
+                        {prev with bike_entry = Bike_entry.Pause_entry e0;
+                                   bike_pause = Bike_pause.Pause m0}
                         (e1 :: entry)
                         (m1 :: marker)
                  | Bike_entry.No_entry ->
                     aux (k + Bike_pause.size)
-                        prev
+                        {prev with bike_pause = Bike_pause.Pause m0}
                         entry
                         (m1 :: marker)
                end
@@ -428,7 +430,8 @@ module Log =
           { entry = List.rev entry;
             marker = List.rev marker } in
       aux 0 {bike_entry = Bike_entry.No_entry;
-             bike_lap = Bike_lap.No_lap} [] []
+             bike_lap = Bike_lap.No_lap;
+             bike_pause = Bike_pause.No_pause} [] []
   end
 
 module Bat_low =
