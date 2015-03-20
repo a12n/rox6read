@@ -178,9 +178,9 @@ module Bike_entry =
         temp : int;             (* °C *)
       }
 
-    type prev = Entry of t
-              | Pause_entry of t
-              | No_entry
+    type opt = Entry of t
+             | Pause_entry of t
+             | No_entry
 
     let size = 9
 
