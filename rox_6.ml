@@ -258,6 +258,7 @@ module Bike_lap =
 module Bike_pause =
   struct
     type t = {
+        ts : int;               (* s *)
         wheel_rot : int;
         avg_alt : float;        (* m *)
         start_date : Date.t;
@@ -268,7 +269,7 @@ module Bike_pause =
 
     let size = 21
 
-    let scan prev buf =
+    let scan prev_entry buf =
       let c = char_codes buf in
       let duration = c.(0) lsr 3 in
       let entry =
@@ -279,7 +280,10 @@ module Bike_pause =
             Bike_entry.scan prev_entry buf in
           Bike_entry.Entry (Bike_entry.fill_ts prev_entry {tmp_entry with Bike_entry.duration}) in
       let pause =
-        { wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
+        { ts = duration +
+                 (match prev_entry with
+                    Bike_entry.Entry e | Bike_entry.Pause_entry e -> e.Bike_entry.ts | _ -> 0);
+          wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
           avg_alt =
             begin
               let alt = float_of_int (((c.(8) land 0x1F) lsl 8) lor c.(7)) in

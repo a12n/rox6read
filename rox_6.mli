@@ -31,6 +31,7 @@ end
 module Bike_pause :
 sig
   type t = {
+      ts : int;                 (* s *)
       wheel_rot : int;
       avg_alt : float;          (* m *)
       start_date : Date.t;
