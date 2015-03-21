@@ -311,16 +311,14 @@ module Bike_pause =
           let tmp_entry =
             Bike_entry.scan wheel_circum prev_entry buf in
           Bike_entry.Entry (Bike_entry.fill_ts prev_entry {tmp_entry with Bike_entry.duration}) in
-      (*
-         if(prevEntryIsFromPause)
-         {
-            prevPause.timeAbsolute = prevPause.timeAbsolute - prevEntry.trainingTime;
-         }
-       *)
       let pause =
-        { ts = duration + (match prev_entry with
-                             Bike_entry.No_entry -> 0
-                           | Bike_entry.Entry e | Bike_entry.Pause_entry e -> e.Bike_entry.ts);
+        { ts = duration +
+                 (match prev_entry with
+                    Bike_entry.No_entry -> 0
+                  | Bike_entry.Entry e | Bike_entry.Pause_entry e -> e.Bike_entry.ts) -
+                 (match entry with
+                    Bike_entry.No_entry -> 0
+                  | Bike_entry.Entry e | Bike_entry.Pause_entry e -> e.Bike_entry.duration);
           wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
           avg_alt =
             begin
