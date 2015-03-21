@@ -45,6 +45,9 @@ sig
       start_time : Time.t;
       stop_date : Date.t;
       stop_time : Time.t;
+
+      distance : float;         (* m *)
+      abs_distance : float;     (* m *)
     }
 end
 

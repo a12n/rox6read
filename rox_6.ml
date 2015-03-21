@@ -295,15 +295,28 @@ module Bike_pause =
         start_time : Time.t;
         stop_date : Date.t;
         stop_time : Time.t;
+
+        distance : float;       (* m *)
+        abs_distance : float;   (* m *)
       }
 
     type opt = Pause of t | No_pause
 
     let size = 21
 
-    let scan wheel_circum prev_entry _prev_pause buf =
+    let scan wheel_circum prev_entry prev_pause buf =
       let c = char_codes buf in
       let duration = c.(0) lsr 3 in
+      let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) in
+      let distance = wheel_circum *. float_of_int wheel_rot in
+      let abs_distance =
+        wheel_circum *. float_of_int wheel_rot +.
+          (match prev_entry with
+             Bike_entry.No_entry -> 0.0
+           | Bike_entry.Entry e | Bike_entry.Pause_entry e -> e.Bike_entry.abs_distance) -.
+          (match prev_entry with
+             Bike_entry.Pause_entry e -> e.Bike_entry.distance
+           | Bike_entry.No_entry | Bike_entry.Entry _ -> 0.0) in
       let entry =
         if duration == 0 then
           Bike_entry.No_entry
@@ -319,7 +332,7 @@ module Bike_pause =
                  (match entry with
                     Bike_entry.No_entry -> 0
                   | Bike_entry.Entry e | Bike_entry.Pause_entry e -> e.Bike_entry.duration);
-          wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1);
+          wheel_rot;
           avg_alt =
             begin
               let alt = float_of_int (((c.(8) land 0x1F) lsl 8) lor c.(7)) in
@@ -344,6 +357,11 @@ module Bike_pause =
             { Time.h = c.(14 + 2) land 0x1F;
               min = c.(16 + 2) land 0x3F;
               s = c.(17 + 2) land 0x3F };
+          distance = abs_distance -.
+                       (match prev_pause with
+                          No_pause -> 0.0
+                        | Pause p -> p.abs_distance);
+          abs_distance;
         } in
       entry, pause
   end
