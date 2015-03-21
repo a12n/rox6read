@@ -197,11 +197,12 @@ module Bike_entry =
 
     let scan wheel_circum prev_entry buf =
       let c = char_codes buf in
-      let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) -
-                      (match prev_entry with
-                         Pause_entry prev -> prev.wheel_rot
-                       | Entry _ | No_entry -> 0) in
-      let distance = wheel_circum *. float_of_int wheel_rot in
+      let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) in
+      let distance =
+        wheel_circum *. float_of_int wheel_rot -.
+          (match prev_entry with
+             Pause_entry prev -> prev.distance
+           | Entry _ | No_entry -> 0.0) in
       { ts = 0;                 (* Filled later *)
         wheel_rot;
         duration = sample_interval -
