@@ -61,22 +61,15 @@ end
 module Log_entry :
 sig
   type t = Bike of Bike_entry.t
-         | Hike of Hike_entry.t
-end
-
-module Log_marker :
-sig
-  type t = Bike_lap of Bike_lap.t
+         | Bike_lap of Bike_lap.t
          | Bike_pause of Bike_pause.t
+         | Hike of Hike_entry.t
          | Hike_pause of Hike_pause.t
 end
 
 module Log :
 sig
-  type t = {
-      entry : Log_entry.t list;
-      marker : Log_marker.t list;
-    }
+  type t = Log_entry.t list
 end
 
 module Log_summary :
