@@ -207,7 +207,7 @@ module Bike_entry =
         wheel_rot;
         duration = sample_interval -
                      (match prev_entry with
-                        Pause_entry prev -> prev.duration
+                        Pause_entry prev -> prev.ts mod sample_interval
                       | Entry _ | No_entry -> 0);
         speed = float_of_int (((c.(4) land 0x7F) lsl 8) lor c.(3)) /. 100.0;
         cadence = c.(6);
