@@ -201,7 +201,7 @@ module Bike_entry =
       let distance =
         wheel_circum *. float_of_int wheel_rot -.
           (match prev_entry with
-             Pause_entry prev -> prev.distance
+             Pause_entry prev -> prev.distance (* prev.tempUncorrectedDistance *)
            | Entry _ | No_entry -> 0.0) in
       { ts = 0;                 (* Filled later *)
         wheel_rot;
