@@ -388,22 +388,15 @@ module Hike_pause =
 module Log_entry =
   struct
     type t = Bike of Bike_entry.t
-           | Hike of Hike_entry.t
-  end
-
-module Log_marker =
-  struct
-    type t = Bike_lap of Bike_lap.t
+           | Bike_lap of Bike_lap.t
            | Bike_pause of Bike_pause.t
+           | Hike of Hike_entry.t
            | Hike_pause of Hike_pause.t
   end
 
 module Log =
   struct
-    type t = {
-        entry : Log_entry.t list;
-        marker : Log_marker.t list;
-      }
+    type t = Log_entry.t list
 
     type prev = {
         bike_entry : Bike_entry.opt;
@@ -413,7 +406,7 @@ module Log =
 
     let scan {Log_summary.wheel_circum; _} buf =
       let n = String.length buf in
-      let rec aux k prev entry marker =
+      let rec aux k prev ans =
         if k < n then
           begin
             match (Char.code buf.[k]) land 0x07 with
@@ -423,12 +416,11 @@ module Log =
                let e1 = Log_entry.Bike e0 in
                aux (k + Bike_entry.size)
                    {prev with bike_entry = Bike_entry.Entry e0}
-                   (e1 :: entry)
-                   marker
+                   (e1 :: ans)
             | 1 ->
                let e0, m0 = String.sub buf k Bike_pause.size |>
                               Bike_pause.scan wheel_circum prev.bike_entry prev.bike_pause in
-               let m1 = Log_marker.Bike_pause m0 in
+               let m1 = Log_entry.Bike_pause m0 in
                begin
                  match e0 with
                  | Bike_entry.Entry e0 | Bike_entry.Pause_entry e0 ->
@@ -436,60 +428,58 @@ module Log =
                     aux (k + Bike_pause.size)
                         {prev with bike_entry = Bike_entry.Pause_entry e0;
                                    bike_pause = Bike_pause.Pause m0}
-                        (e1 :: entry)
-                        (m1 :: marker)
+                        (m1 :: e1 :: ans)
                  | Bike_entry.No_entry ->
                     aux (k + Bike_pause.size)
                         {prev with bike_pause = Bike_pause.Pause m0}
-                        entry
-                        (m1 :: marker)
+                        (m1 :: ans)
                end
             | 2 ->
                let m0 = String.sub buf k Bike_lap.size |>
                           Bike_lap.scan wheel_circum prev.bike_lap in
-               let m1 = Log_marker.Bike_lap m0 in
+               let m1 = Log_entry.Bike_lap m0 in
                aux (k + Bike_lap.size)
                    {prev with bike_lap = Bike_lap.Lap m0}
-                   entry
-                   (m1 :: marker)
+                   (m1 :: ans)
             | 3 ->
                let e1 = Log_entry.Hike (
                             String.sub buf k Hike_entry.size |> Hike_entry.scan
                           ) in
                aux (k + Hike_entry.size)
                    prev
-                   (e1 :: entry)
-                   marker
+                   (e1 :: ans)
             | 4 ->
-               let m1 = Log_marker.Hike_pause (
+               let m1 = Log_entry.Hike_pause (
                             String.sub buf k Hike_pause.size |> Hike_pause.scan
                           ) in
                aux (k + Hike_pause.size)
                    prev
-                   entry
-                   (m1 :: marker)
+                   (m1 :: ans)
             | _ -> raise (Invalid_response "log entry type")
           end
         else
           begin
-            let entry = List.rev entry in
-            let marker = List.rev marker in
+            let ans = List.rev ans in
             (* Insert fake first entry with zeroes for time and distance. *)
-            let entry =
-              match entry with
+            let ans =
+              match ans with
               | (Log_entry.Bike e) :: _rest ->
                  (Log_entry.Bike {e with Bike_entry.ts = 0;
                                          wheel_rot = 0;
                                          duration = 0;
                                          speed = 0.0;
                                          distance = 0.0;
-                                         abs_distance = 0.0}) :: entry
-              | (Log_entry.Hike _) :: _ | [] -> entry in
-            {entry; marker}
+                                         abs_distance = 0.0}) :: ans
+              | (Log_entry.Bike_lap _) :: _ -> ans
+              | (Log_entry.Bike_pause _) :: _ -> ans
+              | (Log_entry.Hike _) :: _ -> ans
+              | (Log_entry.Hike_pause _) :: _ -> ans
+              | [] -> ans in
+            ans
           end in
       aux 0 {bike_entry = Bike_entry.No_entry;
              bike_lap = Bike_lap.No_lap;
-             bike_pause = Bike_pause.No_pause} [] []
+             bike_pause = Bike_pause.No_pause} []
   end
 
 module Bat_low =
