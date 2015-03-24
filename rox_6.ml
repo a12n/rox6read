@@ -463,6 +463,7 @@ module Log =
           end
         else
           begin
+            (* TODO: Ignore last decoded entry if it's a pause. *)
             let ans = List.rev ans in
             (* Insert fake first entry with zeroes for time and distance. *)
             let ans =
