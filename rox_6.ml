@@ -313,7 +313,7 @@ module Bike_pause =
       let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) in
       let distance = wheel_circum *. float_of_int wheel_rot in
       let abs_distance =
-        wheel_circum *. float_of_int wheel_rot +.
+        distance +.
           (match prev_entry with
              Bike_entry.No_entry -> 0.0
            | Bike_entry.Entry e | Bike_entry.Pause_entry e -> e.Bike_entry.abs_distance) -.
