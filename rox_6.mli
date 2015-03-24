@@ -12,6 +12,7 @@ sig
 
       distance : float;         (* m *)
       abs_distance : float;     (* m *)
+      unadj_distance : float;   (* m *)
     }
 end
 

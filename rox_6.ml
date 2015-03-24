@@ -179,6 +179,7 @@ module Bike_entry =
 
         distance : float;       (* m *)
         abs_distance : float;   (* m *)
+        unadj_distance : float; (* m *)
       }
 
     type opt = Entry of t
@@ -203,7 +204,7 @@ module Bike_entry =
       let distance =
         unadj_distance -.
           (match prev_entry with
-             Pause_entry prev -> prev.distance (* prev.tempUncorrectedDistance *)
+             Pause_entry prev -> prev.unadj_distance
            | Entry _ | No_entry -> 0.0) in
       { ts = 0;                 (* Filled later *)
         wheel_rot;
@@ -229,6 +230,7 @@ module Bike_entry =
             (match prev_entry with
                No_entry -> 0.0
              | Entry prev | Pause_entry prev -> prev.abs_distance);
+        unadj_distance
       } |> fill_ts prev_entry
   end
 
@@ -318,7 +320,7 @@ module Bike_pause =
              Bike_entry.No_entry -> 0.0
            | Bike_entry.Entry e | Bike_entry.Pause_entry e -> e.Bike_entry.abs_distance) -.
           (match prev_entry with
-             Bike_entry.Pause_entry e -> e.Bike_entry.distance
+             Bike_entry.Pause_entry e -> e.Bike_entry.unadj_distance
            | Bike_entry.No_entry | Bike_entry.Entry _ -> 0.0) in
       let entry =
         if duration == 0 then
