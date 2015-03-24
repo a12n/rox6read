@@ -198,8 +198,10 @@ module Bike_entry =
     let scan wheel_circum prev_entry buf =
       let c = char_codes buf in
       let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) in
+      let unadjusted_distance =
+        wheel_circum *. float_of_int wheel_rot in
       let distance =
-        wheel_circum *. float_of_int wheel_rot -.
+        unadjusted_distance -.
           (match prev_entry with
              Pause_entry prev -> prev.distance (* prev.tempUncorrectedDistance *)
            | Entry _ | No_entry -> 0.0) in
