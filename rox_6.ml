@@ -165,6 +165,9 @@ module Log_summary =
       }
   end
 
+(* FIXME: Consider the case when there are two consecutive pauses in
+ * the log. There's probably a bug. *)
+
 module Bike_entry =
   struct
     type t = {
