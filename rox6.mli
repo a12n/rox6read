@@ -180,13 +180,3 @@ exception Invalid_response of string
 val log : Ser_port.t -> Log_summary.t -> Log.t
 
 val bat_low : Ser_port.t -> bool
-
-val log_addr : int
-
-val verify_checksum : Bytea.t -> n:int -> unit
-
-val verify_padding : Bytea.t -> k:int -> unit
-
-val run_command : Ser_port.t -> code:int -> addr:int -> ans_size:int -> bytes
-
-val run_pkg_command : Ser_port.t -> code:int -> addr:int -> ans_size:int -> bytes
