@@ -7,6 +7,14 @@ let t = input_file "test/rox_6-totals.dat" |> Rox_6.Totals.scan
 let s = input_file "test/rox_6-log_summary.dat" |> Rox_6.Log_summary.scan
 let l = input_file "test/rox_6-log.dat" |> Rox_6.Log.scan s
 
+let ts_of_entry = function
+    Rox_6.Log_entry.Bike {Rox_6.Bike_entry.ts; _} -> ts
+  | Rox_6.Log_entry.Bike_lap {Rox_6.Bike_lap.ts; _} -> ts
+  | Rox_6.Log_entry.Bike_pause {Rox_6.Bike_pause.ts; _} -> ts
+  | Rox_6.Log_entry.Hike _ | Rox_6.Log_entry.Hike_pause _ -> failwith "Hike"
+
+let l = List.sort (fun a b -> compare (ts_of_entry a) (ts_of_entry b)) l
+
 let start_time =
   let {Rox_6.Log_summary.start_date = {Date.y; mon; d};
        start_time = {Time.h; min; s}; _} = s in
