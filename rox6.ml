@@ -234,7 +234,7 @@ module Bike_entry =
                           | Pause_entry e -> e.ts
                           | No_entry -> 0)}
 
-    let scan wheel_circum prev_entry buf =
+    let decode wheel_circum prev_entry buf =
       let c = Bytea.of_bytes buf in
       let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) in
       let unadj_distance =
@@ -295,7 +295,7 @@ module Bike_lap =
 
     let size = 23
 
-    let scan wheel_circum prev_lap buf =
+    let decode wheel_circum prev_lap buf =
       let c = Bytea.of_bytes buf in
       let duration =
         ((c.(3) land 0x3F) lsl 16) lor (c.(2) lsl 8) lor c.(1) in
@@ -347,7 +347,7 @@ module Bike_pause =
 
     let size = 21
 
-    let scan wheel_circum prev_entry prev_pause buf =
+    let decode wheel_circum prev_entry prev_pause buf =
       let c = Bytea.of_bytes buf in
       let duration = c.(0) lsr 3 in
       let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) in
@@ -365,7 +365,7 @@ module Bike_pause =
           Bike_entry.No_entry
         else
           let tmp_entry =
-            Bike_entry.scan wheel_circum prev_entry buf in
+            Bike_entry.decode wheel_circum prev_entry buf in
           Bike_entry.Entry (
               Bike_entry.fill_ts
                 prev_entry {tmp_entry with
@@ -423,7 +423,7 @@ module Hike_entry =
 
     let size = 5
 
-    let scan buf = buf
+    let decode buf = buf
   end
 
 module Hike_pause =
@@ -432,7 +432,7 @@ module Hike_pause =
 
     let size = 16
 
-    let scan buf = buf
+    let decode buf = buf
   end
 
 module Log_entry =
@@ -454,7 +454,7 @@ module Log =
         bike_pause : Bike_pause.opt;
       }
 
-    let scan {Log_summary.wheel_circum; _} buf =
+    let decode {Log_summary.wheel_circum; _} buf =
       let n = String.length buf in
       let rec aux k prev ans =
         if k < n then
@@ -462,14 +462,14 @@ module Log =
             match (Char.code buf.[k]) land 0x07 with
             | 0 ->
                let e0 = String.sub buf k Bike_entry.size |>
-                          Bike_entry.scan wheel_circum prev.bike_entry in
+                          Bike_entry.decode wheel_circum prev.bike_entry in
                let e1 = Log_entry.Bike e0 in
                aux (k + Bike_entry.size)
                    {prev with bike_entry = Bike_entry.Entry e0}
                    (e1 :: ans)
             | 1 ->
                let e0, m0 = String.sub buf k Bike_pause.size |>
-                              Bike_pause.scan wheel_circum prev.bike_entry prev.bike_pause in
+                              Bike_pause.decode wheel_circum prev.bike_entry prev.bike_pause in
                let m1 = Log_entry.Bike_pause m0 in
                begin
                  match e0 with
@@ -486,26 +486,26 @@ module Log =
                end
             | 2 ->
                let m0 = String.sub buf k Bike_lap.size |>
-                          Bike_lap.scan wheel_circum prev.bike_lap in
+                          Bike_lap.decode wheel_circum prev.bike_lap in
                let m1 = Log_entry.Bike_lap m0 in
                aux (k + Bike_lap.size)
                    {prev with bike_lap = Bike_lap.Lap m0}
                    (m1 :: ans)
             | 3 ->
                let e1 = Log_entry.Hike (
-                            String.sub buf k Hike_entry.size |> Hike_entry.scan
+                            String.sub buf k Hike_entry.size |> Hike_entry.decode
                           ) in
                aux (k + Hike_entry.size)
                    prev
                    (e1 :: ans)
             | 4 ->
                let m1 = Log_entry.Hike_pause (
-                            String.sub buf k Hike_pause.size |> Hike_pause.scan
+                            String.sub buf k Hike_pause.size |> Hike_pause.decode
                           ) in
                aux (k + Hike_pause.size)
                    prev
                    (m1 :: ans)
-            | _ -> failwith "scan"
+            | _ -> failwith "decode"
           end
         else
           begin
@@ -794,4 +794,4 @@ module Bat_status =
   end
 
 let log port ({Log_summary.log_size; _} as summary) =
-  run_pkg_command port ~code:0xEF ~addr:log_addr ~ans_size:log_size |> Log.scan summary
+  run_pkg_command port ~code:0xEF ~addr:log_addr ~ans_size:log_size |> Log.decode summary
