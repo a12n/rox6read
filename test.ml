@@ -2,21 +2,21 @@
 
 open Batteries
 
-let z = input_file "test/rox_6-settings.dat" |> Rox_6.Settings.scan
-let t = input_file "test/rox_6-totals.dat" |> Rox_6.Totals.scan
-let s = input_file "test/rox_6-log_summary.dat" |> Rox_6.Log_summary.scan
-let l = input_file "test/rox_6-log.dat" |> Rox_6.Log.scan s
+let z = input_file "test/rox_6-settings.dat" |> Rox6.Settings.scan
+let t = input_file "test/rox_6-totals.dat" |> Rox6.Totals.scan
+let s = input_file "test/rox_6-log_summary.dat" |> Rox6.Log_summary.scan
+let l = input_file "test/rox_6-log.dat" |> Rox6.Log.scan s
 
 let ts_of_entry = function
-    Rox_6.Log_entry.Bike {Rox_6.Bike_entry.ts; _} -> ts
-  | Rox_6.Log_entry.Bike_lap {Rox_6.Bike_lap.ts; _} -> ts
-  | Rox_6.Log_entry.Bike_pause {Rox_6.Bike_pause.ts; _} -> ts
-  | Rox_6.Log_entry.Hike _ | Rox_6.Log_entry.Hike_pause _ -> failwith "Hike"
+    Rox6.Log_entry.Bike {Rox6.Bike_entry.ts; _} -> ts
+  | Rox6.Log_entry.Bike_lap {Rox6.Bike_lap.ts; _} -> ts
+  | Rox6.Log_entry.Bike_pause {Rox6.Bike_pause.ts; _} -> ts
+  | Rox6.Log_entry.Hike _ | Rox6.Log_entry.Hike_pause _ -> failwith "Hike"
 
 let l = List.sort (fun a b -> compare (ts_of_entry a) (ts_of_entry b)) l
 
 let start_time =
-  let {Rox_6.Log_summary.start_date = {Date.y; mon; d};
+  let {Rox6.Log_summary.start_date = {Date.y; mon; d};
        start_time = {Time.h; min; s}; _} = s in
   let tz = {Tcx.Time_zone.hours = 3; minutes = 0} in
   {Tcx.Timestamp.date = {Tcx.Date.year = y; month = mon; day = d};
@@ -32,8 +32,8 @@ let rec collect start_time laps tracks track_points = function
            laps = List_ext.Non_empty.of_list (List.rev laps);
            notes = None;
            creator = None}
-  | (Rox_6.Log_entry.Bike b) :: rest ->
-     let {Rox_6.Bike_entry.ts; alt;
+  | (Rox6.Log_entry.Bike b) :: rest ->
+     let {Rox6.Bike_entry.ts; alt;
           abs_distance; hr; cadence; _} = b in
      let track_point =
        {Tcx.Track_point.time =
@@ -45,11 +45,11 @@ let rec collect start_time laps tracks track_points = function
         cadence = Some cadence;
         sensor_state = None} in
      collect start_time laps tracks (track_point :: track_points) rest
-  | (Rox_6.Log_entry.Bike_pause p) :: rest ->
+  | (Rox6.Log_entry.Bike_pause p) :: rest ->
      let track = {Tcx.Track.points = List_ext.Non_empty.of_list (List.rev track_points)} in
      collect start_time laps (track :: tracks) [] rest
-  | (Rox_6.Log_entry.Bike_lap l) :: rest ->
-     let {Rox_6.Bike_lap.ts; duration; distance; avg_hr;
+  | (Rox6.Log_entry.Bike_lap l) :: rest ->
+     let {Rox6.Bike_lap.ts; duration; distance; avg_hr;
           max_hr; max_speed; kcal; avg_cadence; _} = l in
      let track = {Tcx.Track.points = List_ext.Non_empty.of_list (List.rev track_points)} in
      let lap = {Tcx.Activity_lap.start_time =
@@ -66,8 +66,8 @@ let rec collect start_time laps tracks track_points = function
                 tracks = List.rev (track :: tracks);
                 notes = None} in
      collect start_time (lap :: laps) [] [] rest
-  | (Rox_6.Log_entry.Hike _) :: _ -> failwith "Rox_6.Log_entry.Hike"
-  | (Rox_6.Log_entry.Hike_pause _) :: _ -> failwith "Rox_6.Log_entry.Hike_pause"
+  | (Rox6.Log_entry.Hike _) :: _ -> failwith "Rox6.Log_entry.Hike"
+  | (Rox6.Log_entry.Hike_pause _) :: _ -> failwith "Rox6.Log_entry.Hike_pause"
 
 let to_tcx entries =
   let activity = collect start_time [] [] [] entries in
