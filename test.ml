@@ -24,33 +24,6 @@ let start_time =
    time_zone = Some tz}
   |> Tcx.Timestamp.to_unix_time
 
-let rec collect_track_points start_time ans = function
-  | (Rox_6.Log_entry.Bike {Rox_6.Bike_entry.ts; alt;
-                           abs_distance; hr; cadence; _}) :: rest ->
-     let track_point =
-       {Tcx.Track_point.time =
-          Tcx.Timestamp.of_unix_time (start_time +. float_of_int ts);
-        position = None;
-        altitude = Some alt;
-        distance = Some abs_distance;
-        heart_rate = Some hr;
-        cadence = Some cadence;
-        sensor_state = None} in
-     collect_track_points start_time (track_point :: ans) rest
-  | rest -> List.rev ans, rest
-
-let rec collect_tracks start_time ans = function
-  | (Rox_6.Log_entry.Bike_pause _) :: rest ->
-     collect_tracks start_time ans rest
-  | ((Rox_6.Log_entry.Bike_lap _) :: _) as list -> List.rev ans, list
-  | [] -> List.rev ans, []
-  | ((Rox_6.Log_entry.Bike _) :: _) as list ->
-     let track_points, rest = collect_track_points start_time [] list in
-     let track = {Tcx.Track.points = List_ext.Non_empty.of_list track_points} in
-     collect_tracks start_time (track :: ans) rest
-  | (Rox_6.Log_entry.Hike _) :: _ -> failwith "Rox_6.Log_entry.Hike"
-  | (Rox_6.Log_entry.Hike_pause _) :: _ -> failwith "Rox_6.Log_entry.Hike_pause"
-
 let mps_of_kmh kmh = kmh *. 1000.0 /. 3600.0
 
 let rec collect start_time laps tracks track_points = function
