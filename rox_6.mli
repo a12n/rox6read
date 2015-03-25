@@ -176,3 +176,5 @@ val bat_low : Ser_port.t -> bool
 val settings : Ser_port.t -> Settings.t
 
 val totals : Ser_port.t -> Totals.t
+
+val log_addr : int
