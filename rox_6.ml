@@ -302,7 +302,7 @@ module Log =
         bike_pause : Bike_pause.opt;
       }
 
-    let scan {Rox_6_log_summary.wheel_circum; _} buf =
+    let scan {Rox6_log_summary.wheel_circum; _} buf =
       let n = String.length buf in
       let rec aux k prev ans =
         if k < n then
@@ -390,7 +390,7 @@ module Bat_low =
       (c.(2) land 0x80) != 0
   end
 
-let log port ({Rox_6_log_summary.log_size; _} as summary) =
+let log port ({Rox6_log_summary.log_size; _} as summary) =
   run_pkg_command port ~code:0xEF ~addr:log_addr ~ans_size:log_size |> Log.scan summary
 
 let bat_low =

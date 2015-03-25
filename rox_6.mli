@@ -78,7 +78,7 @@ end
 
 exception Invalid_response of string
 
-val log : Ser_port.t -> Rox_6_log_summary.t -> Log.t
+val log : Ser_port.t -> Rox6_log_summary.t -> Log.t
 
 val bat_low : Ser_port.t -> bool
 
