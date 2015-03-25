@@ -679,75 +679,6 @@ module Settings =
       }
   end
 
-module Totals =
-  struct
-    type t = {
-        distance : float * float;
-        duration : int * int;
-        alt_gain : float * float;
-        kcal : int * int;
-        hike_duration : int;
-        hike_alt_gain : float;
-        hike_kcal : int;
-      }
-
-    let scan ans =
-      let c = char_codes ans in
-      (* Checksums *)
-      verify_checksum c ~n:35;
-      verify_padding c ~k:36;
-      (* Scan binary data *)
-      { distance = (
-          (* Bike1 *)
-          float_of_int (
-              (c.( 0) lor (c.( 1) lsl 8) lor (c.( 2) lsl 16) lor ((c.( 3) land 0x0F) lsl 24)) +
-                (((c.( 7) land 0xFC) lsl 2) lor ((c.( 3) land 0xF0) lsr 4)) / 1000
-            )
-        ,
-          (* Bike2 *)
-          float_of_int (
-              (c.( 8) lor (c.( 9) lsl 8) lor (c.(10) lsl 16) lor ((c.(11) land 0x0F) lsl 24)) +
-                (((c.(15) land 0xFC) lsl 2) lor ((c.(11) land 0x0F) lsr 4)) / 1000
-            )
-        );
-        duration = (
-          (* Bike1 *)
-          c.(4) lor (c.(5) lsl 8) lor (c.(6) lsl 16) lor (c.(7) land 0x03) lsl 24
-        ,
-          (* Bike2 *)
-          ((c.(15) land 3) lsl 24) lor (c.(14) lsl 16) lor (c.(13) lsl 8) lor c.(12)
-        );
-        kcal = (
-          (* Bike1 *)
-          (((c.(25) land 0x04) lsr 2) lsl 16) lor (c.(17) lsl 8) lor c.(16)
-        ,
-          (* Bike2 *)
-          (((c.(25) land 0x08) lsr 3) lsl 16) lor (c.(19) lsl 8) lor c.(18)
-        );
-        alt_gain = (
-          (* Bike1 *)
-          float_of_int (
-              (((c.(28) land 0x0F) lsl 16) lor (c.(27) lsl 8) lor c.(26)) * 100 +
-                10 * ((c.(28) land 0xF0) lsr 4)
-            ) /. 1000.0
-        ,
-          (* Bike2 *)
-          float_of_int (
-              (((c.(31) land 0x0F) lsl 16) lor (c.(30) lsl 8) lor c.(29)) * 100 +
-                10 * ((c.(31) land 0xF0) lsr 4)
-            ) /. 1000.0
-        );
-        hike_alt_gain =
-          float_of_int (
-              (((c.(34) land 15) lsl 16) land (c.(33) lsl 8) lor c.(32)) * 100 +
-                10 * ((c.(34) land 0xF0) lsr 4)
-            ) /. 1000.0;
-        hike_kcal =
-          (((c.(25) land 0x10) lsr 4) lsl 16) lor (c.(21) lsl 8) lor c.(20) ;
-        hike_duration =
-          ((c.(25) land 0x03) lsl 24) lor (c.(24) lsl 16) lor (c.(23) lsl 8) lor c.(22) }
-  end
-
 let log_summary =
   Log_summary.scan % run_command ~code:0xEF ~addr:0x0071 ~ans_size:53
 
@@ -759,6 +690,3 @@ let bat_low =
 
 let settings =
   Settings.scan % run_command ~code:0xEF ~addr:0x0020 ~ans_size:34
-
-let totals =
-  Totals.scan % run_command ~code:0xEF ~addr:0x0042 ~ans_size:40

@@ -150,21 +150,6 @@ sig
     }
 end
 
-module Totals :
-sig
-  type t = {
-      (* Bike *)
-      distance : float * float; (* m *)
-      duration : int * int;     (* s *)
-      alt_gain : float * float; (* m *)
-      kcal : int * int;         (* kcal *)
-      (* Hike *)
-      hike_duration : int;      (* s *)
-      hike_alt_gain : float;    (* m *)
-      hike_kcal : int;          (* kcal *)
-    }
-end
-
 exception Invalid_response of string
 
 val log_summary : Ser_port.t -> Log_summary.t
@@ -174,8 +159,6 @@ val log : Ser_port.t -> Log_summary.t -> Log.t
 val bat_low : Ser_port.t -> bool
 
 val settings : Ser_port.t -> Settings.t
-
-val totals : Ser_port.t -> Totals.t
 
 val log_addr : int
 
