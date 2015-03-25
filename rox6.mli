@@ -160,7 +160,20 @@ sig
   val recv : Ser_port.t -> t
 end
 
-module Totals : (module type of Rox6_totals)
+module Totals :
+sig
+  type t = {
+      distance : float * float;
+      duration : int * int;
+      alt_gain : float * float;
+      kcal : int * int;
+      hike_duration : int;
+      hike_alt_gain : float;
+      hike_kcal : int;
+    }
+
+  val recv : Ser_port.t -> t
+end
 
 exception Invalid_response of string
 
