@@ -175,8 +175,13 @@ sig
   val recv : Ser_port.t -> t
 end
 
+module Bat_status :
+sig
+  type t = Ok | Low
+
+  val recv : Ser_port.t -> t
+end
+
 exception Invalid_response of string
 
 val log : Ser_port.t -> Log_summary.t -> Log.t
-
-val bat_low : Ser_port.t -> bool

@@ -538,15 +538,6 @@ module Log =
              bike_pause = Bike_pause.No_pause} []
   end
 
-module Bat_low =
-  struct
-    let scan ans =
-      let c = char_codes ans in
-      if (Array.(sub c 0 6 |> sum) land 0x0F) != (c.(6) lsr 4) then
-        raise (Invalid_response "checksum");
-      (c.(2) land 0x80) != 0
-  end
-
 module Settings =
   struct
     type t = {
@@ -791,8 +782,21 @@ module Totals =
     let recv = decode % run_command ~code:0xEF ~addr:0x0042 ~ans_size:40
   end
 
+module Bat_status =
+  struct
+    type t = Ok | Low
+
+    let decode buf =
+      let bytea = Bytea.of_bytes buf in
+      if (Array.(sub bytea 0 6 |> sum) land 0x0F) != (bytea.(6) lsr 4) then
+        failwith "decode";
+      if (bytea.(2) land 0x80) == 0 then
+        Ok
+      else
+        Low
+
+    let recv = decode % run_command ~code:0xEF ~addr:0x006A ~ans_size:7
+  end
+
 let log port ({Log_summary.log_size; _} as summary) =
   run_pkg_command port ~code:0xEF ~addr:log_addr ~ans_size:log_size |> Log.scan summary
-
-let bat_low =
-  Bat_low.scan % run_command ~code:0xEF ~addr:0x006A ~ans_size:7
