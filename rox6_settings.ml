@@ -35,8 +35,8 @@ type t = {
 let decode buf =
   let bytea = Bytea.of_bytes buf in
   (* Checksums *)
-  Rox_6.verify_checksum bytea ~n:29;
-  Rox_6.verify_padding bytea ~k:30;
+  Rox6.verify_checksum bytea ~n:29;
+  Rox6.verify_padding bytea ~k:30;
   (* Scan binary data *)
   { (* Person *)
     age =
@@ -172,4 +172,4 @@ let decode buf =
        enabled, after_km);
   }
 
-let recv = decode % Rox_6.run_command ~code:0xEF ~addr:0x0020 ~ans_size:34
+let recv = decode % Rox6.run_command ~code:0xEF ~addr:0x0020 ~ans_size:34

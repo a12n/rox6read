@@ -38,8 +38,8 @@ type t = {
 let decode buf =
   let bytea = Bytea.of_bytes buf in
   (* Checksum *)
-  Rox_6.verify_checksum bytea ~n:48;
-  Rox_6.verify_padding bytea ~k:49;
+  Rox6.verify_checksum bytea ~n:48;
+  Rox6.verify_padding bytea ~k:49;
   (* Parse binary data *)
   { max_hr =
       bytea.(0);
@@ -56,7 +56,7 @@ let decode buf =
     mass =
       float_of_int (bytea.(9) * 1000 + bytea.(8)) /. 1000.0;
     log_size =
-      ((bytea.(26) lsl 8) lor bytea.(25)) - Rox_6.log_addr;
+      ((bytea.(26) lsl 8) lor bytea.(25)) - Rox6.log_addr;
     training_zone =
       (match (bytea.(30) land 0xC0) lsr 6 with
          0 -> Training_zone.Fit (* TODO: hr_limits = max_hr * 0.7, max_hr * 0.8 *)
@@ -152,4 +152,4 @@ let decode buf =
         ) /. 10.0;
   }
 
-let recv = decode % Rox_6.run_command ~code:0xEF ~addr:0x0071 ~ans_size:53
+let recv = decode % Rox6.run_command ~code:0xEF ~addr:0x0071 ~ans_size:53

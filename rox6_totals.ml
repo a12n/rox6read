@@ -12,8 +12,8 @@ type t = {
 
 let decode buf =
   let byte = Bytea.of_bytes buf in
-  Rox_6.verify_checksum byte ~n:35;
-  Rox_6.verify_padding byte ~k:36;
+  Rox6.verify_checksum byte ~n:35;
+  Rox6.verify_padding byte ~k:36;
   { distance =
       (let bike_1 =
          float_of_int (
@@ -62,4 +62,4 @@ let decode buf =
     hike_duration =
       ((byte.(25) land 0x03) lsl 24) lor (byte.(24) lsl 16) lor (byte.(23) lsl 8) lor byte.(22) }
 
-let recv = decode % Rox_6.run_command ~code:0xEF ~addr:0x0042 ~ans_size:40
+let recv = decode % Rox6.run_command ~code:0xEF ~addr:0x0042 ~ans_size:40
