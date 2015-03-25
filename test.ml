@@ -2,10 +2,10 @@
 
 open Batteries
 
-let z = input_file "test/rox_6-settings.dat" |> Rox6.Settings.scan
-let t = input_file "test/rox_6-totals.dat" |> Rox6.Totals.scan
-let s = input_file "test/rox_6-log_summary.dat" |> Rox6.Log_summary.scan
-let l = input_file "test/rox_6-log.dat" |> Rox6.Log.scan s
+let z = input_file "test/rox_6-settings.dat" |> Rox6.Settings.decode
+let t = input_file "test/rox_6-totals.dat" |> Rox6.Totals.decode
+let s = input_file "test/rox_6-log_summary.dat" |> Rox6.Log_summary.decode
+let l = input_file "test/rox_6-log.dat" |> Rox6.Log.decode s
 
 let ts_of_entry = function
     Rox6.Log_entry.Bike {Rox6.Bike_entry.ts; _} -> ts
