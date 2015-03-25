@@ -178,3 +178,7 @@ val settings : Ser_port.t -> Settings.t
 val totals : Ser_port.t -> Totals.t
 
 val log_addr : int
+
+val verify_checksum : Bytea.t -> n:int -> unit
+
+val verify_padding : Bytea.t -> k:int -> unit

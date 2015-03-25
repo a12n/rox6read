@@ -9,12 +9,14 @@ let sample_interval = 10
 let char_codes =
   Array.of_list % List.map Char.code % String.to_list
 
-let valid_checksum c n =
-  (Array.(sub c 0 n |> sum) land 0xFF) == c.(n)
+let verify_checksum bytea ~n =
+  if bytea.(n) <> Array.(sub bytea 0 n |> sum) land 0xFF then
+    failwith "verify_checksum"
 
-let valid_padding c k =
-  c.(k) == 0xA1 && c.(k + 1) == 0xA2 &&
-    c.(k + 2) == 0xA3 && c.(k + 3) == 0xA4
+let verify_padding bytea ~k =
+  if bytea.(k) <> 0xA1 || bytea.(k + 1) <> 0xA2 ||
+       bytea.(k + 2) <> 0xA3 || bytea.(k + 3) <> 0xA4 then
+    failwith "verify_padding"
 
 let command_buf ~code ~address ~ans_size =
   let buf = IO.output_string () in
@@ -89,10 +91,8 @@ module Log_summary =
     let scan ans =
       let c = char_codes ans in
       (* Checksum *)
-      if not (valid_checksum c 48) then
-        raise (Invalid_response "checksum");
-      if not (valid_padding c 49) then
-        raise (Invalid_response "padding");
+      verify_checksum c ~n:48;
+      verify_padding c ~k:49;
       (* Parse binary data *)
       { max_hr = c.(0);
         zone_start = float_of_int c.(1) /. 100.0,
@@ -542,10 +542,8 @@ module Settings =
     let scan ans =
       let c = char_codes ans in
       (* Checksums *)
-      if not (valid_checksum c 29) then
-        raise (Invalid_response "checksum");
-      if not (valid_padding c 30) then
-        raise (Invalid_response "padding");
+      verify_checksum c ~n:29;
+      verify_padding c ~k:30;
       (* Scan binary data *)
       {
         (* Person *)
@@ -696,10 +694,8 @@ module Totals =
     let scan ans =
       let c = char_codes ans in
       (* Checksums *)
-      if not (valid_checksum c 35) then
-        raise (Invalid_response "checksum");
-      if not (valid_padding c 36) then
-        raise (Invalid_response "padding");
+      verify_checksum c ~n:35;
+      verify_padding c ~k:36;
       (* Scan binary data *)
       { distance = (
           (* Bike1 *)
