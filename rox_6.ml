@@ -18,10 +18,10 @@ let verify_padding bytea ~k =
        bytea.(k + 2) <> 0xA3 || bytea.(k + 3) <> 0xA4 then
     failwith "verify_padding"
 
-let command_buf ~code ~address ~ans_size =
+let command_buf ~code ~addr ~ans_size =
   let buf = IO.output_string () in
   IO.write_byte buf code;
-  IO.write_ui16 buf address;
+  IO.write_ui16 buf addr;
   IO.write_ui16 buf ans_size;
   IO.close_out buf
 
@@ -29,22 +29,22 @@ let fully_received ans =
   let n = String.length ans in
   n > 2 && ans.[n - 2] == '\x00' && ans.[n - 1] == '\xFF'
 
-let command fd ~code ~address ~ans_size =
-  Ser_port.write fd (command_buf ~code ~address ~ans_size);
-  let ans = Ser_port.read fd (ans_size + 2) in
+let run_command port ~code ~addr ~ans_size =
+  Ser_port.write port (command_buf ~code ~addr ~ans_size);
+  let ans = Ser_port.read port (ans_size + 2) in
   if not (fully_received ans) then
     raise (Invalid_response "end of response marker");
   String.sub ans 0 ans_size
 
-let package_command fd ~code ~address ~ans_size =
+let run_pkg_command port ~code ~addr ~ans_size =
   (* TODO: Use bytes *)
   let ans = String.make ans_size '\x00' in
-  let max_ans_size = 768 in
+  let pkg_size = 768 in
   let rec aux off =
     if off < ans_size then
       begin
-        let part_size = min (ans_size - off) max_ans_size in
-        let part = command fd ~code ~address:(address + off) ~ans_size:part_size in
+        let part_size = min (ans_size - off) pkg_size in
+        let part = run_command port ~code ~addr:(addr + off) ~ans_size:part_size in
         String.blit part 0 ans off part_size;
         aux (off + part_size)
       end in
@@ -749,16 +749,16 @@ module Totals =
   end
 
 let log_summary =
-  Log_summary.scan % command ~code:0xEF ~address:0x0071 ~ans_size:53
+  Log_summary.scan % run_command ~code:0xEF ~addr:0x0071 ~ans_size:53
 
 let log port ({Log_summary.log_size; _} as summary) =
-  package_command port ~code:0xEF ~address:log_addr ~ans_size:log_size |> Log.scan summary
+  run_pkg_command port ~code:0xEF ~addr:log_addr ~ans_size:log_size |> Log.scan summary
 
 let bat_low =
-  Bat_low.scan % command ~code:0xEF ~address:0x006A ~ans_size:7
+  Bat_low.scan % run_command ~code:0xEF ~addr:0x006A ~ans_size:7
 
 let settings =
-  Settings.scan % command ~code:0xEF ~address:0x0020 ~ans_size:34
+  Settings.scan % run_command ~code:0xEF ~addr:0x0020 ~ans_size:34
 
 let totals =
-  Totals.scan % command ~code:0xEF ~address:0x0042 ~ans_size:40
+  Totals.scan % run_command ~code:0xEF ~addr:0x0042 ~ans_size:40
