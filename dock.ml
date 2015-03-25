@@ -13,9 +13,9 @@ let device_info port =
   match ans.[1] with
     '\x00' -> None
   | '\x17' ->
-     Some { Device_info.model = Device_model.Rox_5;
+     Some { Device_info.model = Device_model.Rox5;
             ser_number = String.sub ans 2 4 }
   | '\x18' ->
-     Some { Device_info.model = Device_model.Rox_6;
+     Some { Device_info.model = Device_model.Rox6;
             ser_number = String.sub ans 2 4 }
   | _ -> raise Unknown_device

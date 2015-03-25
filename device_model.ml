@@ -1,1 +1,1 @@
-type t = Rox_5 | Rox_6
+type t = Rox5 | Rox6
