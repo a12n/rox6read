@@ -331,7 +331,15 @@ module Bike_pause =
         else
           let tmp_entry =
             Bike_entry.scan wheel_circum prev_entry buf in
-          Bike_entry.Entry (Bike_entry.fill_ts prev_entry {tmp_entry with Bike_entry.duration}) in
+          Bike_entry.Entry (
+              Bike_entry.fill_ts
+                prev_entry {tmp_entry with
+                             Bike_entry.duration =
+                               duration -
+                                 (match prev_entry with
+                                    Bike_entry.Pause_entry e -> e.Bike_entry.duration
+                                  | Bike_entry.No_entry | Bike_entry.Entry _ -> 0)}
+            ) in
       let pause =
         { ts = duration +
                  (match prev_entry with
