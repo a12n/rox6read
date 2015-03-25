@@ -76,9 +76,13 @@ sig
   type t = Log_entry.t list
 end
 
+module Log_summary : (module type of Rox6_log_summary)
+module Settings : (module type of Rox6_settings)
+module Totals : (module type of Rox6_totals)
+
 exception Invalid_response of string
 
-val log : Ser_port.t -> Rox6_log_summary.t -> Log.t
+val log : Ser_port.t -> Log_summary.t -> Log.t
 
 val bat_low : Ser_port.t -> bool
 
