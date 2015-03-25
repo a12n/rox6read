@@ -8,10 +8,10 @@ OCAMLBUILD_FLAGS += -use-ocamlfind
 all: lib
 
 clean:
-	ocamlbuild $(OCAMLBUILD_FLAGS) -clean
+	ocamlbuild ${OCAMLBUILD_FLAGS} -clean
 
 lib:
-	ocamlbuild $(OCAMLBUILD_FLAGS) ssfc.cma
+	ocamlbuild ${OCAMLBUILD_FLAGS} ssfc.cma
 
 top: lib
 	utop -I _build/
