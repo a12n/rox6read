@@ -51,6 +51,7 @@ let rec collect start_time laps tracks track_points = function
   | (Rox_6.Log_entry.Bike_lap l) :: rest ->
      let {Rox_6.Bike_lap.ts; duration; distance; avg_hr;
           max_hr; max_speed; kcal; avg_cadence; _} = l in
+     let track = {Tcx.Track.points = List_ext.Non_empty.of_list (List.rev track_points)} in
      let lap = {Tcx.Activity_lap.start_time =
                   Tcx.Timestamp.of_unix_time (start_time +. float_of_int (ts - duration));
                 total_time = float_of_int duration;
@@ -62,7 +63,7 @@ let rec collect start_time laps tracks track_points = function
                 intensity = Tcx.Intensity.Active;
                 cadence = Some avg_cadence;
                 trigger_method = Tcx.Trigger_method.Manual;
-                tracks = List.rev tracks;
+                tracks = List.rev (track :: tracks);
                 notes = None} in
      collect start_time (lap :: laps) [] [] rest
   | (Rox_6.Log_entry.Hike _) :: _ -> failwith "Rox_6.Log_entry.Hike"
