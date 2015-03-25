@@ -531,6 +531,9 @@ module Log =
       aux 0 {bike_entry = Bike_entry.No_entry;
              bike_lap = Bike_lap.No_lap;
              bike_pause = Bike_pause.No_pause} []
+
+    let recv port ({Log_summary.log_size; _} as summary) =
+      run_pkg_command port ~code:0xEF ~addr:log_addr ~ans_size:log_size |> decode summary
   end
 
 module Settings =
@@ -792,6 +795,3 @@ module Bat_status =
 
     let recv = decode % run_command ~code:0xEF ~addr:0x006A ~ans_size:7
   end
-
-let log port ({Log_summary.log_size; _} as summary) =
-  run_pkg_command port ~code:0xEF ~addr:log_addr ~ans_size:log_size |> Log.decode summary

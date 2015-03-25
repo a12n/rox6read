@@ -71,11 +71,6 @@ sig
          | Hike_pause of Hike_pause.t
 end
 
-module Log :
-sig
-  type t = Log_entry.t list
-end
-
 module Log_summary :
 sig
   type t = {
@@ -120,6 +115,13 @@ sig
     }
 
   val recv : Ser_port.t -> t
+end
+
+module Log :
+sig
+  type t = Log_entry.t list
+
+  val recv : Ser_port.t -> Log_summary.t -> t
 end
 
 module Settings :
@@ -181,5 +183,3 @@ sig
 
   val recv : Ser_port.t -> t
 end
-
-val log : Ser_port.t -> Log_summary.t -> Log.t
