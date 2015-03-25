@@ -182,6 +182,4 @@ sig
   val recv : Ser_port.t -> t
 end
 
-exception Invalid_response of string
-
 val log : Ser_port.t -> Log_summary.t -> Log.t

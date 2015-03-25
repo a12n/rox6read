@@ -1,7 +1,5 @@
 open Batteries
 
-exception Invalid_response of string
-
 let log_addr = 0x00A6
 
 let sample_interval = 10
@@ -33,7 +31,7 @@ let run_command port ~code ~addr ~ans_size =
   Ser_port.write port (command_buf ~code ~addr ~ans_size);
   let ans = Ser_port.read port (ans_size + 2) in
   if not (fully_received ans) then
-    raise (Invalid_response "end of response marker");
+    failwith "run_command";
   String.sub ans 0 ans_size
 
 let run_pkg_command port ~code ~addr ~ans_size =
@@ -510,7 +508,7 @@ module Log =
                aux (k + Hike_pause.size)
                    prev
                    (m1 :: ans)
-            | _ -> raise (Invalid_response "log entry type")
+            | _ -> failwith "scan"
           end
         else
           begin
