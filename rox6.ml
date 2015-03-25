@@ -4,9 +4,6 @@ let log_addr = 0x00A6
 
 let sample_interval = 10
 
-let char_codes =
-  Array.of_list % List.map Char.code % String.to_list
-
 let verify_checksum bytea ~n =
   if bytea.(n) <> Array.(sub bytea 0 n |> sum) land 0xFF then
     failwith "verify_checksum"
@@ -238,7 +235,7 @@ module Bike_entry =
                           | No_entry -> 0)}
 
     let scan wheel_circum prev_entry buf =
-      let c = char_codes buf in
+      let c = Bytea.of_bytes buf in
       let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) in
       let unadj_distance =
         wheel_circum *. float_of_int wheel_rot in
@@ -299,7 +296,7 @@ module Bike_lap =
     let size = 23
 
     let scan wheel_circum prev_lap buf =
-      let c = char_codes buf in
+      let c = Bytea.of_bytes buf in
       let duration =
         ((c.(3) land 0x3F) lsl 16) lor (c.(2) lsl 8) lor c.(1) in
       let wheel_rot =
@@ -351,7 +348,7 @@ module Bike_pause =
     let size = 21
 
     let scan wheel_circum prev_entry prev_pause buf =
-      let c = char_codes buf in
+      let c = Bytea.of_bytes buf in
       let duration = c.(0) lsr 3 in
       let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) in
       let distance = wheel_circum *. float_of_int wheel_rot in
