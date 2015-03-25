@@ -76,44 +76,6 @@ sig
   type t = Log_entry.t list
 end
 
-module Log_summary :
-sig
-  type t = {
-      start_date : Date.t;
-      start_time : Time.t;
-
-      age : int;                          (* y *)
-      mass : float;                       (* kg *)
-      sex : Sex.t;
-
-      max_hr : int;           (* bpm *)
-      hr_limits : int * int;              (* bpm *)
-
-      training_zone : Training_zone.t;
-      zone_start : float * float * float * float; (* frac of max_hr *)
-
-      bike_no : Bike_no.t;
-      wheel_circum : float;     (* m *)
-
-      distance : float;         (* m *)
-      duration : int;           (* s *)
-      max_speed : float * int;  (* km/h, log entry index *)
-      alt_gain : float;         (* m *)
-      alt_loss : float;         (* m *)
-      kcal : int;               (* kcal *)
-
-      hike_duration : int;      (* s *)
-      hike_alt_gain : float;    (* m *)
-      hike_alt_loss : float;    (* m *)
-      hike_kcal : int;          (* kcal *)
-
-      speed_unit : Speed_unit.t;
-      mass_unit : Mass_unit.t;
-
-      log_size : int;        (* size of log in device memory *)
-    }
-end
-
 module Settings :
 sig
   type t = {
@@ -152,9 +114,7 @@ end
 
 exception Invalid_response of string
 
-val log_summary : Ser_port.t -> Log_summary.t
-
-val log : Ser_port.t -> Log_summary.t -> Log.t
+val log : Ser_port.t -> Rox_6_log_summary.t -> Log.t
 
 val bat_low : Ser_port.t -> bool
 
