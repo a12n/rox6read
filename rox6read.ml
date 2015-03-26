@@ -3,6 +3,10 @@ let training_zone_to_string =
          | Training_zone.Fat -> "Fat"
          | Training_zone.Own -> "Own"
 
+let bool_to_string =
+  function false -> "No"
+         | true -> "Yes"
+
 let read_battery port =
   Printf.printf "Battery: %s\n"
                 (match Rox6.Bat_status.recv port with
@@ -27,7 +31,7 @@ let read_settings port =
           printf "Lower Heart Rate Limit: %d bpm\n" (fst hr_limits);
           printf "Upper Heart Rate Limit: %d bpm\n" (snd hr_limits);
           printf "Training Zone: %s\n" (training_zone_to_string training_zone);
-          printf "Zone Alarm: %s\n" (if zone_alarm then "Yes" else "No");
+          printf "Zone Alarm: %s\n" (bool_to_string zone_alarm);
           printf "Zone 1 Start: %d %%\n" (int_of_float (z1 *. 100.0));
           printf "Zone 2 Start: %d %%\n" (int_of_float (z2 *. 100.0));
           printf "Zone 3 Start: %d %%\n" (int_of_float (z3 *. 100.0));
@@ -72,7 +76,7 @@ let read_settings port =
                                                        | Below_2670 -> 2670
                                                        | Below_2830 -> 2830
                                                        | Below_3000 -> 3000);
-          printf "Service Interval Enabled: %s\n" (if (fst serv_interval) then "Yes" else "No");
+          printf "Service Interval Enabled: %s\n" (bool_to_string (fst serv_interval));
           printf "Service Interval: %d ?\n" (snd serv_interval))
 
 let read_summary port =
