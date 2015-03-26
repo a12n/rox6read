@@ -20,14 +20,14 @@ let command_buf ~code ~addr ~ans_size =
   IO.write_ui16 buf ans_size;
   IO.close_out buf
 
-let fully_received ans =
+let complete ans =
   let n = String.length ans in
   n > 2 && ans.[n - 2] == '\x00' && ans.[n - 1] == '\xFF'
 
 let run_command port ~code ~addr ~ans_size =
   Ser_port.write port (command_buf ~code ~addr ~ans_size);
   let ans = Ser_port.read port (ans_size + 2) in
-  if not (fully_received ans) then
+  if not (complete ans) then
     failwith "run_command";
   String.sub ans 0 ans_size
 
