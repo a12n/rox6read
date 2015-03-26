@@ -1,5 +1,10 @@
 open Batteries
 
+let error msg =
+  prerr_string "tcxmerge: ";
+  prerr_endline msg;
+  exit 1
+
 (* Elevation data *)
 
 let alt_data_of_gpx {Gpx.trk; _} =
