@@ -264,7 +264,10 @@ let () =
   let port = Unix.handle_unix_error Ser_port.open_port !port_path in
   if Dock.device_connected port then
     (match Dock.device_info port with
-       Some {Device_info.model = Device_model.Rox6; _} -> !read_func port
+       Some {Device_info.model; _} ->
+       (match model with
+          Device_model.Rox5 -> failwith "ROX 5.0 isn't supported"
+        | Device_model.Rox6 -> !read_func port)
      | _other -> failwith "Device isn't a ROX 6.0 computer")
   else
     failwith "No device in the docking station"
