@@ -164,4 +164,4 @@ let () =
     let _ = Dock.device_info port in
     !read_func port
   else
-    exit 1
+    failwith "No device in the docking station"
