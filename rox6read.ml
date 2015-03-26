@@ -37,12 +37,21 @@ let read_battery port =
 
 (* Ride log *)
 
+let ts_of_entry = function
+    Rox6.Log_entry.Bike {Rox6.Bike_entry.ts; _} -> ts
+  | Rox6.Log_entry.Bike_lap {Rox6.Bike_lap.ts; _} -> ts
+  | Rox6.Log_entry.Bike_pause {Rox6.Bike_pause.ts; _} -> ts
+  | Rox6.Log_entry.Hike _ | Rox6.Log_entry.Hike_pause _ -> failwith "ts_of_entry"
+
 let remove_hike_entries =
   List.filter (function Rox6.Log_entry.Bike _ -> true
                       | Rox6.Log_entry.Bike_lap _ -> true
                       | Rox6.Log_entry.Bike_pause _ -> true
                       | Rox6.Log_entry.Hike _ -> false
                       | Rox6.Log_entry.Hike_pause _ -> false)
+
+let sort_entries =
+  List.sort (fun a b -> compare (ts_of_entry a) (ts_of_entry b))
 
 let read_log port =
   let summary = Rox6.Log_summary.recv port in
