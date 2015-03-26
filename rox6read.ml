@@ -1,3 +1,8 @@
+let training_zone_to_string =
+  function Training_zone.Fit -> "Fit"
+         | Training_zone.Fat -> "Fat"
+         | Training_zone.Own -> "Own"
+
 let read_battery port =
   Printf.printf "Battery: %s\n"
                 (match Rox6.Bat_status.recv port with
@@ -21,10 +26,7 @@ let read_settings port =
           printf "Max. Heart Rate: %d bpm\n" max_hr;
           printf "Lower Heart Rate Limit: %d bpm\n" (fst hr_limits);
           printf "Upper Heart Rate Limit: %d bpm\n" (snd hr_limits);
-          printf "Training Zone: %s\n" Training_zone.(match training_zone with
-                                                        Fit -> "Fit"
-                                                      | Fat -> "Fat"
-                                                      | Own -> "Own");
+          printf "Training Zone: %s\n" (training_zone_to_string training_zone);
           printf "Zone Alarm: %s\n" (if zone_alarm then "Yes" else "No");
           printf "Zone 1 Start: %d %%\n" (int_of_float (z1 *. 100.0));
           printf "Zone 2 Start: %d %%\n" (int_of_float (z2 *. 100.0));
@@ -91,10 +93,7 @@ let read_summary port =
           printf "Max. Heart Rate: %d bpm\n" max_hr;
           printf "Lower Heart Rate Limit: %d bpm\n" (fst hr_limits);
           printf "Upper Heart Rate Limit: %d bpm\n" (snd hr_limits);
-          printf "Training Zone: %s\n" Training_zone.(match training_zone with
-                                                        Fit -> "Fit"
-                                                      | Fat -> "Fat"
-                                                      | Own -> "Own");
+          printf "Training Zone: %s\n" (training_zone_to_string training_zone);
           printf "Zone 1 Start: %d %%\n" (int_of_float (z1 *. 100.0));
           printf "Zone 2 Start: %d %%\n" (int_of_float (z2 *. 100.0));
           printf "Zone 3 Start: %d %%\n" (int_of_float (z3 *. 100.0));
