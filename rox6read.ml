@@ -212,7 +212,7 @@ let read_summary port =
           printf "Bike no.: %d\n" Bike_no.(match bike_no with
                                              Bike_1 -> 1
                                            | Bike_2 -> 2);
-          printf "Wheel Circumference: %.3f m\n" wheel_circum;
+          printf "Wheel Circum.: %.3f m\n" wheel_circum;
           printf "Distance: %.2f m\n" distance;
           printf "Duration: %d s\n" duration;
           printf "Max. Speed: %.1f km/h\n" (fst max_speed);
