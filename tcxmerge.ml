@@ -54,6 +54,20 @@ let load_gpx path =
   try Gpx.of_xml (Xml.parse_file path)
   with _ -> error ("couldn't parse GPX file \"" ^ path ^ "\"")
 
+(* Command line args *)
+
+let parse_args () =
+  let tcx_path = ref "in.tcx" in
+  let gpx_path = ref "track.gpx" in
+  Arg.parse
+    [ "-tcx", Arg.Set_string tcx_path,
+      "Path to input TCX file (default \"" ^ !tcx_path ^ "\")"
+    ; "-gpx", Arg.Set_string gpx_path,
+      "Path to GPX file (default \"" ^ !gpx_path ^ "\")" ]
+    (fun _anon -> ())
+    "Merge TCX data (heart rate, cadence) with GPS data from a GPX file";
+  !tcx_path, !gpx_path
+
 (* Main *)
 
 let () =
