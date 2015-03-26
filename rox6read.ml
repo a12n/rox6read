@@ -152,28 +152,17 @@ let read_summary port =
 let read_totals port =
   let {Rox6.Totals.distance; duration; alt_gain; kcal; hike_duration;
        hike_alt_gain; hike_kcal} = Rox6.Totals.recv port in
-  Printf.printf "Bike 1 Altitude Gain: %f m\n
-                 Bike 1 Distance: %f m\n
-                 Bike 1 Duration: %d s\n
-                 Bike 1 Energy Expend.: %d kcal\n
-                 Bike 2 Altitude Gain: %f m\n
-                 Bike 2 Distance: %f m\n
-                 Bike 2 Duration: %d s\n
-                 Bike 2 Energy Expend.: %d kcal\n
-                 Hike Altitude Gain: %f m\n
-                 Hike Duration: %d s\n
-                 Hike Energy Expend.: %d kcal\n"
-                (fst alt_gain)
-                (fst distance)
-                (fst duration)
-                (fst kcal)
-                (snd alt_gain)
-                (snd distance)
-                (snd duration)
-                (snd kcal)
-                hike_alt_gain
-                hike_duration
-                hike_kcal
+  Printf.(printf "Bike 1 Altitude Gain: %.3f m\n" (fst alt_gain);
+          printf "Bike 1 Distance: %.3f m\n" (fst distance);
+          printf "Bike 1 Duration: %d s\n" (fst duration);
+          printf "Bike 1 Energy Expend.: %d kcal\n" (fst kcal);
+          printf "Bike 2 Altitude Gain: %.3f m\n" (snd alt_gain);
+          printf "Bike 2 Distance: %.3f m\n" (snd distance);
+          printf "Bike 2 Duration: %d s\n" (snd duration);
+          printf "Bike 2 Energy Expend.: %d kcal\n" (snd kcal);
+          printf "Hike Altitude Gain: %.3f m\n" hike_alt_gain;
+          printf "Hike Duration: %d s\n" hike_duration;
+          printf "Hike Energy Expend.: %d kcal\n" hike_kcal)
 
 let () =
   let port_path = ref "" in
