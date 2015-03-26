@@ -88,7 +88,7 @@ let make_tcx {Rox6.Log_summary.start_date = {Date.y; mon; d};
           sensor_state = None} in
        collect laps tracks (track_point :: track_points) rest
     (* Bike pause, skip and start new track segment *)
-    | (Rox6.Log_entry.Bike_pause p) :: rest ->
+    | (Rox6.Log_entry.Bike_pause _p) :: rest ->
        let track = {Tcx.Track.points = List_ext.Non_empty.of_list (List.rev track_points)} in
        collect laps (track :: tracks) [] rest
     (* Bike lap, make new lap *)
