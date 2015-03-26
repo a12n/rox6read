@@ -44,6 +44,16 @@ let merge_data tcx _gpx ?(time_lag=0.0) =
   (* TODO *)
   tcx
 
+(* GPX and TCX files I/O *)
+
+let load_tcx path =
+  try Tcx.parse_file path
+  with _ -> error ("couldn't parse TCX file \"" ^ path ^ "\"")
+
+let load_gpx path =
+  try Gpx.of_xml (Xml.parse_file path)
+  with _ -> error ("couldn't parse GPX file \"" ^ path ^ "\"")
+
 (* Main *)
 
 let () =
