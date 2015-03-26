@@ -38,6 +38,8 @@ let read_battery port =
 (* Ride log *)
 
 let read_log port =
+  let summary = Rox6.Log_summary.recv port in
+  let log = Rox6.Log.recv port summary in
   print_endline "TODO"
 
 (* Settings *)
