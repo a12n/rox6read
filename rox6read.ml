@@ -249,9 +249,9 @@ let read_totals port =
           printf "Hike Duration: %d s\n" hike_duration;
           printf "Hike Energy Expend.: %d kcal\n" hike_kcal)
 
-(* Main *)
+(* Command line arguments *)
 
-let () =
+let parse_args () =
   let port_path = ref None in
   let read_func = ref read_summary in
   let usage_msg = "Read data from SIGMA ROX 6.0 cycling computer" in
@@ -270,14 +270,19 @@ let () =
   if Option.is_none !port_path then
     (Arg.usage options usage_msg;
      error "No serial port device specified");
-  let port =
-    Unix.handle_unix_error Ser_port.open_port (Option.get !port_path) in
+  Option.get !port_path, !read_func
+
+(* Main *)
+
+let () =
+  let port_path, read_func = parse_args () in
+  let port = Unix.handle_unix_error Ser_port.open_port port_path in
   if Dock.device_connected port then
     (match Dock.device_info port with
        Some {Device_info.model; _} ->
        (match model with
           Device_model.Rox5 -> error "ROX 5.0 isn't supported"
-        | Device_model.Rox6 -> !read_func port)
+        | Device_model.Rox6 -> read_func port)
      | _other -> error "Device isn't a ROX 6.0 computer")
   else
     error "No device in the docking station"
