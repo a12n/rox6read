@@ -35,8 +35,8 @@ let read_settings port =
           printf "Date: %04d-%02d-%02d\n" y mon d;
           printf "Time: %02d:%02d:%02d\n" h min s;
           printf "Sea Level Pressure: %d Pa\n" slp;
-          printf "Actual Altitude: %.3f m\n" actual_alt;
-          printf "Home Altitude: %.3f m\n" home_alt;
+          printf "Actual Altitude: %.2f m\n" actual_alt;
+          printf "Home Altitude: %.2f m\n" home_alt;
           printf "Altitude Reference: %s\n" Alt_ref.(match alt_ref with
                                                        Slp -> "Sea Level Pressure"
                                                      | Actual_alt -> "Actual Altitude");
@@ -95,16 +95,16 @@ let read_summary port =
                  Zone 3 Start: %d %%\n
                  Zone 4 Start: %d %%\n
                  Bike no.: %d\n
-                 Wheel Circumference: %f m\n
-                 Distance: %f m\n
+                 Wheel Circumference: %.3f m\n
+                 Distance: %.2f m\n
                  Duration: %d s\n
                  Max. Speed: %f km/h\n
-                 Altitude Gain: %f m\n
-                 Altitude Loss: %f m\n
+                 Altitude Gain: %.2f m\n
+                 Altitude Loss: %.2f m\n
                  Energy Expend.: %d kcal\n
                  Hike Duration: %d s\n
-                 Hike Altitude Gain: %f m\n
-                 Hike Altitude Loss: %f m\n
+                 Hike Altitude Gain: %.2f m\n
+                 Hike Altitude Loss: %.2f m\n
                  Hike Energy Expend.: %d kcal\n
                  Speed Unit: %s\n
                  Mass Unit: %s\n
@@ -152,15 +152,15 @@ let read_summary port =
 let read_totals port =
   let {Rox6.Totals.distance; duration; alt_gain; kcal; hike_duration;
        hike_alt_gain; hike_kcal} = Rox6.Totals.recv port in
-  Printf.(printf "Bike 1 Altitude Gain: %.3f m\n" (fst alt_gain);
-          printf "Bike 1 Distance: %.3f m\n" (fst distance);
+  Printf.(printf "Bike 1 Altitude Gain: %.2f m\n" (fst alt_gain);
+          printf "Bike 1 Distance: %.2f m\n" (fst distance);
           printf "Bike 1 Duration: %d s\n" (fst duration);
           printf "Bike 1 Energy Expend.: %d kcal\n" (fst kcal);
-          printf "Bike 2 Altitude Gain: %.3f m\n" (snd alt_gain);
-          printf "Bike 2 Distance: %.3f m\n" (snd distance);
+          printf "Bike 2 Altitude Gain: %.2f m\n" (snd alt_gain);
+          printf "Bike 2 Distance: %.2f m\n" (snd distance);
           printf "Bike 2 Duration: %d s\n" (snd duration);
           printf "Bike 2 Energy Expend.: %d kcal\n" (snd kcal);
-          printf "Hike Altitude Gain: %.3f m\n" hike_alt_gain;
+          printf "Hike Altitude Gain: %.2f m\n" hike_alt_gain;
           printf "Hike Duration: %d s\n" hike_duration;
           printf "Hike Energy Expend.: %d kcal\n" hike_kcal)
 
