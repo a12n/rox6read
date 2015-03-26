@@ -252,12 +252,12 @@ let () =
   let usage_msg = "Read data from SIGMA ROX 6.0 cycling computer" in
   let options =
     [ "-d", Arg.Set_string port_path, " Serial port device path";
-      "-w", Arg.Symbol (["battery"; "log"; "settings"; "summary"; "totals"],
+      "-w", Arg.Symbol (["battery"; "settings"; "totals"; "ridesum"; "ride"],
                         function "battery" -> read_func := read_battery
-                               | "log" -> read_func := read_log
                                | "settings" -> read_func := read_settings
-                               | "summary" -> read_func := read_summary
                                | "totals" -> read_func := read_totals
+                               | "ridesum" -> read_func := read_summary
+                               | "ride" -> read_func := read_log
                                | symbol -> raise (Arg.Bad symbol)),
       "  Which piece of information to read" ] in
   Arg.parse options (fun _anon -> ()) usage_msg;
