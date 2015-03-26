@@ -55,7 +55,7 @@ let sort_entries =
 
 let read_log port =
   let summary = Rox6.Log_summary.recv port in
-  let log = remove_hike_entries (Rox6.Log.recv port summary) in
+  let log = Rox6.Log.recv port summary |> remove_hike_entries |> sort_entries in
   print_endline "TODO"
 
 (* Settings *)
