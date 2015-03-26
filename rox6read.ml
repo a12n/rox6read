@@ -247,21 +247,26 @@ let read_totals port =
 (* Main *)
 
 let () =
-  let port_path = ref "" in
+  let port_path = ref None in
   let read_func = ref read_summary in
   let usage_msg = "Read data from SIGMA ROX 6.0 cycling computer" in
   let options =
-    [ "-d", Arg.Set_string port_path, " Serial port device path";
-      "-w", Arg.Symbol (["battery"; "settings"; "totals"; "ridesum"; "ride"],
+    [ "-d", Arg.String (fun s -> port_path := Some s),
+      " Serial port device path (requires argument)"
+    ; "-w", Arg.Symbol (["battery"; "settings"; "totals"; "ridesum"; "ride"],
                         function "battery" -> read_func := read_battery
                                | "settings" -> read_func := read_settings
                                | "totals" -> read_func := read_totals
                                | "ridesum" -> read_func := read_summary
                                | "ride" -> read_func := read_log
                                | symbol -> raise (Arg.Bad symbol)),
-      "  Which piece of information to read" ] in
+      "  Which piece of information to read (ridesum by default)" ] in
   Arg.parse options (fun _anon -> ()) usage_msg;
-  let port = Unix.handle_unix_error Ser_port.open_port !port_path in
+  if Option.is_none !port_path then
+    (Arg.usage options usage_msg;
+     failwith "No serial port device specified");
+  let port =
+    Unix.handle_unix_error Ser_port.open_port (Option.get !port_path) in
   if Dock.device_connected port then
     (match Dock.device_info port with
        Some {Device_info.model; _} ->
