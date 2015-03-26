@@ -84,7 +84,7 @@ let read_summary port =
   Printf.printf "Start Date: %04d-%02d-%02d\n
                  Start Time: %02d:%02d:%02d\n
                  Age: %d y\n
-                 Mass: %f kg\n
+                 Mass: %.3f kg\n
                  Sex: %s\n
                  Max. Heart Rate: %d bpm\n
                  Lower Heart Rate Limit: %d bpm\n
