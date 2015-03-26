@@ -1,6 +1,6 @@
 <rox6read.*>: package(tcx)
-<tcxmerge.*>: package(ISO8601)
 <tcxmerge.*>: package(gpx)
+<tcxmerge.*>: package(ISO8601)
 <tcxmerge.*>: package(tcx)
 true: package(batteries)
 true: principal
