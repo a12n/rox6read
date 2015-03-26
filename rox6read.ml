@@ -22,6 +22,9 @@ let mass_unit_to_string =
 let date_to_string {Date.y; mon; d} =
   Printf.sprintf "%04d-%02d-%02d" y mon d
 
+let time_to_string {Time.h; min; s} =
+  Printf.sprintf "%02d:%02d:%02d" h min s
+
 let read_battery port =
   Printf.printf "Battery: %s\n"
                 (match Rox6.Bat_status.recv port with
@@ -34,7 +37,7 @@ let read_log port =
 let read_settings port =
   let {Rox6.Settings.age; mass; sex; max_hr; hr_limits; training_zone;
        zone_alarm; zone_start = z1, z2, z3, z4; wheel_circum; date;
-       time = {Time.h; min; s}; slp; actual_alt; home_alt; alt_ref; lang; date_format;
+       time; slp; actual_alt; home_alt; alt_ref; lang; date_format;
        speed_unit; mass_unit; contrast; low_bat; serv_interval} =
     Rox6.Settings.recv port in
   Printf.(printf "Age: %d y\n" age;
@@ -52,7 +55,7 @@ let read_settings port =
           printf "Bike 1 Wheel Circum.: %.3f m\n" (fst wheel_circum);
           printf "Bike 2 Wheel Circum.: %.3f m\n" (snd wheel_circum);
           printf "Date: %s\n" (date_to_string date);
-          printf "Time: %02d:%02d:%02d\n" h min s;
+          printf "Time: %s\n" (time_to_string time);
           printf "Sea Level Pressure: %d Pa\n" slp;
           printf "Actual Altitude: %.2f m\n" actual_alt;
           printf "Home Altitude: %.2f m\n" home_alt;
@@ -89,15 +92,14 @@ let read_settings port =
           printf "Service Interval: %d ?\n" (snd serv_interval))
 
 let read_summary port =
-  let {Rox6.Log_summary.start_date;
-       start_time = {Time.h; min; s}; age; mass; sex;
+  let {Rox6.Log_summary.start_date; start_time; age; mass; sex;
        max_hr; hr_limits; training_zone; zone_start = z1, z2, z3, z4; bike_no;
        wheel_circum; distance; duration; max_speed; alt_gain;
        alt_loss; kcal; hike_duration; hike_alt_gain; hike_alt_loss;
        hike_kcal; speed_unit; mass_unit; log_size} =
     Rox6.Log_summary.recv port in
   Printf.(printf "Start Date: %s\n" (date_to_string start_date);
-          printf "Start Time: %02d:%02d:%02d\n" h min s;
+          printf "Start Time: %s\n" (time_to_string start_time);
           printf "Age: %d y\n" age;
           printf "Mass: %.3f kg\n" mass;
           printf "Sex: %s\n" (sex_to_string sex);
