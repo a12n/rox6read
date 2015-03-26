@@ -1,5 +1,10 @@
 open Batteries
 
+let error msg =
+  prerr_string "rox6read: ";
+  prerr_endline msg;
+  exit 1
+
 (* Formatting functions *)
 
 let training_zone_to_string =
