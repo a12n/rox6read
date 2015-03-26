@@ -98,7 +98,7 @@ let read_summary port =
                  Wheel Circumference: %.3f m\n
                  Distance: %.2f m\n
                  Duration: %d s\n
-                 Max. Speed: %f km/h\n
+                 Max. Speed: %.1f km/h\n
                  Altitude Gain: %.2f m\n
                  Altitude Loss: %.2f m\n
                  Energy Expend.: %d kcal\n
