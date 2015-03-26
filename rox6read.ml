@@ -81,73 +81,45 @@ let read_summary port =
        alt_loss; kcal; hike_duration; hike_alt_gain; hike_alt_loss;
        hike_kcal; speed_unit; mass_unit; log_size} =
     Rox6.Log_summary.recv port in
-  Printf.printf "Start Date: %04d-%02d-%02d\n
-                 Start Time: %02d:%02d:%02d\n
-                 Age: %d y\n
-                 Mass: %.3f kg\n
-                 Sex: %s\n
-                 Max. Heart Rate: %d bpm\n
-                 Lower Heart Rate Limit: %d bpm\n
-                 Upper Heart Rate Limit: %d bpm\n
-                 Training Zone: %s\n
-                 Zone 1 Start: %d %%\n
-                 Zone 2 Start: %d %%\n
-                 Zone 3 Start: %d %%\n
-                 Zone 4 Start: %d %%\n
-                 Bike no.: %d\n
-                 Wheel Circumference: %.3f m\n
-                 Distance: %.2f m\n
-                 Duration: %d s\n
-                 Max. Speed: %.1f km/h\n
-                 Altitude Gain: %.2f m\n
-                 Altitude Loss: %.2f m\n
-                 Energy Expend.: %d kcal\n
-                 Hike Duration: %d s\n
-                 Hike Altitude Gain: %.2f m\n
-                 Hike Altitude Loss: %.2f m\n
-                 Hike Energy Expend.: %d kcal\n
-                 Speed Unit: %s\n
-                 Mass Unit: %s\n
-                 Log Size: %d\n"
-                y mon d
-                h min s
-                age
-                mass
-                Sex.(match sex with
-                       Male -> "Male"
-                     | Female -> "Female")
-                max_hr
-                (fst hr_limits)
-                (snd hr_limits)
-                Training_zone.(match training_zone with
-                                 Fit -> "Fit"
-                               | Fat -> "Fat"
-                               | Own -> "Own")
-                (int_of_float (z1 *. 100.0))
-                (int_of_float (z2 *. 100.0))
-                (int_of_float (z3 *. 100.0))
-                (int_of_float (z4 *. 100.0))
-                Bike_no.(match bike_no with
-                           Bike_1 -> 1
-                         | Bike_2 -> 2)
-                wheel_circum
-                distance
-                duration
-                (fst max_speed)
-                alt_gain
-                alt_loss
-                kcal
-                hike_duration
-                hike_alt_gain
-                hike_alt_loss
-                hike_kcal
-                Speed_unit.(match speed_unit with
-                              Kmh -> "km/h"
-                            | Mph -> "mph")
-                Mass_unit.(match mass_unit with
-                             Kg -> "kg"
-                           | Lb -> "lb")
-                log_size
+  Printf.(printf "Start Date: %04d-%02d-%02d\n" y mon d;
+          printf "Start Time: %02d:%02d:%02d\n" h min s;
+          printf "Age: %d y\n" age;
+          printf "Mass: %.3f kg\n" mass;
+          printf "Sex: %s\n" Sex.(match sex with
+                                    Male -> "Male"
+                                  | Female -> "Female");
+          printf "Max. Heart Rate: %d bpm\n" max_hr;
+          printf "Lower Heart Rate Limit: %d bpm\n" (fst hr_limits);
+          printf "Upper Heart Rate Limit: %d bpm\n" (snd hr_limits);
+          printf "Training Zone: %s\n" Training_zone.(match training_zone with
+                                                        Fit -> "Fit"
+                                                      | Fat -> "Fat"
+                                                      | Own -> "Own");
+          printf "Zone 1 Start: %d %%\n" (int_of_float (z1 *. 100.0));
+          printf "Zone 2 Start: %d %%\n" (int_of_float (z2 *. 100.0));
+          printf "Zone 3 Start: %d %%\n" (int_of_float (z3 *. 100.0));
+          printf "Zone 4 Start: %d %%\n" (int_of_float (z4 *. 100.0));
+          printf "Bike no.: %d\n" Bike_no.(match bike_no with
+                                             Bike_1 -> 1
+                                           | Bike_2 -> 2);
+          printf "Wheel Circumference: %.3f m\n" wheel_circum;
+          printf "Distance: %.2f m\n" distance;
+          printf "Duration: %d s\n" duration;
+          printf "Max. Speed: %.1f km/h\n" (fst max_speed);
+          printf "Altitude Gain: %.2f m\n" alt_gain;
+          printf "Altitude Loss: %.2f m\n" alt_loss;
+          printf "Energy Expend.: %d kcal\n" kcal;
+          printf "Hike Duration: %d s\n" hike_duration;
+          printf "Hike Altitude Gain: %.2f m\n" hike_alt_gain;
+          printf "Hike Altitude Loss: %.2f m\n" hike_alt_loss;
+          printf "Hike Energy Expend.: %d kcal\n" hike_kcal;
+          printf "Speed Unit: %s\n" Speed_unit.(match speed_unit with
+                                                  Kmh -> "km/h"
+                                                | Mph -> "mph");
+          printf "Mass Unit: %s\n" Mass_unit.(match mass_unit with
+                                                Kg -> "kg"
+                                              | Lb -> "lb");
+          printf "Log Size: %d\n" log_size)
 
 let read_totals port =
   let {Rox6.Totals.distance; duration; alt_gain; kcal; hike_duration;
