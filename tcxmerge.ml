@@ -5,7 +5,7 @@ let error msg =
   prerr_endline msg;
   exit 1
 
-(* Elevation data *)
+(* Cross correlation on elevation data *)
 
 let alt_data_of_gpx {Gpx.trk; _} =
   let to_tcx_time_zone = function
@@ -33,6 +33,10 @@ let alt_data_of_tcx tcx =
        (Tcx.Timestamp.to_unix_time time, h) :: ans
     | _ -> ans in
   Tcx.fold f [] tcx |> List.rev |> Array.of_list
+
+let xcorr_alt _tcx _gpx =
+  (* TODO *)
+  None
 
 (* Main *)
 
