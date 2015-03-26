@@ -95,7 +95,14 @@ let make_tcx {Rox6.Log_summary.start_date = {Date.y; mon; d};
     | (Rox6.Log_entry.Bike_lap l) :: rest ->
        let {Rox6.Bike_lap.ts; duration; distance; avg_hr;
             max_hr; max_speed; kcal; avg_cadence; _} = l in
-       let track = {Tcx.Track.points = List_ext.Non_empty.of_list (List.rev track_points)} in
+       (* If there were track points since last track segment, create a new segment *)
+       let tracks =
+         if List.is_empty track_points then
+           tracks
+         else
+           let track =
+             {Tcx.Track.points = List_ext.Non_empty.of_list (List.rev track_points)} in
+           track :: tracks in
        let lap = {Tcx.Activity_lap.start_time =
                     Tcx.Timestamp.of_unix_time (start_time +. float_of_int (ts - duration));
                   total_time = float_of_int duration;
@@ -107,7 +114,7 @@ let make_tcx {Rox6.Log_summary.start_date = {Date.y; mon; d};
                   intensity = Tcx.Intensity.Active;
                   cadence = Some avg_cadence;
                   trigger_method = Tcx.Trigger_method.Manual;
-                  tracks = List.rev (track :: tracks);
+                  tracks = List.rev tracks;
                   notes = None} in
        collect (lap :: laps) [] [] rest
     (* Hike entries, fail *)
