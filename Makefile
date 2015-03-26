@@ -4,6 +4,7 @@ OCAMLBUILD_FLAGS += -docflags -charset,utf-8,-stars
 OCAMLBUILD_FLAGS += -use-ocamlfind
 
 .PHONY: all clean lib top
+.SUFFIXES: .byte .ml .native
 
 all: lib
 
@@ -15,3 +16,9 @@ lib:
 
 top: lib
 	utop -I _build/
+
+.ml.byte:
+	ocamlbuild ${OCAMLBUILD_FLAGS} $@
+
+.ml.native:
+	ocamlbuild ${OCAMLBUILD_FLAGS} $@
