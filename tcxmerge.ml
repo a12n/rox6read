@@ -8,21 +8,11 @@ let error msg =
 (* Collect data points of GPX/TCX tracks *)
 
 let data_of_gpx f {Gpx.trk; _} =
-  let to_tcx_time_zone = function
-      Gpx.TIMEZONE_Z -> {Tcx.Time_zone.hours = 0; minutes = 0}
-    | Gpx.TIMEZONE_plus (hours, minutes) -> {Tcx.Time_zone.hours; minutes}
-    | Gpx.TIMEZONE_minus (hours, minutes) -> {Tcx.Time_zone.hours = -hours; minutes} in
-  let to_tcx_timestamp {Gpx.year; month; day; hour; minute; second; timezone} =
-    {Tcx.Timestamp.date = {Tcx.Date.year; month; day};
-     time = {Tcx.Time.hour; minute; second = int_of_float second};
-     time_zone = Option.map to_tcx_time_zone timezone} in
-  let to_unix_time gpx_ts =
-    Tcx.Timestamp.to_unix_time (to_tcx_timestamp gpx_ts) in
   let of_wpt ans = function
-    | {Gpx.time = Some t; ele = _; _} as p ->
+    | {Gpx.time = Some (t, _tz); ele = _; _} as p ->
        let data = f p in
        if Option.is_some data then
-         (to_unix_time t, Option.get data) :: ans
+         (t, Option.get data) :: ans
        else
          ans
     | _ -> ans in
