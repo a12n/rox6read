@@ -1,3 +1,5 @@
+open Batteries
+
 (* Formatting functions *)
 
 let training_zone_to_string =
