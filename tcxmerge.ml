@@ -38,6 +38,12 @@ let xcorr_alt _tcx _gpx =
   (* TODO *)
   None
 
+(* Merge data sets *)
+
+let merge_data tcx _gpx ?(time_lag=0.0) =
+  (* TODO *)
+  tcx
+
 (* Main *)
 
 let () =
