@@ -25,11 +25,17 @@ let complete ans =
   n > 2 && ans.[n - 2] == '\x00' && ans.[n - 1] == '\xFF'
 
 let run_command port ~code ~addr ~ans_size =
-  Ser_port.write port (command_buf ~code ~addr ~ans_size);
-  let ans = Ser_port.read port (ans_size + 2) in
-  if not (complete ans) then
-    failwith "run_command";
-  String.sub ans 0 ans_size
+  let rec retry n_tries =
+    if n_tries > 0 then
+      (Ser_port.write port (command_buf ~code ~addr ~ans_size);
+       let ans = Ser_port.read port (ans_size + 2) in
+       if (complete ans) then
+         String.sub ans 0 ans_size
+       else
+         retry (n_tries - 1))
+    else
+      failwith "run_command" in
+  retry 3
 
 let run_pkg_command port ~code ~addr ~ans_size =
   (* TODO: Use bytes *)
