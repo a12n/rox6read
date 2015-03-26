@@ -15,7 +15,14 @@ let eval_opt f x =
   | `At k -> Some (snd f.(k))
   | `Just_after k -> Some (interpolate x f.(k) f.(k + 1))
 
+let eval_opt2 f1 f2 x =
+  match eval_opt f1 x, eval_opt f2 x with
+    Some y1, Some y2 -> Some (y1, y2)
+  | _, _ -> None
+
 let eval f x = Option.default 0.0 (eval_opt f x)
+
+let eval2 f1 f2 x = eval f1 x, eval f2 x
 
 let of_array = Array.decorate_stable_sort fst
 

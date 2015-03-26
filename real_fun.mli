@@ -5,10 +5,14 @@ type t
  * set. *)
 val eval : t -> float -> float
 
+val eval2 : t -> t -> float -> float * float
+
 (** Evaluate function [f] at point [x]. Linear interpolation is used
  * for missing data points. None is returned for points out of defined
  * set. *)
 val eval_opt : t -> float -> float option
+
+val eval_opt2 : t -> t -> float -> (float * float) option
 
 (** Construct function [f] out of array of pairs [(x, y)]. *)
 val of_array : (float * float) array -> t
