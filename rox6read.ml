@@ -161,7 +161,8 @@ let () =
   Arg.parse options (fun _anon -> ()) usage_msg;
   let port = Unix.handle_unix_error Ser_port.open_port !port_path in
   if Dock.device_connected port then
-    let _ = Dock.device_info port in
-    !read_func port
+    (match Dock.device_info port with
+       Some {Device_info.model = Device_model.Rox6; _} -> !read_func port
+     | _other -> failwith "Device isn't a ROX 6.0 computer")
   else
     failwith "No device in the docking station"
