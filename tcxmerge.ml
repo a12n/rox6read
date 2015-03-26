@@ -59,9 +59,30 @@ let xcorr_alt _tcx _gpx =
 
 (* Merge data sets *)
 
-let merge_data tcx _gpx ?(time_lag=0.0) =
-  (* TODO *)
-  tcx
+let merge_data tcx gpx ?(time_lag=0.0) =
+  let alt_data = Real_fun.of_array (alt_data_of_gpx gpx) in
+  let lat_data = Real_fun.of_array (lat_data_of_gpx gpx) in
+  let lon_data = Real_fun.of_array (lon_data_of_gpx gpx) in
+  let transform = function
+    | `Activity_lap ({Tcx.Activity_lap.start_time; _} as l) ->
+       let t = Tcx.Timestamp.to_unix_time start_time +. time_lag in
+       `Activity_lap {l with Tcx.Activity_lap.start_time = Tcx.Timestamp.of_unix_time t}
+    | `Track_point ({Tcx.Track_point.time; altitude; _} as p) ->
+       let t = Tcx.Timestamp.to_unix_time time +. time_lag in
+       (* Use altitude from GPX track, if there's any. Otherwise use
+        * altitude from TCX. *)
+       let altitude =
+         match Real_fun.eval_opt alt_data t with
+           Some alt -> Some alt
+         | None -> altitude in
+       let position =
+         match Real_fun.eval_opt2 lat_data lon_data t with
+           Some (lat, lon) -> Some {Tcx.Position.latitude = lat; longitude = lon}
+         | None -> None in
+       `Track_point {p with Tcx.Track_point.time = Tcx.Timestamp.of_unix_time t;
+                            altitude; position}
+    | x -> x in
+  Tcx.map transform tcx
 
 (* GPX and TCX files I/O *)
 
