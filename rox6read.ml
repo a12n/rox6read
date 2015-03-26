@@ -15,6 +15,10 @@ let speed_unit_to_string =
   function Speed_unit.Kmh -> "km/h"
          | Speed_unit.Mph -> "mph"
 
+let mass_unit_to_string =
+  function Mass_unit.Kg -> "kg"
+         | Mass_unit.Lb -> "lb"
+
 let read_battery port =
   Printf.printf "Battery: %s\n"
                 (match Rox6.Bat_status.recv port with
@@ -64,9 +68,7 @@ let read_settings port =
                                                     Eu -> "European"
                                                   | Us -> "US");
           printf "Speed Unit: %s\n" (speed_unit_to_string speed_unit);
-          printf "Mass Unit: %s\n" Mass_unit.(match mass_unit with
-                                                Kg -> "kg"
-                                              | Lb -> "lb");
+          printf "Mass Unit: %s\n" (mass_unit_to_string mass_unit);
           printf "Contrast: %s\n" Contrast.(match contrast with
                                               Low -> "Low"
                                             | Mid -> "Mid"
@@ -119,9 +121,7 @@ let read_summary port =
           printf "Hike Altitude Loss: %.2f m\n" hike_alt_loss;
           printf "Hike Energy Expend.: %d kcal\n" hike_kcal;
           printf "Speed Unit: %s\n" (speed_unit_to_string speed_unit);
-          printf "Mass Unit: %s\n" Mass_unit.(match mass_unit with
-                                                Kg -> "kg"
-                                              | Lb -> "lb");
+          printf "Mass Unit: %s\n" (mass_unit_to_string mass_unit);
           printf "Log Size: %d\n" log_size)
 
 let read_totals port =
