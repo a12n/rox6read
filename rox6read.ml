@@ -116,8 +116,8 @@ let make_tcx {Rox6.Log_summary.start_date = {Date.y; mon; d};
 
 let read_log port =
   let summary = Rox6.Log_summary.recv port in
-  let log = Rox6.Log.recv port summary |> remove_hike_entries |> sort_entries in
-  print_endline "TODO"
+  let entries = Rox6.Log.recv port summary |> remove_hike_entries |> sort_entries in
+  print_string (Tcx.to_string (make_tcx summary entries))
 
 (* Settings *)
 
