@@ -7,6 +7,10 @@ let bool_to_string =
   function false -> "No"
          | true -> "Yes"
 
+let sex_to_string =
+  function Sex.Male -> "Male"
+         | Sex.Female -> "Female"
+
 let read_battery port =
   Printf.printf "Battery: %s\n"
                 (match Rox6.Bat_status.recv port with
@@ -24,9 +28,7 @@ let read_settings port =
     Rox6.Settings.recv port in
   Printf.(printf "Age: %d y\n" age;
           printf "Mass: %.3f kg\n" mass;
-          printf "Sex: %s\n" Sex.(match sex with
-                                    Male -> "Male"
-                                  | Female -> "Female");
+          printf "Sex: %s\n" (sex_to_string sex);
           printf "Max. Heart Rate: %d bpm\n" max_hr;
           printf "Lower Heart Rate Limit: %d bpm\n" (fst hr_limits);
           printf "Upper Heart Rate Limit: %d bpm\n" (snd hr_limits);
@@ -91,9 +93,7 @@ let read_summary port =
           printf "Start Time: %02d:%02d:%02d\n" h min s;
           printf "Age: %d y\n" age;
           printf "Mass: %.3f kg\n" mass;
-          printf "Sex: %s\n" Sex.(match sex with
-                                    Male -> "Male"
-                                  | Female -> "Female");
+          printf "Sex: %s\n" (sex_to_string sex);
           printf "Max. Heart Rate: %d bpm\n" max_hr;
           printf "Lower Heart Rate Limit: %d bpm\n" (fst hr_limits);
           printf "Upper Heart Rate Limit: %d bpm\n" (snd hr_limits);
