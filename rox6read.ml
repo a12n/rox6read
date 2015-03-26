@@ -269,15 +269,15 @@ let () =
   Arg.parse options (fun _anon -> ()) usage_msg;
   if Option.is_none !port_path then
     (Arg.usage options usage_msg;
-     failwith "No serial port device specified");
+     error "No serial port device specified");
   let port =
     Unix.handle_unix_error Ser_port.open_port (Option.get !port_path) in
   if Dock.device_connected port then
     (match Dock.device_info port with
        Some {Device_info.model; _} ->
        (match model with
-          Device_model.Rox5 -> failwith "ROX 5.0 isn't supported"
+          Device_model.Rox5 -> error "ROX 5.0 isn't supported"
         | Device_model.Rox6 -> !read_func port)
-     | _other -> failwith "Device isn't a ROX 6.0 computer")
+     | _other -> error "Device isn't a ROX 6.0 computer")
   else
-    failwith "No device in the docking station"
+    error "No device in the docking station"
