@@ -47,6 +47,10 @@ let alt_data_of_gpx = data_of_gpx (fun p -> p.Gpx.ele)
 
 let alt_data_of_tcx = data_of_tcx (fun p -> p.Tcx.Track_point.altitude)
 
+let lat_data_of_gpx = data_of_gpx (fun p -> Some p.Gpx.lat)
+
+let lon_data_of_gpx = data_of_gpx (fun p -> Some p.Gpx.lon)
+
 (* Cross correlation on elevation data *)
 
 let xcorr_alt _tcx _gpx =
