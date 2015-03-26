@@ -6,7 +6,7 @@ OCAMLBUILD_FLAGS += -use-ocamlfind
 .PHONY: all clean lib top
 .SUFFIXES: .byte .ml .native
 
-all: rox6read.native
+all: rox6read.native tcxmerge.native
 
 clean:
 	ocamlbuild ${OCAMLBUILD_FLAGS} -clean
