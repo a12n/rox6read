@@ -1,3 +1,5 @@
+(* Formatting functions *)
+
 let training_zone_to_string =
   function Training_zone.Fit -> "Fit"
          | Training_zone.Fat -> "Fat"
@@ -25,14 +27,20 @@ let date_to_string {Date.y; mon; d} =
 let time_to_string {Time.h; min; s} =
   Printf.sprintf "%02d:%02d:%02d" h min s
 
+(* Battery status *)
+
 let read_battery port =
   Printf.printf "Battery: %s\n"
                 (match Rox6.Bat_status.recv port with
                    Rox6.Bat_status.Ok -> "OK"
                  | Rox6.Bat_status.Low -> "Low")
 
+(* Ride log *)
+
 let read_log port =
   print_endline "TODO"
+
+(* Settings *)
 
 let read_settings port =
   let {Rox6.Settings.age; mass; sex; max_hr; hr_limits; training_zone;
@@ -91,6 +99,8 @@ let read_settings port =
           printf "Service Interval Enabled: %s\n" (bool_to_string (fst serv_interval));
           printf "Service Interval: %d ?\n" (snd serv_interval))
 
+(* Ride log summary *)
+
 let read_summary port =
   let {Rox6.Log_summary.start_date; start_time; age; mass; sex;
        max_hr; hr_limits; training_zone; zone_start = z1, z2, z3, z4; bike_no;
@@ -129,6 +139,8 @@ let read_summary port =
           printf "Mass Unit: %s\n" (mass_unit_to_string mass_unit);
           printf "Log Size: %d\n" log_size)
 
+(* Total values *)
+
 let read_totals port =
   let {Rox6.Totals.distance; duration; alt_gain; kcal; hike_duration;
        hike_alt_gain; hike_kcal} = Rox6.Totals.recv port in
@@ -143,6 +155,8 @@ let read_totals port =
           printf "Hike Altitude Gain: %.2f m\n" hike_alt_gain;
           printf "Hike Duration: %d s\n" hike_duration;
           printf "Hike Energy Expend.: %d kcal\n" hike_kcal)
+
+(* Main *)
 
 let () =
   let port_path = ref "" in
