@@ -71,5 +71,8 @@ let parse_args () =
 (* Main *)
 
 let () =
-  (* TODO *)
-  ()
+  let tcx_path, gpx_path = parse_args () in
+  let tcx = load_tcx tcx_path in
+  let gpx = load_gpx gpx_path in
+  let time_lag = xcorr_alt tcx gpx in
+  merge_data tcx gpx ?time_lag |> Tcx.to_string |> print_string
