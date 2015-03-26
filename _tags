@@ -1,3 +1,5 @@
 <rox6read.*>: package(tcx)
+<tcxmerge.*>: package(gpx)
+<tcxmerge.*>: package(tcx)
 true: package(batteries)
 true: principal
