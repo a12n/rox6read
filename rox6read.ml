@@ -37,7 +37,7 @@ let read_battery port =
 
 (* Ride log *)
 
-let remove_hike =
+let remove_hike_entries =
   List.filter (function Rox6.Log_entry.Bike _ -> true
                       | Rox6.Log_entry.Bike_lap _ -> true
                       | Rox6.Log_entry.Bike_pause _ -> true
@@ -46,7 +46,7 @@ let remove_hike =
 
 let read_log port =
   let summary = Rox6.Log_summary.recv port in
-  let log = remove_hike (Rox6.Log.recv port summary) in
+  let log = remove_hike_entries (Rox6.Log.recv port summary) in
   print_endline "TODO"
 
 (* Settings *)
