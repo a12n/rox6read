@@ -5,9 +5,9 @@ let error msg =
   prerr_endline msg;
   exit 1
 
-(* Cross correlation on elevation data *)
+(* Collect data points of GPX/TCX tracks *)
 
-let alt_data_of_gpx {Gpx.trk; _} =
+let data_of_gpx f {Gpx.trk; _} =
   let to_tcx_time_zone = function
       Gpx.TIMEZONE_Z -> {Tcx.Time_zone.hours = 0; minutes = 0}
     | Gpx.TIMEZONE_plus (hours, minutes) -> {Tcx.Time_zone.hours; minutes}
@@ -19,7 +19,12 @@ let alt_data_of_gpx {Gpx.trk; _} =
   let to_unix_time gpx_ts =
     Tcx.Timestamp.to_unix_time (to_tcx_timestamp gpx_ts) in
   let of_wpt ans = function
-    | {Gpx.time = Some t; ele = Some h; _} -> (to_unix_time t, h) :: ans
+    | {Gpx.time = Some t; ele = _; _} as p ->
+       let data = f p in
+       if Option.is_some data then
+         (to_unix_time t, Option.get data) :: ans
+       else
+         ans
     | _ -> ans in
   let of_trkseg {Gpx.trkpt; _} =
     trkpt |> List.fold_left of_wpt [] |> List.rev in
@@ -27,12 +32,22 @@ let alt_data_of_gpx {Gpx.trk; _} =
     trkseg |> List.map of_trkseg |> List.flatten in
   trk |> List.map of_trk |> List.flatten |> Array.of_list
 
-let alt_data_of_tcx tcx =
-  let f ans = function
-    | `Track_point {Tcx.Track_point.time; altitude = Some h; _} ->
-       (Tcx.Timestamp.to_unix_time time, h) :: ans
+let data_of_tcx f tcx =
+  let collect ans = function
+    | `Track_point ({Tcx.Track_point.time; _} as p) ->
+       let data = f p in
+       if Option.is_some data then
+         (Tcx.Timestamp.to_unix_time time, Option.get data) :: ans
+       else
+         ans
     | _ -> ans in
-  Tcx.fold f [] tcx |> List.rev |> Array.of_list
+  Tcx.fold collect [] tcx |> List.rev |> Array.of_list
+
+let alt_data_of_gpx = data_of_gpx (fun p -> p.Gpx.ele)
+
+let alt_data_of_tcx = data_of_tcx (fun p -> p.Tcx.Track_point.altitude)
+
+(* Cross correlation on elevation data *)
 
 let xcorr_alt _tcx _gpx =
   (* TODO *)
