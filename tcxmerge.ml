@@ -43,9 +43,27 @@ let gpx_lon_data = gpx_data (fun p -> Some p.Gpx.lon)
 
 (* Cross correlation on elevation data *)
 
-let find_time_lag _tcx _gpx =
-  (* TODO *)
-  None
+let resample_alt tcx gpx =
+  let tcx_alt = Real_fun.of_array (tcx_alt_data tcx) in
+  let gpx_alt = Real_fun.of_array (gpx_alt_data gpx) in
+  match Real_fun.(domain tcx_alt, domain gpx_alt) with
+  | Some (t1, t2), Some (t3, t4) ->
+     let min_t, max_t = min t1 t3, max t2 t4 in
+     let dt = 1.0 in
+     Some (dt,
+           Real_fun.samples tcx_alt (min_t, max_t) dt,
+           Real_fun.samples gpx_alt (min_t, max_t) dt)
+  | _, _ -> None
+
+let find_time_lag tcx gpx =
+  match resample_alt tcx gpx with
+  | Some (dt, tcx_alt, gpx_alt) ->
+     let k, r = Xcorr.max_xcorr gpx_alt tcx_alt in
+     let time_lag = float_of_int k *. dt in
+     Printf.eprintf "Tcxmerge.find_time_lag: k = %d, r = %f, time_lag = %f\n%!"
+                    k r time_lag;
+     Some time_lag
+  | None -> None
 
 (* Merge data sets *)
 
