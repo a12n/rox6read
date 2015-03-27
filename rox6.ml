@@ -52,6 +52,17 @@ let run_pkg_command port ~code ~addr ~ans_size =
   aux 0;
   ans
 
+let to_unix_time {Date.y; mon; d} {Time.h; min; s} =
+  let t, _tm =
+    Unix.mktime {Unix.tm_year = y - 1900;
+                 tm_mon = mon - 1;
+                 tm_mday = d;
+                 tm_hour = h;
+                 tm_min = min;
+                 tm_sec = s;
+                 tm_wday = 0; tm_yday = 0; tm_isdst = false} in
+  t
+
 module Log_summary =
   struct
     type t = {
@@ -396,6 +407,12 @@ module Bike_pause =
                                (match prev_entry with
                                   Bike_entry.Pause_entry e -> e.Bike_entry.duration
                                 | Bike_entry.No_entry | Bike_entry.Entry _ -> 0)} in
+          let tmp_entry =
+            let pause_time =
+              int_of_float (to_unix_time stop_date stop_time -.
+                              to_unix_time start_date start_time) in
+            Printf.eprintf "Rox6.Bike_pause.decode: pause_time = %d\n" pause_time;
+            {tmp_entry with Bike_entry.ts = tmp_entry.Bike_entry.ts + pause_time} in
           Bike_entry.Entry tmp_entry in
       let pause =
         { ts = duration +
