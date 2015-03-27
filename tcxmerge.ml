@@ -50,14 +50,15 @@ let resample_alt tcx gpx =
   | Some (t1, t2), Some (t3, t4) ->
      let min_t, max_t = min t1 t3, max t2 t4 in
      let dt = 1.0 in
-     Some (dt,
+     Some ((min_t, max_t),
+           dt,
            Real_fun.samples tcx_alt (min_t, max_t) dt,
            Real_fun.samples gpx_alt (min_t, max_t) dt)
   | _, _ -> None
 
 let find_time_lag tcx gpx =
   match resample_alt tcx gpx with
-  | Some (dt, tcx_alt, gpx_alt) ->
+  | Some ((_min_t, _max_t), dt, tcx_alt, gpx_alt) ->
      let k, r = Xcorr.max_xcorr gpx_alt tcx_alt in
      let time_lag = float_of_int k *. dt in
      Printf.eprintf "Tcxmerge.find_time_lag: k = %d, r = %f, time_lag = %f\n%!"
