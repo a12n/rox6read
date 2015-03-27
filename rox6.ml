@@ -355,6 +355,22 @@ module Bike_pause =
 
     let decode wheel_circum prev_entry prev_pause buf =
       let c = Bytea.of_bytes buf in
+      let start_date =
+        { Date.y = ((c.(9 + 2) land 0x0F) lsl 8) lor c.(8 + 2);
+          mon = c.(9 + 2) lsr 4;
+          d = c.(7 + 2) land 0x3F } in
+      let start_time =
+        { Time.h = c.(13 + 2) land 0x1F;
+          min = ((c.(14 + 2) land 0xE0) lsr 2) lor (c.(13 + 2) lsr 5);
+          s = c.(15 + 2) land 0x3F } in
+      let stop_date =
+        { Date.y = ((c.(12 + 2) land 0x0F) lsl 8) lor c.(11 + 2);
+          mon = c.(12 + 2) lsr 4;
+          d = c.(10 + 2) land 0x3F } in
+      let stop_time =
+        { Time.h = c.(14 + 2) land 0x1F;
+          min = c.(16 + 2) land 0x3F;
+          s = c.(17 + 2) land 0x3F } in
       let duration = c.(0) lsr 3 in
       let wheel_rot = ((c.(2) land 0x03) lsl 8) lor c.(1) in
       let distance = wheel_circum *. float_of_int wheel_rot in
@@ -398,22 +414,7 @@ module Bike_pause =
               else
                 -.alt
             end;
-          start_date =
-            { Date.y = ((c.(9 + 2) land 0x0F) lsl 8) lor c.(8 + 2);
-              mon = c.(9 + 2) lsr 4;
-              d = c.(7 + 2) land 0x3F };
-          start_time =
-            { Time.h = c.(13 + 2) land 0x1F;
-              min = ((c.(14 + 2) land 0xE0) lsr 2) lor (c.(13 + 2) lsr 5);
-              s = c.(15 + 2) land 0x3F };
-          stop_date =
-            { Date.y = ((c.(12 + 2) land 0x0F) lsl 8) lor c.(11 + 2);
-              mon = c.(12 + 2) lsr 4;
-              d = c.(10 + 2) land 0x3F };
-          stop_time =
-            { Time.h = c.(14 + 2) land 0x1F;
-              min = c.(16 + 2) land 0x3F;
-              s = c.(17 + 2) land 0x3F };
+          start_date; start_time; stop_date; stop_time;
           distance = abs_distance -.
                        (match prev_pause with
                           No_pause -> 0.0
