@@ -49,7 +49,7 @@ let xcorr_alt _tcx _gpx =
 
 (* Merge data sets *)
 
-let merge_data tcx gpx ?(time_lag=0.0) =
+let merge_data ?(time_lag=0.0) tcx gpx =
   let alt_data = Real_fun.of_array (alt_data_of_gpx gpx) in
   let lat_data = Real_fun.of_array (lat_data_of_gpx gpx) in
   let lon_data = Real_fun.of_array (lon_data_of_gpx gpx) in
