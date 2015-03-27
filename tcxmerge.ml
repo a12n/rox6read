@@ -7,7 +7,7 @@ let error msg =
 
 (* Collect data points of GPX/TCX tracks *)
 
-let data_of_gpx f {Gpx.trk; _} =
+let gpx_data f {Gpx.trk; _} =
   let of_wpt ans = function
     | {Gpx.time = Some (t, _tz); ele = _; _} as p ->
        let data = f p in
@@ -22,7 +22,7 @@ let data_of_gpx f {Gpx.trk; _} =
     trkseg |> List.map of_trkseg |> List.flatten in
   trk |> List.map of_trk |> List.flatten |> Array.of_list
 
-let data_of_tcx f tcx =
+let tcx_data f tcx =
   let collect ans = function
     | `Track_point ({Tcx.Track_point.time; _} as p) ->
        let data = f p in
@@ -33,13 +33,13 @@ let data_of_tcx f tcx =
     | _ -> ans in
   Tcx.fold collect [] tcx |> List.rev |> Array.of_list
 
-let alt_data_of_gpx = data_of_gpx (fun p -> p.Gpx.ele)
+let gpx_alt_data = gpx_data (fun p -> p.Gpx.ele)
 
-let alt_data_of_tcx = data_of_tcx (fun p -> p.Tcx.Track_point.altitude)
+let tcx_alt_data = tcx_data (fun p -> p.Tcx.Track_point.altitude)
 
-let lat_data_of_gpx = data_of_gpx (fun p -> Some p.Gpx.lat)
+let gpx_lat_data = gpx_data (fun p -> Some p.Gpx.lat)
 
-let lon_data_of_gpx = data_of_gpx (fun p -> Some p.Gpx.lon)
+let gpx_lon_data = gpx_data (fun p -> Some p.Gpx.lon)
 
 (* Cross correlation on elevation data *)
 
@@ -50,9 +50,9 @@ let xcorr_alt _tcx _gpx =
 (* Merge data sets *)
 
 let merge_data ?(time_lag=0.0) tcx gpx =
-  let alt_data = Real_fun.of_array (alt_data_of_gpx gpx) in
-  let lat_data = Real_fun.of_array (lat_data_of_gpx gpx) in
-  let lon_data = Real_fun.of_array (lon_data_of_gpx gpx) in
+  let alt_data = Real_fun.of_array (gpx_alt_data gpx) in
+  let lat_data = Real_fun.of_array (gpx_lat_data gpx) in
+  let lon_data = Real_fun.of_array (gpx_lon_data gpx) in
   let transform = function
     | `Activity_lap ({Tcx.Activity_lap.start_time; _} as l) ->
        let t = Tcx.Timestamp.to_unix_time start_time +. time_lag in
