@@ -34,6 +34,8 @@ let eval2 f1 f2 x = eval f1 x, eval f2 x
 let of_array = Array.decorate_stable_sort fst
 
 let samples f (min_x, max_x) dx =
+  Printf.eprintf "Real_fun.samples: n1 = %d, min_x = %f, max_x = %f, dx = %f, n2 = %d\n%!"
+                 (Array.length f) min_x max_x dx (int_of_float ((max_x -. min_x) /. dx));
   let next x =
     if x <= max_x then
       eval f x, x +. dx
