@@ -43,7 +43,7 @@ let gpx_lon_data = gpx_data (fun p -> Some p.Gpx.lon)
 
 (* Cross correlation on elevation data *)
 
-let xcorr_alt _tcx _gpx =
+let find_time_lag _tcx _gpx =
   (* TODO *)
   None
 
@@ -104,5 +104,5 @@ let () =
   let tcx_path, gpx_path = parse_args () in
   let tcx = load_tcx tcx_path in
   let gpx = load_gpx gpx_path in
-  let time_lag = xcorr_alt tcx gpx in
+  let time_lag = find_time_lag tcx gpx in
   merge_data tcx gpx ?time_lag |> Tcx.to_string |> print_string
