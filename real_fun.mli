@@ -1,6 +1,9 @@
 (** Function from [float] to [float]. *)
 type t
 
+(** Defined domain of the function. [None] if the function is empty. *)
+val domain : t -> (float * float) option
+
 (** Same as [eval_opt], but returns zero for arguments out of defined
  * set. *)
 val eval : t -> float -> float

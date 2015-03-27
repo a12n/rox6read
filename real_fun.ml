@@ -7,6 +7,13 @@ let lerp (a, b) t = a +. t *. (b -. a)
 let interpolate k (k1, v1) (k2, v2) =
   let t = (k -. k1) /. (k2 -. k1) in lerp (v1, v2) t
 
+let domain f =
+  let n = Array.length f in
+  if n > 0 then
+    Some (fst f.(0), fst f.(n - 1))
+  else
+    None
+
 let eval_opt f x =
   let cmp (k1, _v1) (k2, _v2) =
     (BatOrd.ord compare) k1 k2 in
