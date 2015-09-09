@@ -1,8 +1,3 @@
 <rox6read.*>: package(tcx)
-<tcxmerge.*>: package(gpx)
-<tcxmerge.*>: package(ISO8601)
-<tcxmerge.*>: package(tcx)
-<tcxmerge.*>: package(fftw3)
-<xcorr.*>: package(fftw3)
 true: package(batteries)
 true: principal
